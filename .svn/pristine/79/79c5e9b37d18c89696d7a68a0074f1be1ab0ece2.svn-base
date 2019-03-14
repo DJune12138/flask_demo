@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>代理层级管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .refactor_content {
+            display: none;
+        }
+
+        /*.rule {*/
+            /*background: #393D49;*/
+            /*font-size: 14px;*/
+            /*padding: 10px 10px 5px 10px;*/
+        /*}*/
+
+        /*.rule p {*/
+            /*color: #fff;*/
+            /*margin-bottom: 5px;*/
+        /*}*/
+
+        /*.rule p .highlight {*/
+            /*color: #FFB800;*/
+        /*}*/
+
+        .switch_button {
+            position: relative;
+            top: 6px !important;
+            left: 5px;
+        }
+
+        .detail .content_item {
+            display: inline-block;
+            width: 426px;
+        }
+
+        .detail .content_item input {
+            display: inline-block;
+            width: 300px;
+            /*border: solid red 1px !important;*/
+            height: 28px !important;
+        }
+
+        .detail .content_item input.win_lose, .detail .content_item input.bet {
+            width: 150px;
+        }
+
+        .detail .content_item .win_lose_min, .detail .content_item .bet_min {
+            /*border-right: solid #e6e6e6 1px !important;*/
+            margin-left: 4px !important;
+        }
+
+        .content_item .tip {
+            color: #888;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .new ul li {
+            background: #f2f2f2;
+            font-size: 14px;
+            padding: 10px 10px;
+            border-top: solid #ddd 1px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .new ul li:last-child {
+            border-bottom: solid #ddd 1px;
+        }
+
+        .new ul .detail {
+            /*display: none;*/
+        }
+
+        .content_top {
+            text-align: right;
+        }
+
+        .content_top input {
+            margin-right: 10px !important;
+        }
+
+        .submit {
+            margin: 10px !important;
+        }
+
+        .game {
+            overflow: hidden;
+        }
+
+        .game-item {
+            float: left;
+            position: relative;
+            border: solid 1px #ededed;
+            width: 235px;
+            font-size: 14px;
+            padding: 17px 15px 10px 15px;
+            margin: 15px;
+        }
+
+        .game-item a {
+            position: absolute;
+            top: -16px;
+            left: 20px;
+            color: #000;
+            display: inline-block;
+            background: #fff;
+            padding: 5px 15px;
+        }
+
+        .game-item input {
+            width: 80px !important;
+            height: 26px !important;
+            margin: 5px 0px 5px 15px !important;
+        }
+
+        .refactor_content .new {
+            display: none;
+        }
+
+        .refactor_content .list {
+            /*display: none;*/
+            /*padding: 10px;*/
+        }
+
+        table tr td a {
+            margin: 0 20px;
+        }
+        .label_{
+            border-left:1px solid #e6e6e6;
+        }
+        table tr th:first-child{
+            width: 80%;
+        }
+        .bootstrap-table{
+            padding: 0 10px 10px 10px;
+        }
+    </style>
+</head>
+<body>
+<div hidden>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.agent_level_retrieve"),beginDate=False,QueryType=3,Method='get') }}
+    {% endautoescape %}
+</div>
+
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="submit" value="新增代理层级">
+    </div>
+    <section class="new">
+        <div class="rule">
+            <p>每条返佣规则一共分为 <span class="highlight">五个阶梯</span>，如果您的返佣规则只有<span class="highlight">三个阶梯</span>，那么<span
+                    class="highlight">后两个阶梯</span>的抽水或输赢金额的最大值请输入 <span class="highlight">0</span></p>
+            <p>为了方便根据不同游戏设置不同的代理佣金条件，每个平台分为<span class="highlight">返佣设置</span>与<span class="highlight">反水设置</span>2个方式，可以共用，也可以单独使用，如果不想使用某一个设置，请直接输入
+                <span class="highlight">0</span></p>
+            <p><span class="highlight">返佣设置：</span>根据代理旗下玩家的<span class="highlight">输赢结果</span>进行返佣，例如：玩家AG娱乐场输100000，返佣30，则代理应得30000
+            </p>
+            <p><span class="highlight">反水设置：</span>根据代理旗下玩家的<span class="highlight">游戏抽水</span>进行反水，例如：玩家在百人牛牛游戏抽水100000，反水0.1，则代理应得100
+            </p>
+        </div>
+        <p class="content_item">
+            <label>代理层级名称</label>
+            <input class="level_name" type="text"/>
+        </p>
+        <p class="content_item" hidden>
+            <label>是否发放佣金</label>
+            <span class="switch_button" value="1"></span>
+            <span class="tip">如选择不发放佣金，则在代理佣金计算时自动过滤该层级下代理</span>
+        </p>
+        <ul>
+            <li>第1阶梯</li>
+            <div class="detail"></div>
+            <li>第2阶梯</li>
+            <div class="detail"></div>
+            <li>第3阶梯</li>
+            <div class="detail"></div>
+            <li>第4阶梯</li>
+            <div class="detail"></div>
+            <li>第5阶梯</li>
+            <div class="detail"></div>
+        </ul>
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="立即提交">
+    </section>
+    <section class="list">
+        <div class="rule">
+            <p>顶级代理不允许删除，只允许修改。否则会导致代理佣金结算混乱。</p>
+        </div>
+        <table id="table"></table>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class=" btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class=" btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    setTimeout(function(){
+        $(".switch_button").unbind("click");
+        $('.switch_button').click(function () {
+            if ($(this).attr('value') == '1') {
+                $(this).attr('value', '0');
+            } else if($(this).attr('value') == '0') {
+                $(this).attr('value', '1');
+            }
+        })
+    },300)
+
+    var list, obj, level_id, old_name, type, channel;
+
+    $content = $('.refactor_content');
+    content_top = $content.find('.content_top');
+    go_new = $content.find('.content_top input');
+    $new = $content.find('.new');
+    $list = $content.find('.list');
+    nav_li = $new.find('ul li');
+    detail = $new.find('ul .detail');
+    level_name = $new.find('.level_name ');
+    grant_brokerage = $new.find('.switch_button  ');
+    table = $('#table');
+    submit_btn = $new.find('input.submit');
+    search_btn = $('#query_btn');
+
+    $content.show();
+
+    go_new.click(function () {
+        level_id = '';
+        old_name = '';
+        if ($(this).val() == '新增代理层级') {
+            $(this).val('返回层级列表');
+            $new.show();
+            $list.hide();
+        } else {
+            $new.hide();
+            $list.show();
+            $(this).val('新增代理层级');
+        }
+
+        level_name.val('');
+        grant_brokerage.attr('value', '1');
+        detail.empty()
+        detail.append('<p class="content_item">\n' +
+            '<input class="win_lose win_lose_min" type="text" placeholder="最小" disabled/>\n' +
+            '<label class="label_">＜输赢金额≤</label>\n' +
+            '<input class="win_lose win_lose_max" type="text" placeholder="最大" onchange="max_change(this)"/>\n' +
+            '</p>\n' +
+            '<p class="content_item">\n' +
+            '<label>返佣比例</label>\n' +
+            '<input class="rebate" type="text" value="0" placeholder="万分比"/>\n' +
+            '</p>\n' +
+            '<br>\n' +
+            '<p class="content_item">\n' +
+            '<input class="bet bet_min" type="text" placeholder="最小" disabled/>\n' +
+            '<label class="label_">＜抽水金额≤</label>\n' +
+            '<input class="bet bet_max" type="text" placeholder="最大" onchange="max_change(this)"/>\n' +
+            '</p>\n' +
+            '<p class="content_item">\n' +
+            '<label>反水比例</label>\n' +
+            '<input class="backwater" type="text" value="0" placeholder="万分比"/>\n' +
+            '</p><span style="font-size: 14px">【 例：想将反水或返佣比例设置为50%， 则请输入5000】</span>')
+        $('.win_lose_min').eq(0).val(0);
+        $('.win_lose_min').eq(0).attr('disabled',false);
+        $('.bet_min').eq(0).val(0);
+        $('.bet_min').eq(0).attr('disabled',false);
+
+        win_lose_min = $new.find('.win_lose_min  ');
+        win_lose_max = $new.find('.win_lose_max  ');
+        bet = $new.find('.bet');
+        bet_min = $new.find('.bet_min');
+        bet_max = $new.find('.bet_max');
+        rebate = $new.find('.rebate');
+        backwater = $new.find('.backwater');
+    })
+
+    submit_btn.click(function () {
+        add();
+    });
+
+    search_btn.click(function () {
+        table.bootstrapTable('refresh');
+    })
+
+    window.operateEvents = {
+        'click #go_manage': goDetail,
+        'click #go_delete': goDelete,
+    }
+
+    table.bootstrapTable({
+        ajax: function (request) {
+            getList(request);
+        },
+        columns: [{
+            field: 'level_name',
+            title: '层级名称',
+        }, {
+            field: '',
+            title: '操作',
+            events: operateEvents,
+            formatter: getOperat,
+        }]
+    });
+
+    function getOperat(value,item,index) {
+        if (index == 0 || type == 2) {
+            return '<a id="go_manage">编辑</a>'
+        } else {
+            return '<a id="go_manage">编辑</a><a id="go_delete">删除</a>'
+        }
+    }
+
+    function max_change(dom) {
+        var index = $('.win_lose_max').index($(dom));
+        var index2 = $('.bet_max').index($(dom));
+        var value = parseInt($(dom).val());
+        if (index >= 0){
+            $('.win_lose_min').eq(index+1).val(value)
+        }else{
+            $('.bet_min').eq(index2+1).val(value)
+        }
+    }
+
+    function checkChannel() {
+        $.ajax({
+            url: '/agent/list/what/pattern',
+            type: 'get',
+            async: false,
+            success: function (res) {
+                type = res.result;
+                if (type == 2) {
+                    content_top.hide();
+                } else {
+                    content_top.show();
+                }
+                getDefault(res.result)
+                switch (res.result) {
+                    case 0:
+                        showAlert(res.msg);
+                        break;
+                    case 1://传统模式
+                        $content.show();
+                        break;
+                    case 2://分销模式,四个固定数据
+                        $content.show();
+                        break;
+                    case 3:
+                        showAlert(res.msg);
+                        break;
+                }
+            }
+        })
+    }
+
+    function getDefault(result) {
+        var obj = '{"win_lose_min":"0", "win_lose_max":"0","bet_min":"0","bet_max":"0","backwater":"0", "rebate":"0"}';
+        $.ajax({
+            url: '/agent/level/default',
+            type: 'post',
+            async: false,
+            data: {
+                agent_pattern_id: result,
+                first_ladder: obj,
+                second_ladder: obj,
+                third_ladder: obj,
+                fourth_ladder: obj,
+                fifth_ladder: obj,
+            },
+            success: function (res) {
+            }
+        })
+    }
+
+    function getSelectGame(idx) {
+        list = [];
+        game.eq(idx).find('.game-item').each(function (index, item) {
+            list.push({
+                id: $(item).attr('item_id'),
+                rebate: $(item).find('.rebate').val(),
+                backwater: $(item).find('.backwater').val(),
+            })
+        });
+        return list;
+    }
+
+    function getLadder(idx) {
+        obj = {
+            win_lose_min: String(coin_format_back(win_lose_min.eq(idx).val() || 0)),
+            win_lose_max: String(coin_format_back(win_lose_max.eq(idx).val() || 0)),
+            bet_min: String(coin_format_back(bet_min.eq(idx).val() || 0)),
+            bet_max: String(coin_format_back(bet_max.eq(idx).val() || 0)),
+            rebate: String(Math.round(rebate.eq(idx).val() || 0)),
+            backwater: String(Math.round(backwater.eq(idx).val() || 0)),
+        };
+        return JSON.stringify(obj);
+    };
+
+    function add() {
+        loadingShow(true);
+        $.ajax({
+            url: '/agent/level/create/update',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                channel: channel,
+                level_id: level_id,
+                old_name: old_name,
+                level_name: level_name.val(),
+                grant_brokerage: grant_brokerage.attr('value'),
+                first_ladder: getLadder(0),
+                second_ladder: getLadder(1),
+                third_ladder: getLadder(2),
+                fourth_ladder: getLadder(3),
+                fifth_ladder: getLadder(4),
+            },
+            success: function (res) {
+                loadingShow(false);
+                ajaxCallback(res, successCallback);
+            }
+        })
+    }
+
+    function successCallback() {
+        $new.hide();
+        $list.show();
+        search_btn.click();
+        go_new.val('新增代理层级');
+    };
+
+    function getGameList() {
+        $.ajax({
+            url: '/agent/level/game/json',
+            success: function (res) {
+                game.html('');
+                res.data.forEach(function (item) {
+                    game.append('<div class="game-item" item_id="' + item.id + '"><a>' + item.name + '</a><span>返佣比例(万分比)</span><input class="rebate" type="text" value="0"><br/><span>反水比例(万分比)</span><input class="backwater" type="text" value="0"></div>')
+                })
+            }
+        })
+    }
+
+    function getList(request) {
+        loadingShow(true);
+        $.ajax({
+            url: '/agent/level/retrieve',
+            success: function (items) {
+                channel = items.channel;
+                loadingShow(false);
+                request.success({row: items});
+                table.bootstrapTable('load', items);
+            },
+        })
+    }
+
+    function goDelete() {
+        level_id = arguments[2].level_id;
+        showDelete(function () {
+            $.ajax({
+                url: '/agent/level/delete',
+                type: 'DELETE',
+                data: {
+                    channel: channel,
+                    level_id: level_id,
+                },
+                success: function (res) {
+                    showAlert(res.msg, 'success');
+                    search_btn.click();
+                }
+            })
+        })
+    }
+
+    function goDetail() {
+        res = arguments[2];
+
+        go_new.click();
+        level_id = res.level_id;
+        old_name = res.level_name;
+
+        level_name.val(res.level_name);
+        grant_brokerage.attr('value', res.grant_brokerage)
+
+        setDetail(0, res.first_ladder);
+        setDetail(1, res.second_ladder);
+        setDetail(2, res.third_ladder);
+        setDetail(3, res.fourth_ladder);
+        setDetail(4, res.fifth_ladder);
+    }
+
+    function setDetail(idx, res) {
+        res = JSON.parse(res);
+
+        win_lose_min.eq(idx).val(coin_format_no_color(res.win_lose_min));
+        win_lose_max.eq(idx).val(coin_format_no_color(res.win_lose_max));
+        bet_min.eq(idx).val(coin_format_no_color(res.bet_min));
+        bet_max.eq(idx).val(coin_format_no_color(res.bet_max));
+        rebate.eq(idx).val(res.rebate);
+        backwater.eq(idx).val(res.backwater);
+    }
+
+
+</script>
+</body>
+</html>

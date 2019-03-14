@@ -1,0 +1,828 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理系统</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0 !important;
+            margin: 0;
+            background: #F0F2F5;
+            overflow-y: hidden;
+            padding-top: 36px !important;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+            width: 100%;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        a:hover {
+            color: #000;
+        }
+
+        #divLeft {
+            width: 192px;
+            height: 100%;
+            float: left;
+            display: inline;
+            padding-left: 10px;
+            position: relative;
+            display: none;
+        }
+
+        #dianji {
+            display: block;
+            width: 10px;
+            height: 100%;
+            background: #EEF2FB;
+            position: absolute;
+            right: 0;
+            _right: -22px;
+            top: 0;
+            cursor: pointer;
+        }
+
+        #content {
+            width: 100%;
+            /*margin-top: 71px;*/
+        }
+
+        .nav {
+            position: absolute;
+            top: 0px;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+
+        .nav .nav_ul {
+            overflow: hidden;
+            box-sizing: border-box;
+            display: flex;
+            margin: 0;
+            width: 60%;
+            float: left;
+        }
+
+        .nav .nav_ul .nav_li {
+            flex: 1;
+            background: transparent;
+            text-align: center;
+            cursor: pointer;
+            line-height: 50px;
+            font-size: 12px;
+        }
+
+        .nav .nav_ul .nav_li .span {
+            background: #001529;
+            font-size: 14px;
+            width: 100%;
+            display: inline-block;
+            color: rgba(255, 255, 255, 0.65);
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        .nav .nav_ul .nav_li .span:hover {
+            color: #fff !important;
+            background-color: #334454;
+        }
+
+        .nav .nav_ul .nav_li .nav_ul_child {
+            background: #fff;
+            border: solid 1px #dedede;
+        }
+
+        .nav .nav_ul .nav_li .nav_ul_child li {
+            user-select: none;
+            line-height: 40px;
+            box-sizing: border-box;
+            border-bottom: solid 2px transparent !important;
+        }
+
+        .nav .nav_ul .nav_li .nav_ul_child li:hover {
+            background: #edf1f2;
+            border-bottom: solid 2px #1890ff !important;
+        }
+
+        .nav .nav_ul .nav_li .nav_ul_child li:hover a {
+            color: #1890ff !important;
+        }
+
+        .list, .list_ {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            height: 41px;
+            background: #fff;
+            overflow-x: auto;
+            /*width: 1000px;*/
+        }
+
+        .list .list_ul, .list_ .list_ul_ {
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        .list .list_ul li, .list_ .list_ul_ li {
+            float: left;
+            background: #fff;
+            user-select: none;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .list .list_ul li a, .list_ .list_ul_ li a {
+            color: #666;
+            text-align: center;
+            padding: 10px 30px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .list .list_ul li:hover, .list_ .list_ul_ li:hover {
+            color: #1890ff;
+            border-bottom: solid 2px #1890ff !important;
+        }
+
+        .list .list_ul li:hover a, .list_ .list_ul_ li:hover a {
+            color: #1890ff;
+        }
+
+        .list_ul_ li span {
+            position: absolute;
+            top: 5px;
+            right: 0;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: .7;
+        }
+
+        .select_nav {
+            color: #fff !important;
+            background-color: #334454 !important;
+        }
+
+        .select_child {
+            color: #1890ff !important;
+            border-bottom: solid 2px #1890ff !important;
+        }
+
+        .select_child a {
+            color: #1890ff !important;
+        }
+
+        .color_green {
+            background-color: #009688 !important;
+        }
+
+        .color_red {
+            background-color: #7266ba !important;
+        }
+
+        .nav .user {
+            overflow: inherit;
+            box-sizing: border-box;
+            margin: 0;
+            width: 40%;
+            float: right;
+            background: #001529;
+            color: #fff;
+        }
+
+        .nav .user li {
+            float: right;
+            line-height: 50px;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 14px;
+            padding: 0 10px 0 20px;
+        }
+
+        .nav .user li img {
+            position: relative;
+            top: 5px;
+        }
+
+        .nav .user .user_detail {
+            padding: 0 26px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav .user .user_detail::after {
+            content: '';
+            position: absolute;
+            top: 21px;
+            right: 6px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid #99a2aa;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 6px solid transparent;
+        }
+
+        .nav .user .user_detail:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user_func {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            border: solid 1px #dedede;
+            display: none;
+        }
+
+        .user_func li {
+            line-height: 40px;
+            font-size: 12px;
+            background: #fff;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .user_func li a {
+            padding: 0 20px;
+        }
+
+        .user_func li:hover {
+            background: #ededed;
+            border-bottom: solid 2px #1890ff !important;
+        }
+
+        .user_func li:hover a {
+            color: #1890ff !important;
+        }
+
+        .quick_li {
+            float: right;
+            line-height: 50px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.65);
+            padding: 0 20px !important;
+            font-size: 14px;
+            position: relative;
+            user-select: none;
+            position: relative;
+        }
+
+        .quick_li:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .quick_li .quick_span {
+            position: absolute;
+            top: 4px;
+            right: 0;
+            min-width: 20px;
+            width: auto;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            color: #fff;
+            font-size: 12px;
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            border-radius: 8px;
+            background-color: #ff5722;
+            /*display: none;*/
+        }
+
+        .channel-item {
+            display: none;
+        }
+
+        .channel-item #channel {
+            /*background: #001529;*/
+            border: none !important;
+            /*color: rgba(255, 255, 255, 0.65) !important;*/
+            font-size: 14px !important;
+            height: 28px !important;
+        }
+
+        .iframe {
+            width: 98%;
+            margin: 35px 1% 0 1%;
+            border-radius: 5px;
+        }
+
+        .color_red {
+            color: darkred;
+        }
+
+        .gold_coin {
+            padding: 5px !important;
+            line-height: normal !important;
+            margin-left: 10px;
+        }
+
+        .nav_top_iframe {
+            height: 30px;
+        }
+
+        .music {
+            position: absolute;
+            width: 86px;
+            padding-left: 19px;
+            text-align: center;
+            color: #000;
+            top: 50px;
+            line-height: 2.5;
+            left: -20px;
+            background: #eee;
+            height: 30px;
+            font-size: 12px;
+            display: none;
+            user-select: none;
+        }
+
+        .music_open::before, .music_close::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            user-select: none;
+        }
+
+        .music_open::before {
+            background-image: url(/static/images/volume_open.png);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .music_close::before {
+            background-image: url(/static/images/volume_close.png);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="nav">
+    <ul class="nav_ul">
+        {% for menus in menus_list %}
+        <li class="nav_li"><a class="span">{{
+            menus.group }}</a>
+            <ul class="nav_ul_child">
+                {% for menu in menus.menu_list %}
+                <li><a href="{{ url_for('busi.' + menu.view_name) }}"
+                       target="main">{{ menu.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    <ul class="user">
+        <li class="user_detail">{{ username }}</li>
+        <!--<li>权限组：{{ role_text }}</li>-->
+        <li class="channel-item"><select id="channel"></select></li>
+        <li class="gold_coin quick_li">
+            <span class="player_coin">金币存量：</span>
+            <br>
+            <span class="onlinenum">在线人数：</span>
+        </li>
+        <li class="quick_li withdrawal">提现<span class="quick_span color_green">0</span><span
+                class="music music2 music_close">关闭提示音</span>
+        </li>
+        <li class="quick_li recharge">充值<span class="quick_span">0</span><span
+                class="music music1 music_close">关闭提示音</span></li>
+        <li class="quick_li alarm">预警<span class="quick_span color_red">0</span></li>
+    </ul>
+    <ul class="user_func">
+        <li><a href="{{ url_for('busi.show_change_password') }}" target="_self">修改密码</a></li>
+        <li><a onclick="logout()">安全退出</a></li>
+    </ul>
+</nav>
+<nav class="list" hidden>
+    {% for menus in menus_list %}
+    <ul class="list_ul">
+        {% for menu in menus.menu_list %}
+        <li><a href="{{ url_for('busi.' + menu.view_name) }}"
+               target="_blank">{{ menu.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</nav>
+<nav class="list_" id="list_">
+    <ul class="list_ul_"></ul>
+</nav>
+<section id="content">
+    <iframe src="/operat/state?id=1" name="main" class="iframe" marginwidth="0" marginheight="0"
+            frameborder="0" scrolling="auto" target="_self" width="100%" height="100%"></iframe>
+</section>
+<section class="nav_top" style="position: absolute;width: 100%;top: 0;">
+    <iframe class="nav_top_iframe" src="{{ url_for('busi.show_top') }}" noresize="noresize" frameborder="NO"
+            name="topFrame" scrolling="no" marginwidth="0" marginheight="0" target="main" width="100%"
+            height="64"></iframe>
+</section>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<audio id="audio" src="/static/images/order_remind.mp3"></audio>
+<script src="/static/js/my97date/WdatePicker.js"></script>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/scrolltop.js"></script>
+<script src="/static/js/float.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    var timer;
+
+    function playMusic(path) {
+        var audioEle = document.getElementById("audio");
+        audioEle.src = path;
+        audioEle.load();
+        if (audioEle.paused) { /*如果已经暂停*/
+            audioEle.play();   //播放
+        } else {
+            audioEle.pause();  //暂停
+        }
+    }
+
+    function getMusic(isTrue) {
+        if (isTrue) {
+            playMusic("/static/images/order_remind.mp3");
+            clearInterval(timer);
+            timer = setInterval(function () {
+                playMusic("/static/images/order_remind.mp3");
+            }, 5000)
+        } else {
+            clearInterval(timer);
+        }
+    }
+
+    channel = $('#channel');
+
+    function select_channel(id, isTrue) {
+        $.ajax({
+            url: 'select_channel',
+            type: 'get',
+            async: false,
+            data: {
+                channel_id: id,
+            },
+            success: function () {
+                if (isTrue) {
+                    showAlert('切换渠道成功', 'success');
+                }
+            }
+        });
+    }
+
+    function get_channel_config() {
+        $.ajax({
+            url: '/channels_config',
+            type: 'post',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.result = "succ") {
+                    channel.html('');
+                    $.each(res.data, function (key, value) {
+                        channel.append('<option value="' + key + '" coin_rate="' + value.coin_rate + '">' + value.name + '</option>')
+                    });
+                    localStorage.setItem("coin_rate", channel.find('option:selected').attr('coin_rate'));
+                    select_channel(channel.val());
+                    if (Object.getOwnPropertyNames(res.data).length != 1) {
+                        channel.parent().show();
+                    } else {
+                        channel.parent().hide();
+                    }
+                }
+            },
+            error: function () {
+                alert("获取渠道配置失败");
+            }
+        })
+    };
+
+    get_channel_config();
+
+    channel.change(function () {
+        localStorage.setItem("coin_rate", $(this).find('option:selected').attr('coin_rate'));
+        select_channel(channel.val(), true);
+        getPendinglNum();
+        $(".iframe").each(function (index,item) {
+            if(!$(item).is(':hidden')){
+                $(item).contents().find("#query_btn").click();
+            }
+        })
+    });
+
+    function logout() {
+        $.ajax({
+            url: '/sessions',
+            type: 'delete',
+            async: false,
+            success: function (response) {
+            }
+        });
+        parent.location.reload()
+    }
+
+    var widthjs = function () {
+        iframe_height = $("body").height() - 122;
+        jQuery(".iframe").height(jQuery("body").height() - 122);
+    };
+    jQuery(function () {
+        widthjs();
+        jQuery("#dianji").click(function () {
+            if (jQuery("#divLeft").width() <= 10) {
+                jQuery("#divLeft").width(192);
+                jQuery("#dianji #img1").attr("src", "/static/images/hal_0001_background.png");
+                jQuery("#dianji #img2").attr("src", "/static/images/hal_0000_layer-1.png");
+                widthjs();
+            } else {
+                jQuery("#divLeft").width(10);
+                jQuery("#dianji #img1").attr("src", "/static/images/hal_0001_background.png");
+                jQuery("#dianji #img2").attr("src", "/static/images/hal_0000_layer-2.png");
+                widthjs();
+            }
+        });
+        jQuery(window).bind("resize", function () {
+            widthjs();
+        });
+    });
+
+    user = $('.nav .user');
+    quick_li = user.find('.quick_li ');
+    recharge = user.find('.recharge .quick_span');
+    withdrawal = user.find('.withdrawal .quick_span');
+    player_coin = user.find('.gold_coin .player_coin');
+    onlinenum = user.find('.gold_coin .onlinenum');
+
+    quick_li.mouseover(function () {
+        $(this).find('.music').show()
+    })
+    quick_li.mouseout(function () {
+        $(this).find('.music').hide()
+    })
+
+    function getPendinglNum() {
+        getMusic(false);
+        $.ajax({
+            url: '/recharge/order/waiting/count',
+            success: function (items) {
+                var count = JSON.parse(items).count;
+                var is_new = JSON.parse(items).is_new;
+                recharge.attr('is_new',is_new).text(count);
+                if ($('.music1').text() == '关闭提示音' && is_new != 0) {
+                    setTimeout(function () {
+                        getMusic(true);
+                    }, 500)
+                }
+            }
+        })
+        $.ajax({
+            url: '/withdrawal/order/count',
+            success: function (items) {
+                var count = JSON.parse(items).count;
+                var is_new = JSON.parse(items).is_new;
+                withdrawal.attr('is_new',is_new).text(count);
+                if ($('.music2').text() == '关闭提示音' && is_new != 0) {
+                    setTimeout(function () {
+                        getMusic(true);
+                    }, 500)
+                }
+            }
+        })
+        $.ajax({
+            url:'alarm_count',
+            data:{
+                beginDate: date_fast('one_week').start,
+                endDate: date_fast('one_week').end,
+            },
+            success: function (res) {
+                var res = JSON.parse(res);
+                user.find('.alarm .quick_span').text(res.count[0][0]);
+            }
+        })
+        $.ajax({
+            url: '/games/datas/rt',
+            type: 'get',
+            success: function (res) {
+                res = JSON.parse(res)
+                player_coin_val = res.player_coin || '';
+                onlinenum_val = res.onlinenum || '';
+                player_coin.text('金币存量：' + coin_format_no_color(player_coin_val));
+                onlinenum.text('在线人数：' + onlinenum_val);
+            }
+        })
+    }
+
+    getPendinglNum();
+    setInterval(function () {
+        getPendinglNum()
+    }, 1e3 * 30)
+
+    user.find('.recharge').click(function () {
+        nav_switch(2, 1);
+        new_iframe('充值订单详情', '/games/topup/detail');
+    })
+
+    user.find('.withdrawal').click(function () {
+        nav_switch(2, 6);
+        new_iframe('提现订单管理', '/withdrawal/order/details');
+    })
+
+    user.find('.alarm').click(function () {
+        nav_switch(7, 1);
+        new_iframe('游戏预警设置', '/alarm_config_show?from=top');
+    })
+
+    user.find('.gold_coin').click(function () {
+        nav_switch(6, 1);
+        new_iframe('单控玩家输赢', '/games/maniplate/oneplayer?from=top');
+    })
+
+    user.find('.music').click(function () {
+        if (window.event) {//IE下阻止冒泡
+            event.cancelBubble = true;
+        } else {
+            event.stopPropagation();
+        }
+        if ($(this).text() == '开启提示音') {
+            $(this).removeClass('music_open');
+            $(this).addClass('music_close').text('关闭提示音');
+            if ($(this).siblings('.quick_span').attr('is_new') != 0) {
+                getMusic(true);
+            }
+        } else {
+            $(this).removeClass('music_close');
+            $(this).addClass('music_open').text('开启提示音');
+            getMusic(false);
+        }
+    })
+
+    function nav_switch(index_nav, index_list) {
+        $nav_li.find('.span').removeClass('select_nav');
+        $nav_li.eq(index_nav).find('.span').addClass('select_nav');
+        $list_ul.hide();
+        $list_ul.eq(index_nav).show();
+        $list_ul.find('li').removeClass('select_child');
+        $list_ul.eq(index_nav).find('li').eq(index_list).addClass('select_child');
+    }
+</script>
+<script>
+    $(function () {
+        iframe_height = $("body").height() - 122;
+        $nav_li = $('.nav .nav_ul .nav_li');
+        $nav_li_span = $nav_li.find('.span');
+        $nav_ul_child = $nav_li.find('.nav_ul_child');
+        $list_ul = $('.list .list_ul');
+        $list_li = $list_ul.find('li');
+
+        $list_ul.hide();
+        $list_ul.eq(0).show();
+        $nav_ul_child.hide();
+        $nav_li_span.mouseover(function () {
+            $nav_ul_child.hide();
+            $(this).siblings('.nav_ul_child').show();
+        });
+        $nav_li_span.mouseout(function () {
+            $nav_ul_child.hide();
+        });
+        $nav_ul_child.mouseover(function () {
+            $(this).show();
+        });
+        $nav_ul_child.mouseout(function () {
+            $(this).hide();
+        });
+        $nav_li_span.eq(0).addClass('select_nav');
+        $nav_li_span.click(function () {
+            $nav_li_span.removeClass('select_nav')
+            $(this).addClass('select_nav');
+
+            // list_sup.find('li').removeClass('select_child')
+            // list_sup.append('<li class="select_child"><a href="' + $(this).attr('href') + '" target="main">' + $(this).parent('.nav_li').find('.nav_ul_child li a').eq(0).text() + '</a><span>×</span></li>');
+            //
+            // $('.list_ .list_ul_ li span').click(function () {
+            //     $(this).parent('li').remove()
+            // })
+            // $('.list_ .list_ul_ li').click(function () {
+            //     $('.list_ .list_ul_ li').removeClass('select_child');
+            //     $(this).addClass('select_child');
+            // })
+
+        })
+
+        $list_li.click(function () {
+            $(this).siblings().removeClass('select_child');
+            $(this).addClass('select_child');
+            localStorage.setItem('update_url', true);
+        })
+
+        $list_ul.find('li:eq(0)').addClass('select_child');
+        $list_ul.find('li').eq(0).removeClass('select_child');
+        $nav_li.click(function () {
+            var index = $nav_li.index(this);
+            $list_ul.hide();
+            $list_ul.eq(index).show();
+            $nav_li_span.removeClass('select_nav')
+            $nav_li_span.eq(index).addClass('select_nav');
+            localStorage.setItem('update_url', true);
+        })
+        $nav_li.find('a').click(function () {
+            $list_ul.find('li').removeClass('select_child');
+            $list_ul.find('li:eq(0)').addClass('select_child');
+        })
+
+        list_sup = $('.list_ .list_ul_');
+
+        $('.nav .nav_ul .nav_li .nav_ul_child li').click(function () {
+            if ($('.list_ .list_ul_ li').length == 15) {
+                showAlert('最多打开15个页签');
+                return
+            }
+            var isNew = true;
+            var self = this;
+            $('.list_ .list_ul_ li').each(function (index, item) {
+                if ($(item).attr('key') == $(self).find('a').attr('href')) {
+                    isNew = false;
+                    $('#content').find('iframe').hide();
+                    $('#content').find('iframe[src=' + $(item).attr('key') + ']').show();
+                    $('.list_ .list_ul_ li').removeClass('select_child')
+                    $('.list_ .list_ul_ li[key=' + $(item).attr('key') + ']').addClass('select_child');
+                }
+            })
+            if (isNew) {
+                list_sup.find('li').removeClass('select_child')
+                list_sup.append('<li class="select_child" key="' + $(this).find('a').attr('href') + '"><a>' + $(this).text() + '</a><span>×</span></li>');
+
+                $('#content').find('iframe').hide();
+                $('#content').append('<iframe src="' + $(this).find('a').attr('href') + '" name="main" class="iframe" marginwidth="0" marginheight="0"\n' +
+                    '            frameborder="0" scrolling="auto" target="_self" width="100%" height="100%"></iframe>')
+            }
+
+            $('.list_ .list_ul_ li span').click(function () {
+                var isTrue = $(this).parent('li').hasClass('select_child');
+                var index = $('.list_ .list_ul_ li span').index(this);
+                $(this).parent('li').remove();
+                if (isTrue) {
+                    $('.list_ .list_ul_ li').removeClass('select_child');
+                    if (index == 0) {
+                        $('.list_ .list_ul_').find('li').eq(0).addClass('select_child');
+                    } else {
+                        $('.list_ .list_ul_').find('li').eq(index - 1).addClass('select_child');
+                    }
+                    $('.list_ .list_ul_').find('li.select_child').click();
+                    if ($('.list_ .list_ul_ li').length == 0) {
+                        $('#content').find('iframe').hide();
+                    }
+                }
+            })
+            $('.list_ .list_ul_ li').click(function () {
+                $('.list_ .list_ul_ li').removeClass('select_child');
+                $(this).addClass('select_child');
+                var self_ = this;
+
+                $('#content').find('iframe').hide();
+                var index_iframe;
+                $('#content').find('iframe').each(function (index, item) {
+                    if ($(self_).attr('key') == $(item).attr('src')) {
+                        // $(item).show();
+                        index_iframe = index;
+                    }
+                })
+                $('#content').find('iframe').eq(index_iframe).show()
+            })
+
+            $nav_ul_child.hide();
+            var self = this;
+            $list_li.each(function () {
+                $(this).removeClass('select_child');
+                if ($(this).find('a').text() == $(self).text()) {
+                    $(this).addClass('select_child');
+                }
+            })
+
+            $(".iframe").height(iframe_height);
+        })
+
+        $('.nav .user .user_detail').mouseover(function () {
+            $('.nav .user_func').show()
+        });
+        $('.nav .user .user_detail').mouseout(function () {
+            $('.nav .user_func').hide()
+        });
+        $('.nav .user_func').mouseover(function () {
+            $('.nav .user_func').show()
+        });
+        $('.nav .user_func').mouseout(function () {
+            $('.nav .user_func').hide()
+        });
+    });
+</script>
+</body>
+</html>

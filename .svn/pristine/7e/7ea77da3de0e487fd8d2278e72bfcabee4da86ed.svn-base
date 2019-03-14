@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>玩家列表查看</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_game_user_data"), beginDate = 11,
+    endDate = 11, SelectChannel=status_msg.channel, PlayerID=status_msg.player_id, NickName=status_msg.nick,
+    Account=status_msg.Account, QueryType = 3,
+    Channels=True, OThers = status_msg.OThers, Method='get',PrecisionSecond=true) }}
+    {% endautoescape %}
+</div>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<!--<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>-->
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstraFp-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    player_level = $('#level');
+
+    getPlayerLevel()
+    function getPlayerLevel() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_json_name") }}',
+            success: function (res) {
+                player_level.html('');
+                player_level.append('<option value="0">全部层级</option>')
+                res.datas.forEach(function (item) {
+                    player_level.append('<option value="' + item.id + '">' + item.name + '</option>')
+                })
+            },
+        })
+    }
+
+    $('#reportTable').bootstrapTable({
+        url: "/games/users/datas",
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,
+        striped: true,
+        pagination: true,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: queryParams,//传递参数（*）
+        columns:
+            [
+                {field: "memberl_lv", title: "玩家层级", align: "center", valign: "middle"},
+                {field: "id", title: "玩家ID", align: "center", valign: "middle", formatter: pid_format},
+                {field: "nick", title: "玩家昵称", align: "center", valign: "middle"},
+                {field: "account_id", title: "玩家账号", align: "center", valign: "middle"},
+                {field: "coin", title: "剩余金币", align: "center", valign: "middle", formatter: coin_format_no_color},
+                {field: "reg_time", title: "注册时间", align: "center", valign: "middle", formatter: getLocalTime},
+                {field: "reg_ip", title: "注册IP"},
+                {field: "last_login_time", title: "登录时间", align: "center", valign: "middle", formatter: getLocalTime},
+            ]
+    });
+
+    function queryParams(params) {
+        var temp = {
+            size: params.limit,
+            offset: params.offset,
+            beginDate: $("#beginDate").val(),
+            endDate: $("#endDate").val(),
+            PlayerID: $("#PlayerID").val(),
+            NickName: $("#NickName").val(),
+            Account: $("#Account").val(),
+            reg_ip: $("#reg_ip").val(),
+            level: player_level.val(),
+        };
+        return temp;
+    };
+
+    function responseHandler(result) {
+        loadingShow(false);
+        var errcode = result.errcode;
+        if (errcode != 0) {
+            return;
+        }
+        return {
+            total: result.dataLength,
+            data: result.rowDatas
+        };
+    };
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#reportTable').bootstrapTable('refreshOptions', {pageNumber: 1});
+        $('#reportTable').bootstrapTable('refresh', {url: '/search/games/users/datas'});
+    })
+</script>
+</body>
+</html>
+

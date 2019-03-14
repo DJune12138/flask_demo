@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>平台登录公告</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style type="text/css">
+        .tip{
+            font-size: 12px;
+            margin-left: 20px;
+        }
+        .add_announcement {
+            width: 1000px;
+            padding: 0 0 0 300px;
+            margin: 0 auto;
+        }
+
+        .input_box {
+            height: 50px;
+            overflow: hidden;
+        }
+
+        .check_box {
+            width: 150px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box div {
+            height: 25px;
+            width: 150px;
+            float: left;
+        }
+
+        .input_box input {
+            height: 30px;
+            width: 280px;
+            /*float: left;*/
+            border:1px solid #4876FF;
+            border-radius: 5px
+        }
+        .input_box div span{
+            position: relative;
+            top: 10px;
+        }
+        .input_box div, .auth_logo {
+            width: 110px;
+            float: left;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        #preview {
+            background-color:rgba(238,238,238,0.5);
+            position:absolute;
+            width:100%;
+            height:100%;
+            display:none;
+            z-index:1000;
+            left:0;
+            top:0;
+        }
+
+        #preview_title {
+            background-color:blue;
+            position:absolute;
+            width:920px;
+            height:60px;
+            left:50%;
+            top:50%;
+            margin-left:-460px;
+            margin-top:-280px;
+            color:white;
+            line-height:60px
+        }
+
+        #image-font {
+            position:absolute;
+            width:920px;
+            height:440px;
+            left:50%;
+            top:50%;
+            margin-left:-460px;
+            margin-top:-220px;
+        }
+
+        #font_content {
+            position:absolute;
+            width:100%;
+            height:100%;
+            left:0;
+            top:0;
+        }
+
+        #title_content {
+            width:100%;
+            height:100%;
+            left:0;
+            top:0;
+        }
+        .nav{
+            margin-bottom: 4px !important;
+        }
+        .nav span{
+            background: #DDDDDD;
+            color: #000;
+            padding: 5px 100px;
+            border-radius: 5px 5px 0 0;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+        /*.nav span:hover{*/
+        /*background: #00a0e9;*/
+        /*color: #fff;*/
+        /*}*/
+        .nav .select{
+            background: #00a0e9;
+            color: #fff;
+        }
+        #announce_form{
+            border: solid 1px #ededed;
+            border-radius: 5px;
+            padding: 20px 0;
+        }
+        .action_button {
+            text-align: left;
+            padding-left: 100px;
+        }
+        .action_button input[type=submit]{
+            margin: 0 !important;
+        }
+        .content_top{
+            text-align: right;
+        }
+        .content_top .button_new{
+            margin: 5px 10px !important;
+        }
+        input[type=file] {
+              display: inline-block;
+                               color: #fff;
+            border: none !important;
+            width: 75px;
+          }
+        .img_output2{
+            border: none !important;
+        }
+        .file{
+            position: relative;
+            left: -10px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_annouce_game"), beginDate = status_msg.beginDate,
+    endDate = status_msg.endDate, SelectChannel=status_msg.channel, QueryType = 1,
+    Channels=True, OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<div class="refactor_content">
+    <div class="content_top">
+        <a class="button_new">新建登录公告</a>
+    </div>
+</div>
+<div id="reportTableDiv">
+    <table id="reportTable" style="border: none !important;"></table>
+</div>
+<form id="announce_form" hidden>
+    <div class="add_announcement">
+        <div class="input_box">
+            <div><span>主题图片链接：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input2" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input2','.img_output2')"/>
+            <input class="img_output2" type="text" name="content_image_url" placeholder="尺寸：850×480" style="width: 500px;background: #fff !important;" disabled>
+            <!--<span class="tip">尺寸：850×480</span>-->
+        </div>
+        <div class="input_box">
+            <div><span>标题：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="必填；不超过10个字" id="title" name="title" value=""
+                   style="text-indent: 5px;" required maxlength="10"/>
+            <!--<span class="tip">必填；不超过10个字</span>-->
+        </div>
+        <div class="input_box">
+            <div><span>每日展示次数：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="必填；非负整数" id="push_times" name="push_times" value=""
+                   style="text-indent: 5px;" required/>
+            <!--<span class="tip">必填；非负整数数字</span>-->
+        </div>
+        <div class="input_box">
+            <div><span>优先级：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="必填；非负整数；数值越大优先级越高" id="priority" name="priority" value=""
+                   style="text-indent: 5px;" required/>
+            <!--<span class="tip">必填；非负整数数字；数值越大优先级越高</span>-->
+        </div>
+        <div class="input_box">
+            <div><span>起止日期：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1, isShowClear:false,
+         isShowOK:false, isShowToday:false, autoPickDate:true})" id="date1" name="date1" value="" required>
+            <span>--</span>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1, isShowClear:false,
+            isShowOK:false, isShowToday:false, autoPickDate:true})" id="date2" name="date2" value="" required>
+        </div>
+        <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+        <div class="action_button">
+            <input class="btn btn-primary btn-sm" type="button" value="确认" id="commit">
+            <!--<input class="btn btn-primary btn-sm cancel" type="button" id="cancel" value="取消">-->
+        </div>
+    </div>
+</form>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    go_new = $('.refactor_content .content_top .button_new');
+    go_new.click(function () {
+        if($(this).text() == '新建登录公告'){
+            $(this).text('返回公告列表');
+            show_add();
+        }else{
+            $(this).text('新建登录公告');
+            show_query();
+        }
+    })
+    $('.nav span').click(function () {
+        $(this).siblings('span').removeClass('select');
+        $(this).addClass('select');
+    })
+    // $('#cancel').click(function () {
+    //     location.href = '{{ url_for("busi.show_annouce_game") }}'
+    // });
+
+    // 新建公告
+    $('#commit').click(function () {
+        $.ajax({
+            url: '/games/gm/announce/game',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'title': $('#title').val(),
+                'content_image_url': $('.img_output2').val(),
+                'push_times': $('#push_times').val(),
+                'priority': $('#priority').val(),
+                'date1': $('#date1').val(),
+                'date2': $('#date2').val()
+            },
+            success: function (data) {
+                if (data.result==1) {
+                    parent.showAlert(data.msg);
+                    location.href = '/games/gm/announce/game'
+                }
+                else {
+                    parent.showAlert(data.msg)
+                }
+            },
+            error: function() {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    });
+
+    // 显示查询tab页
+    function show_query() {
+        $("#query-page").css("background-color","#FFE4B5");
+        $("#add-page").css("background-color","#DDDDDD");
+        $('#announce_form').hide()
+        $('#reportTableDiv').show()
+    };
+
+    // 显示新建tab页
+    function show_add() {
+        $("#add-page").css("background-color","#FFE4B5");
+        $("#query-page").css("background-color","#DDDDDD");
+        $('#reportTableDiv').hide();
+        $('#announce_form').show();
+    };
+
+    // bootstrapTable客户端表格
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            showPaginationSwitch:false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader:true,
+            showToolbar:false,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+            [
+                {field:"priority",title:"优先级",align:"center",sortable:"true",},
+                {field:"id",title:"公告ID",align:"center",valign:"middle"},
+                {field:"title",title:"公告标题",align:"center",valign:"middle"},
+                {field:"content_image_url",title:"主题图片链接",align:"center",valign:"middle"},
+                {field:"push_times",title:"每日推送次数",align:"center",valign:"middle"},
+                {field:"date1",title:"开始时间",align:"center",valign:"middle"},
+                {field:"date2",title:"结束时间",align:"center",valign:"middle"},
+                {field:"status",title:"状态",align:"center",valign:"middle",formatter:state_format},
+                {field: 'operate',title: '操作',align: 'center',events: operateEvents,formatter: operateFormatter}
+            ],
+            data:[
+            {% for data in datas %}
+                {
+                    priority:{{ data.priority }},
+                    id:{{ data.id }},
+                    title:"{{ data.title }}",
+                    content_image_url:"{{ data.content_image_url }}",
+                    push_times:"{{ data.push_times }}",
+                    date1:"{{ data.start_date }}",
+                    date2:"{{ data.end_date }}",
+                    status:"{{ data.status }}",
+                    operate:"{{ data.operate }}"
+                },
+            {% endfor %}
+            ]
+        });
+    });
+
+function operateFormatter(value, row, index) {
+    return [
+        '<a id="b_del">删除</a>',
+    ].join('');
+}
+
+function writeObj(obj){
+     var description = "";
+     for(var i in obj){
+     var property=obj[i];
+     description+=i+" = "+property+"\n";
+     }
+     parent.showAlert(description);
+}
+
+function state_format(state, row, index) {
+    if (state == 0) {
+        return "<s><font color='#FF0000'>已删除</font></s>"
+    }
+    if (state == 1) {return "待生效"}
+    if (state == 2) {return "<font color='#04B404'>生效中</font>"}
+    if (state == 3) {return "已失效"}
+}
+
+window.operateEvents = {
+    'click #b_del': function (e, value, row, index) {
+        $.ajax({
+            url: '/games/gm/del_game_announce',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                'id': row.id,
+                "channel":row.channel
+            },
+            success: function(data) {
+                location.reload();
+            },
+            error: function() {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    }
+}
+</script>
+</body>
+</html>

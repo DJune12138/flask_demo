@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏参数设置</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        .content_top {
+            text-align: right;
+            padding-right: 15px !important;
+        }
+
+        .new {
+            display: none;
+        }
+
+        .new .button_new {
+            margin-left: 15px;
+        }
+
+        .list {
+            padding: 15px;
+        }
+
+        table tr td a {
+            margin: 0 20px;
+        }
+
+        table tr {
+            display: flex;
+        }
+
+        table tr td, table tr th {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<nav class="nav-sub">
+    <span class="nav-select" key="1">账变日志类型定义</span>
+    <span key="2">子游戏定义</span>
+    <span key="3">游戏对局日志定义</span>
+    <span key="4">小游戏参数定义</span>
+    <span key="5">房间类型定义</span>
+</nav>
+<div class="refactor_content">
+    <div class="content_top">
+        <a class="button_new">新建</a>
+    </div>
+    <div class="new">
+        <p class="content_item item2" hidden>
+            <label>游戏英文名</label>
+            <input class="en_name" type="text" placeholder=""/>
+        </p>
+        <p class="content_item item1 item2 item3  item4 item5">
+            <label>ID</label>
+            <input class="id" type="text" placeholder=""/>
+        </p>
+        <p class="content_item item1">
+            <label>游戏名</label>
+            <input class="name" type="text" placeholder=""/>
+        </p>
+        <p class="content_item item2" hidden>
+            <label>描述</label>
+            <input class="desc" type="text" placeholder=""/>
+        </p>
+        <p class="content_item item3  item4 item5" hidden>
+            <label>详情</label>
+            <input class="detail" type="text" placeholder=""/>
+        </p>
+        <p class="content_item  item4 item5" hidden>
+            <label>小游戏</label>
+            <select class="gameid"></select>
+        </p>
+        <a class="button_new">保存</a>
+    </div>
+    <div class="list">
+        <table class="table"></table>
+    </div>
+</div>
+
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    var data = ['', [], [], [], []];
+    var table = [];
+    var isNew = true, small_game;
+
+    $content = $('.refactor_content');
+    go_add = $content.find('.content_top .button_new');
+    content_item = $content.find('.content_item');
+    $new = $content.find('.new');
+    $list = $content.find('.list');
+    table_ = $list.find('.table');
+    submit_ = $new.find('.button_new');
+    en_name = $content.find('.en_name');
+    id_ = $content.find('.id');
+    name_ = $content.find('.name');
+    desc = $content.find('.desc');
+    detail = $content.find('.detail');
+    gameid = $content.find('.gameid');
+    nav_sub_span = $('.nav-sub span');
+
+    getList(1);
+
+    nav_sub_span.click(function () {
+        var index = nav_sub_span.index(this);
+        nav_sub_span.removeClass('nav-select');
+        $(this).addClass('nav-select');
+        getList($('.nav-select').attr('key'));
+        content_item.hide();
+        $('.item' + (index + 1)).show();
+        $('.view').hide();
+        $('.view' + (index + 1)).show();
+    })
+
+    go_add.click(function () {
+        isNew = true;
+        if ($(this).text() == '新建') {
+            reset();
+            $(this).text('返回');
+            $new.find('.id').attr('disabled', false);
+            $new.show();
+            $list.hide();
+        } else {
+            $(this).text('新建');
+            $new.hide();
+            $list.show();
+        }
+    })
+
+    submit_.click(function () {
+        if (!id_.val().trim().length) {
+            parent.window.showAlert('请输入完整');
+            return;
+        }
+        var isTrue = false;
+        var i;
+        var index = $('.nav-select').attr('key');
+        $.each(data[index], function (index, item) {
+            if($('.nav-select').attr('key') == 4 || $('.nav-select').attr('key') == 5){
+                if (item.id == id_.val() && item.gameid == gameid.val()) {
+                    isTrue = true;
+                    i = index;
+                }
+            }else{
+                if (item.id == id_.val()) {
+                    isTrue = true;
+                    i = index;
+                }
+            }
+        })
+        if (isNew) {
+            if (isTrue) {
+                if(index == 4 || index == 5){
+
+                }else{
+                    parent.window.showAlert('ID已存在，请重新输入');
+                    return;
+                }
+            }
+            var obj = {};
+            obj.id = id_.val()
+            if (en_name.val()) {
+                obj.en_name = en_name.val();
+            }
+            if (name_.val()) {
+                obj.name = name_.val();
+            }
+            if (desc.val()) {
+                obj.desc = desc.val();
+            }
+            if (detail.val()) {
+                obj.detail = detail.val();
+            }
+            if (gameid.val()) {
+                obj.gameid = gameid.val();
+            }
+            data[index].push(obj);
+        } else {
+            data[index][i] = {
+                en_name: en_name.val(),
+                id: id_.val(),
+                name: name_.val(),
+                desc: desc.val(),
+                detail: detail.val(),
+                gameid: gameid.val(),
+            }
+        }
+        submit_data(index, data[index], false)
+    })
+
+    function submit_data(index, data, isDel) {
+        loadingShow(true);
+        $.ajax({
+            url: '/game/parameter/update',
+            type: 'post',
+            data: {
+                type: index,
+                config: JSON.stringify(data),
+            },
+            success: function (res) {
+                loadingShow(false);
+                if (res.result == 'ok') {
+                    if (isDel) {
+                        parent.window.showAlert('删除成功', 'success');
+                    } else if (!isNew) {
+                        parent.window.showAlert('编辑成功', 'success');
+                    } else {
+                        parent.window.showAlert(res.msg, 'success');
+                    }
+                    $new.hide();
+                    $list.show();
+                    go_add.text('新建');
+                    $('.nav-select').click();
+                }
+            }
+        })
+    }
+
+    function getList(type) {
+        getSmallGame();
+        loadingShow(true);
+        $.ajax({
+            url: '/game/parameter/retrieve',
+            type: 'get',
+            async: false,
+            data: {
+                type: type
+            },
+            success: function (res) {
+                loadingShow(false);
+                if (res.error == 'system_err') {
+                    parent.window.showAlert('服务器忙，请稍后再试');
+                    return;
+                }
+                table = res.data;
+                data[type] = table;
+                table_.empty();
+                table_.append('<thead><tr><th class="view view2" hidden>游戏英文名</th><th class="view view1 view2 view3 view4 view5">ID</th><th  class="view view1">游戏名</th><th class="view view2" hidden>描述</th><th class="view view3 view4 view5" hidden>详情</th><th class="view view4 view5" hidden>小游戏</th><th>操作</th></tr></thead>');
+                tbody = $('<tbody></tbody>');
+                $.each(table, function (index, item) {
+                    tbody.append(' <tr><td class="en_name view view2" hidden>' + (item.en_name || '') + '</td><td class="id view view1 view2 view3 view4 view5">' + item.id + '</td><td class="name view view1">' + (item.name || '') + '</td><td class="desc view view2" hidden>' + (item.desc || '') + '</td><td class="detail view view3 view4 view5" hidden>' + (item.detail || '') + '</td><td class="gameid view view4 view5" hidden>' + getGameName(item.gameid) + '</td><td><a class="update">编辑</a><a class="del">删除</a></td></tr>');
+                })
+                table_.append(tbody);
+
+                $('table tr td .del').click(function () {
+                    $(this).closest('tr').remove();
+                    var delete_ = [];
+                    $('table tbody tr').each(function (index, item) {
+                        delete_.push({
+                            id: $(item).find('td:first').text(),
+                        })
+                    })
+                    var self = this;
+                    $.each(data[$('.nav-select').attr('key')], function (index, item) {
+                        if($('.nav-select').attr('key') == 4 || $('.nav-select').attr('key') == 5){
+                            if (item.id == $(self).closest('tr').find('.id').text() && getGameName(item.gameid) == $(self).closest('tr').find('.gameid').text()) {
+                                i = index;
+                            }
+                        }else{
+                            if (item.id == $(self).closest('tr').find('.id').text()) {
+                                i = index;
+                            }
+                        }
+                    })
+                    data[$('.nav-select').attr('key')].splice(i, 1)
+                    submit_data($('.nav-select').attr('key'), data[$('.nav-select').attr('key')], true)
+                })
+
+                $('table tr td .update').click(function () {
+                    isNew = false;
+                    go_add.text('返回');
+                    $new.find('.id').attr('disabled', true);
+                    $new.find('.en_name').val($(this).closest('tr').find('.en_name').text());
+                    $new.find('.id').val($(this).closest('tr').find('.id').text());
+                    $new.find('.name').val($(this).closest('tr').find('.name').text());
+                    $new.find('.desc').val($(this).closest('tr').find('.desc').text());
+                    $new.find('.detail').val($(this).closest('tr').find('.detail').text());
+                    $new.find('.gameid').val($(this).closest('tr').find('.gameid').text());
+                    $new.find('.gameid').find('option:contains("'+$(this).closest('tr').find('.gameid').text()+'")').attr('selected',true);
+                    $new.show();
+                    $list.hide();
+                })
+            }
+        })
+    }
+
+    function getSmallGame() {
+        $.ajax({
+            url: '/game/parameter/retrieve',
+            type: 'get',
+            data: {
+                type: 2
+            },
+            success: function (res) {
+                small_game = res.data;
+                gameid.empty();
+                gameid.append('<option value=""></option>')
+                $.each(small_game, function (index, item) {
+                    gameid.append('<option value="' + item.id + '">' + item.desc + '</option>')
+                });
+            }
+        })
+    }
+
+    function getGameName(id) {
+        if (id) {
+            var name;
+            small_game = small_game ? small_game : [];
+            $.each(small_game, function (index, item) {
+                if (item.id == id) {
+                    name = item.desc
+                }
+            })
+            return name;
+        } else {
+            return ''
+        }
+    }
+
+    function reset() {
+        en_name.val('');
+        id_.val('');
+        name_.val('');
+        desc.val('');
+        detail.val('');
+        gameid.val('');
+    }
+</script>
+</body>
+</html>

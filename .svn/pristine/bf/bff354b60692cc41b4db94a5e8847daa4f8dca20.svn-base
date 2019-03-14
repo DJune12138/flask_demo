@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏代理列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        #reportTableDiv #reportTable tr td:nth-child(3){
+            width: 300px;
+        }
+    </style>
+</head>
+<script>
+    function link_to(){
+        window.location.href = '/games/agent/add'
+    }
+</script>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_agent_data"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate,
+    Channels=True, PT = False, PlayerID = False, SelectChannel = status_msg.channel, QueryType = 1,
+    OThers = status_msg.OThers, Method = 'get' ) }}
+    {% endautoescape %}
+</div>
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+<script type="text/javascript">
+    {% if status_msg.is_active == -1 %}
+        $('#is_active').find('option').eq(0).attr("selected", true)
+    {% elif status_msg.is_active == 0 %}
+        $('#is_active').find('option').eq(1).attr("selected", true)
+    {% elif status_msg.is_active == 1 %}
+        $('#is_active').find('option').eq(2).attr("selected", true)
+    {% endif %}
+
+    $('.delete').click(function(){
+            var agent_id = $(this).attr("agent_id");
+            var channel = $(this).attr("channel");
+            var params = {
+                'agent_id': agent_id,
+                'channel': channel
+            };
+            $.ajax({
+                url: '{{ url_for("busi.delete_agent") }}',
+                type: 'DELETE',
+                data: JSON.stringify(params),
+                contentType: 'application/json',
+                success: function (response) {
+                    alert(response.errmsg);
+                    document.location.reload();
+                }
+            });
+    });
+
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            showPaginationSwitch:false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader:true,
+            showToolbar:false,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+            [
+                {field:"NO",title:"编号",align:"center",sortable:"true",},
+                {field:"aid",title:"代理ID",align:"center",valign:"middle",formatter:pid_format},
+                {field:"nick",title:"代理昵称",align:"center",sortable:"true"},
+                {field:"coin",title:"金币",align:"center",sortable:"true",formatter:coin_format_no_color},
+                {field:"duty",title:"职务",align:"center",valign:"middle"},
+                {field:"total_down_coin",title:"累计卖分",align:"center",valign:"middle"},
+                {field:"total_up_coin",title:"累计收分",align:"center",valign:"middle"},
+                {field:"last_login_ip",title:"最后登录IP",align:"center",valign:"middle"},
+                {field:"last_login_time",title:"最后登录时间",align:"center",valign:"middle",formatter:getLocalTime},
+                {field:"is_active",title:"状态",align:"center",valign:"middle"},
+                {field:"operate",title:"操作",align:"center",valign:"middle"},
+            ],
+            data:[
+            {% for aid, data in datas.items() %}
+                {
+                    NO:{{ loop.index }},
+                    aid:{{ aid }},
+                    nick:"{{ data.nick }}",
+                    duty:"{{ data.duty }}",
+                    coin:{{ data.coin }},
+                    total_down_coin:{{ data.total_down_coin }},
+                    total_up_coin:{{ data.total_up_coin }},
+                    last_login_ip:"{{ data.last_login_ip }}",
+                    last_login_time:"{{ data.last_login_time }}",
+                    is_active:"{{ data.is_active }}",
+                    operate:'<a href="{{ url_for('busi.show_edit_agent') }}?aid={{ aid }}&channel={{ status_msg.channel }}">编辑</a>' +
+                            '<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>' +
+                            '<a href="javascript:;" class="delete" agent_id="{{ aid }}" channel="{{ data.channel }}">停用</a>',
+                },
+            {% endfor %}
+            ]
+        });
+    });
+</script>
+</html>

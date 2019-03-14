@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>玩家游戏报表</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_game_user_detail"),beginDate=11,endDate=11,QueryType=3,PlayerID='',NickName='',Account='') }}
+    {% endautoescape %}
+</div>
+<table id="reportTable1"></table>
+<script src="/static/js/my97date/WdatePicker.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    isFirst = true;
+    $('#reportTable1').bootstrapTable({
+        url: "/search/games/users/datas/game_data_tj",
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: queryParams1,//传递参数（*）
+
+        columns:
+            [
+                {field: "time", title: "日期", align: "center", valign: "middle"},
+                {field: "game_id", title: "游戏名称", align: "center", valign: "middle"},
+                {field: "game_count", title: "局数", align: "center", valign: "middle"},
+                {
+                    field: "stake_coin",
+                    title: "投注总额",
+                    align: "center",
+                    valign: "middle",
+                    formatter: coin_format_no_color
+                },
+                {
+                    field: "win_coin",
+                    title: "收入总额",
+                    align: "center",
+                    valign: "middle",
+                    formatter: coin_format_no_color
+                },
+                {field: "total_win", title: "盈亏金额", align: "center", valign: "middle", formatter: coin_format},
+                {field: "today_recharge", title: "充值总额", align: "center", valign: "middle"},
+                {field: "today_withdraw", title: "提现金额", align: "center", valign: "middle"},
+                // {field: "bankrupt_count", title: "破产次数", align: "center", valign: "middle"},
+            ]
+    });
+
+    function queryParams1(params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            PlayerID: $("#PlayerID").val(),
+            NickName: $("#NickName").val(),
+            Account: $("#Account").val(),
+            date1: $("#beginDate").val(),
+            date2: $("#endDate").val(),
+        };
+        return temp;
+    };
+
+    function responseHandler(result) {
+        loadingShow(false);
+        if (result.error == 'system_err') {
+            parent.window.showAlert('服务器忙，请稍后再试')
+        }else if(result.result == 'failed'){
+            if(!isFirst){
+                parent.window.showAlert(result.msg)
+            }
+        }
+        return {
+            total: result.dataLength,
+            data: result.rowDatas,
+        };
+    };
+
+    $('#query_btn').click(function () {
+        isFirst = false;
+        loadingShow(true);
+        $('#reportTable1').bootstrapTable('refreshOptions', {pageNumber: 1});
+    })
+</script>
+</body>
+</html>

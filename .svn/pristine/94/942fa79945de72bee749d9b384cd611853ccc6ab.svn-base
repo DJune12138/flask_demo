@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商城代理管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr th, table tr td {
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .audit-tip, .item-number-exceed, .item-cost-percent, .item-cost-fix {
+            display: none;
+        }
+
+        .member_new {
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 7px !important;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+
+        .switch_button[value="0"] {
+            background-image: url(../static/images/button-open.png);
+        }
+
+        .switch_button[value="1"] {
+            background-image: url(../static/images/button-close.png);
+        }
+
+        .status {
+            /*display: none;*/
+        }
+
+        input[type=file] {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.pay_wx_agent"), beginDate=False, OThers = page.OThers, QueryType=3,
+    SelectChannel=page.channel, Method='get') }}
+    {% endautoescape %}
+</div>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="button" value="添加微信代理">
+    </div>
+    <section class="member_new">
+        <p class="content_item">
+            <label>微信号</label>
+            <input class="name" type="text" placeholder="请输入微信号"/>
+        </p>
+        <p class="content_item">
+            <label>排序</label>
+            <input class=" sort" type="text" placeholder="请输入排序数值（数值越小，排序越前）"/>
+        </p>
+        <p class="content_item">
+            <label>备注</label>
+            <input class="memo" type="text" placeholder="请输入备注"/>
+        </p>
+        <p class="content_item status">
+            <label>状态</label>
+            <span class="switch_button" value="1"></span>
+        </p>
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="确定">
+    </section>
+    <section class="member_list">
+        <table id="table"></table>
+    </section>
+</main>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class=" btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class=" btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    window.operateEvents = {
+        'click #edit': function (e, value, item) {
+            $goNew.click();
+            id = item.id;
+            url = 'edit';
+            $name.val(item.wx);
+            $sort.val(item.seq);
+            $memo.val(item.memo);
+            $status.attr('value', item.status);
+
+        },
+        'click #delete': function (e, value, item) {
+            id = item.id;
+            url = 'del';
+            $name.val(item.wx);
+            $sort.val(item.seq);
+            $memo.val(item.memo);
+            $status.attr('value', item.status);
+            showDelete(submit)
+        },
+    }
+
+    $('#table').bootstrapTable({
+        url: '/wx_agent/list',
+        pagination: true,
+        pageSize: 100,
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('status')
+        },
+        columns:
+            [
+                {field: 'seq', title: "排序", sortable: true},
+                {field: 'wx', title: "微信号", sortable: true},
+                {field: 'memo', title: "备注", sortable: true},
+                {field: 'status', title: "状态", sortable: true, formatter: getState},
+                {field: '', title: "操作", formatter: getOperate, events: operateEvents, formatter: getOperate},
+            ]
+    });
+
+    function getState(value) {
+        return (value == 0) ? '启用' : '停用';
+    }
+
+    function getOperate() {
+        return '<a id="edit">编辑</a><a id="delete">删除</a>'
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total: 0,
+                data: []
+            };
+        } else {
+            return {
+                total: res.data.length,
+                data: res.data
+            };
+        }
+    };
+
+    var url = 'add';
+    var id = '';
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+    $goEedit = $member_list.find('table tr td .edit');
+    $goDelete = $member_list.find('table tr td .delete');
+    $submit = $member_new.find('.submit');
+    $name = $member_new.find('.name');
+    $sort = $member_new.find('.sort');
+    $memo = $member_new.find('.memo');
+    $status = $member_new.find('.switch_button');
+    $status_item = $member_new.find('.status');
+
+    $goNew.click(function () {
+        url = 'add';
+        id = '';
+        $name.val('');
+        $sort.val('');
+        $memo.val('');
+        $status.attr('value', '0');
+        if ($(this).val() == '添加微信代理') {
+            $(this).val('返回微信代理');
+            $member_new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('添加微信代理');
+            $member_new.hide();
+            $member_list.show();
+        }
+    })
+
+    $submit.click(function () {
+        submit();
+    })
+
+    function submit() {
+        $.ajax({
+            url: '/wx_agent/' + url,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                wx: $name.val(),
+                seq: $sort.val(),
+                memo: $memo.val(),
+                status: $status.attr('value'),
+                id: id,
+            },
+            success: function (data) {
+                if (data.result == 'ok') {
+                    if (url == 'add') {
+                        parent.showAlert('添加成功!', 'success');
+                    } else if (url == 'edit') {
+                        parent.showAlert('编辑成功!', 'success');
+                    } else if (url == 'del') {
+                        parent.showAlert('删除成功!', 'success');
+                    }
+                    setTimeout(function () {
+                        $('#table').bootstrapTable('refresh')
+                        $goNew.val('添加微信代理');
+                        $member_new.hide();
+                        $member_list.show();
+                    }, 1000)
+                } else {
+                    parent.showAlert(data.error_msg);
+                }
+            },
+            error: function () {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function showDelete(fn) {
+        $confirm = $('.refactor-confirm');
+        $confirm.fadeIn();
+        $confirm.find('.cancel').click(function () {
+            $confirm.fadeOut();
+        });
+        $confirm.find('.del').click(function () {
+            $confirm.fadeOut();
+            fn();
+        })
+    }
+</script>
+</body>
+</html>

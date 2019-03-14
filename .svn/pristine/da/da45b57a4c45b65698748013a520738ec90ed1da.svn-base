@@ -1,0 +1,13 @@
+# _*_ coding:utf-8 _*_
+"""自定义过滤器"""
+
+
+def rounding_off(num, n):
+    """保留n位小数"""
+
+    new_num = round(float(num), n)
+    return new_num
+
+
+if __name__ == '__main__':
+    print rounding_off(2/6, 2)

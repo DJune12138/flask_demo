@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>赠送参数设置</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style>
+        table tr, table td, table th {
+            height: 30px !important;
+            background: #fff;
+        }
+
+        .item-title td {
+            background: #ebebeb;
+        }
+
+        table tr.item-title:hover td {
+            background: #ebebeb !important;
+        }
+
+        .p2a td:first-child, .p2p td:first-child, .a2a td:first-child, .a2p td:first-child, table tr.a2p:hover td, table tr.a2a:hover td, table tr.p2p:hover td, table tr.p2a:hover td, .ccc, .ccc:hover, .item-ccc:hover .ccc {
+            background: #ccc !important;
+        }
+
+        table tr.a2p:hover td:last-child, table tr.a2a:hover td:last-child, table tr.p2p:hover td:last-child, table tr.p2a:hover td:last-child {
+            background: #fff !important;
+        }
+
+        .item-channel, .item-btn {
+            text-align: center;
+            margin: 10px;
+        }
+
+        table tr td:first-child {
+            width: 25%;
+        }
+
+        table tr td input {
+            height: 22px !important;
+            margin: 0 !important;
+            width: 100px !important;
+        }
+
+        #mainform {
+            position: relative;
+        }
+
+        .item-btn {
+            position: absolute;
+            bottom: -65px;
+            width: 100%;
+        }
+
+        label {
+            font-weight: normal !important;
+        }
+
+        table tr td {
+            border: solid 1px #000 !important;
+        }
+
+        .refactor_content .content_item input {
+            width: 60% !important;
+        }
+
+        .refactor_content {
+            border: none;
+        }
+
+        .item {
+            border: solid 1px #e6e6e6;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .item .content_top {
+            padding: 10px 15px;
+        }
+
+        .refactor_content .content_item label {
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--<div class="container"><h3>赠送配置</h3></div>-->
+
+<div class="container refactor_content">
+    <form id="mainform" action="presented_config_action" method="post">
+        <input type="hidden" id="opt_type" name="opt_type" value="1"/>
+        <div class="item">
+            <div class="content_top">
+                赠送全局条件
+            </div>
+            <p class="content_item">
+                <label>赠送后最小剩余金币需大于等于</label>
+                <input type="text" id="p_coin" name="p_coin" value="{{ config.p_coin }}">
+            </p>
+            <p class="content_item">
+                <label>每天赠送次数需小于</label>
+                <input type="text" id="max_presented_times" name="max_presented_times"
+                       value="{{ config.max_presented_times }}">
+            </p>
+        </div>
+
+        <div class="item">
+            <div class="content_top">
+                代理与玩家赠送
+            </div>
+            <p class="content_item">
+                <label>代理与玩家赠送开关</label>
+                <input type="text" id="a2p" name="a2p" value="{{ config.a2p }}" style="display: none">
+                {% if config.a2p == 1 %}
+                <span class="switch_button" value="1" name="a2p"></span>
+                {% else %}
+                <span class="switch_button" value="0" name="a2p"></span>
+                {% endif %}
+            </p>
+            <p class="content_item">
+                <label>代理与玩家赠送税率(万分比)：</label>
+                <input type="text" id="a2p_tax" name="a2p_tax" value="{{ config.a2p_tax }}">
+            </p>
+            <p class="content_item">
+                <label>最小赠送金币</label>
+                <input type="text" id="a2p_min_coin" name="a2p_min_coin" value="{{ config.a2p_min_coin }}">
+            </p>
+            <p class="content_item">
+                <label>最大赠送金币</label>
+                <input type="text" id="a2p_max_coin" name="a2p_max_coin" value="{{ config.a2p_max_coin }}">
+            </p>
+        </div>
+
+        <div class="item">
+            <div class="content_top">
+                玩家与代理赠送
+            </div>
+            <p class="content_item">
+                <label>玩家与代理赠送开关</label>
+                <input type="text" id="p2a" name="p2a" value="{{ config.p2a }}" style="display: none">
+                {% if config.p2a == 1 %}
+            <span class="switch_button" value="1" name="p2a"></span>
+            {% else %}
+            <span class="switch_button" value="0" name="p2a"></span>
+            {% endif %}
+            </p>
+            <p class="content_item">
+                <label>玩家与代理赠送税率(万分比)</label>
+                <input type="text" id="p2a_tax" name="p2a_tax" value="{{ config.p2a_tax }}">
+            </p>
+            <p class="content_item">
+                <label>最小赠送金币</label>
+                <input type="text" id="p2a_min_coin" name="p2a_min_coin" value="{{ config.p2a_min_coin }}">
+            </p>
+            <p class="content_item">
+                <label>最大赠送金币</label>
+                <input type="text" id="p2a_max_coin" name="p2a_max_coin" value="{{ config.p2a_max_coin }}">
+            </p>
+        </div>
+
+        <div class="item">
+            <div class="content_top">
+                玩家与玩家赠送
+            </div>
+            <p class="content_item">
+                <label>玩家与玩家赠送开关</label>
+                <input type="text" id="p2p" name="p2p" value="{{ config.p2p }}" style="display: none">
+                {% if config.p2p == 1 %}
+            <span class="switch_button" value="1" name="p2p"></span>
+            {% else %}
+            <span class="switch_button" value="0" name="p2p"></span>
+            {% endif %}
+            </p>
+            <p class="content_item">
+                <label>玩家与玩家赠送税率(万分比)</label>
+                <input type="text" id="p2p_tax" name="p2p_tax" value="{{ config.p2p_tax }}">
+            </p>
+            <p class="content_item">
+                <label>最小赠送金币</label>
+                <input type="text" id="p2p_min_coin" name="p2p_min_coin" value="{{ config.p2p_min_coin }}">
+            </p>
+            <p class="content_item">
+                <label>最大赠送金币</label>
+                <input type="text" id="p2p_max_coin" name="p2p_max_coin" value="{{ config.p2p_max_coin }}">
+            </p>
+        </div>
+        <div class="item">
+            <div class="content_top">
+                代理与代理赠送
+            </div>
+            <p class="content_item">
+                <label>代理与代理赠送开关</label>
+                <input type="text" id="a2a" name="a2a" value="{{ config.a2a }}" style="display: none">
+                {% if config.a2a == 1 %}
+            <span class="switch_button" value="1" name="a2a"></span>
+            {% else %}
+            <span class="switch_button" value="0" name="a2a"></span>
+            {% endif %}
+            </p>
+            <p class="content_item">
+                <label>代理与代理赠送税率(万分比)</label>
+                <input type="text" id="a2a_tax" name="a2a_tax" value="{{ config.a2a_tax }}">
+            </p>
+            <p class="content_item">
+                <label>最小赠送金币</label>
+                <input type="text" id="a2a_min_coin" name="a2a_min_coin" value="{{ config.a2a_min_coin }}">
+            </p>
+            <p class="content_item">
+                <label>最大赠送金币</label>
+                <input type="text" id="a2a_max_coin" name="a2a_max_coin" value="{{ config.a2a_max_coin }}">
+            </p>
+        </div>
+
+        <table class="table table-striped table-bordered table-hover table-condensed nohover">
+
+            <tbody>
+            <!--<tr class="item-title">-->
+            <!--<td colspan=1>-->
+            <!--<label>赠送全局条件</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+
+            <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="item-ccc">-->
+            <!--<td class="ccc" colspan=1>-->
+            <!--<label>赠送后最小剩余金币需大于等于：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="p_coin" name="p_coin" value="{{ config.p_coin }}">-->
+            <!--</td>-->
+            <!--</tr>-->
+            <!--<tr class="item-ccc">-->
+            <!--<td class="ccc" colspan=1>-->
+            <!--<label>每天赠送次数需小于：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="max_presented_times" name="max_presented_times"-->
+            <!--value="{{ config.max_presented_times }}">-->
+            <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="item-title">-->
+            <!--<td colspan=1>-->
+            <!--<label>代理与玩家赠送：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="a2p" name="a2p" value="3" style="display: none">-->
+            <!--{% if config.a2p == 1 %}-->
+            <!--<div class="switch_button" value="1" name="a2p"></div>-->
+            <!--{% else %}-->
+            <!--<div class="switch_button" value="0" name="a2p"></div>-->
+            <!--{% endif %}-->
+            <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="a2p">-->
+            <!--<td colspan=1>-->
+            <!--<label>代理与玩家赠送税率(万分比)：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="a2p_tax" name="a2p_tax" value="{{ config.a2p_tax }}">-->
+            <!--</td>-->
+            <!--</tr>-->
+
+
+            <!--<tr class="a2p">-->
+            <!--<td colspan=1>-->
+            <!--<label>最小赠送金币：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="a2p_min_coin" name="a2p_min_coin" value="{{ config.a2p_min_coin }}">-->
+            <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="a2p">-->
+            <!--<td colspan=1>-->
+            <!--<label>最大赠送金币：</label>-->
+            <!--</td>-->
+            <!--<td colspan=2>-->
+            <!--<input type="text" id="a2p_max_coin" name="a2p_max_coin" value="{{ config.a2p_max_coin }}">-->
+            <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="item-title">-->
+                <!--<td colspan=1>-->
+                    <!--<label>玩家与代理赠送：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2a" name="p2a" value="3" style="display: none">-->
+                    <!--{% if config.p2a == 1 %}-->
+                    <!--<div class="switch_button" value="1" name="p2a"></div>-->
+                    <!--{% else %}-->
+                    <!--<div class="switch_button" value="0" name="p2a"></div>-->
+                    <!--{% endif %}-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--<tr class="p2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>玩家与代理赠送税率(万分比)：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2a_tax" name="p2a_tax" value="{{ config.p2a_tax }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--<tr class="p2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最小赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2a_min_coin" name="p2a_min_coin" value="{{ config.p2a_min_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="p2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最大赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2a_max_coin" name="p2a_max_coin" value="{{ config.p2a_max_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--<tr class="item-title">-->
+                <!--<td colspan=1>-->
+                    <!--<label>玩家与玩家赠送：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2p" name="p2p" value="3" style="display: none">-->
+                    <!--{% if config.p2p == 1 %}-->
+                    <!--<div class="switch_button" value="1" name="p2p"></div>-->
+                    <!--{% else %}-->
+                    <!--<div class="switch_button" value="0" name="p2p"></div>-->
+                    <!--{% endif %}-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="p2p">-->
+                <!--<td colspan=1>-->
+                    <!--<label>玩家与玩家赠送税率(万分比)：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2p_tax" name="p2p_tax" value="{{ config.p2p_tax }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="p2p">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最小赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2p_min_coin" name="p2p_min_coin" value="{{ config.p2p_min_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="p2p">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最大赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="p2p_max_coin" name="p2p_max_coin" value="{{ config.p2p_max_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="item-title">-->
+                <!--<td colspan=1>-->
+                    <!--<label>代理与代理赠送：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="a2a" name="a2a" value="3" style="display: none">-->
+                    <!--{% if config.a2a == 1 %}-->
+                    <!--<div class="switch_button" value="1" name="a2a"></div>-->
+                    <!--{% else %}-->
+                    <!--<div class="switch_button" value="0" name="a2a"></div>-->
+                    <!--{% endif %}-->
+                <!--</td>-->
+            <!--</tr>-->
+
+
+            <!--<tr class="a2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>代理与代理赠送税率(万分比)：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="a2a_tax" name="a2a_tax" value="{{ config.a2a_tax }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--<tr class="a2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最小赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="a2a_min_coin" name="a2a_min_coin" value="{{ config.a2a_min_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            <!--<tr class="a2a">-->
+                <!--<td colspan=1>-->
+                    <!--<label>最大赠送金币：</label>-->
+                <!--</td>-->
+                <!--<td colspan=2>-->
+                    <!--<input type="text" id="a2a_max_coin" name="a2a_max_coin" value="{{ config.a2a_max_coin }}">-->
+                <!--</td>-->
+            <!--</tr>-->
+
+            </tbody>
+
+            <div class="item-btn">
+                <input type="button" onclick="save_clk()" class="btn btn-primary btn-sm" value="保存"/></div>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>
+<!-- JavaScript 放置在文档最后面可以使页面加载速度更快 -->
+<!-- 可选: 包含 jQuery 库 -->
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<!-- 可选: 合并了 Bootstrap JavaScript 插件 -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    // $('.switch_button').each(function (index, item) {
+    //     if ($(item).attr('value') == '0') {
+    //         if (index == '0') {
+    //             $('.a2p').hide();
+    //         } else if (index == '1') {
+    //             $('.p2a').hide();
+    //         } else if (index == '2') {
+    //             $('.p2p').hide();
+    //         } else if (index == '3') {
+    //             $('.a2a').hide();
+    //         }
+    //     }
+    // })
+    $('.switch_button').click(function () {
+        var self = this;
+        setTimeout(function(){
+            $(self).siblings('input').val($(self).attr('value'))
+        },200)
+    })
+</script>
+<script>
+    function query_clk() {
+        document.getElementById('opt_type').value = "1";
+        document.getElementById('mainform').submit();
+    }
+
+    function save_clk() {
+        if (checkForm()) {
+            document.getElementById('opt_type').value = "2";
+            document.getElementById('mainform').submit();
+        }
+    }
+
+    function checkForm() {
+        // $('.switch_button').each(function () {
+        //     if ($(this).attr('name') == 'p2p') {
+        //         $('#p2p').val($(this).attr('value'))
+        //     } else if ($(this).attr('name') == 'p2a') {
+        //         $('#p2a').val($(this).attr('value'))
+        //     } else if ($(this).attr('name') == 'a2a') {
+        //         $('#a2a').val($(this).attr('value'))
+        //     } else if ($(this).attr('name') == 'a2p') {
+        //         $('#a2p').val($(this).attr('value'))
+        //     }
+        // });
+        var regPos = /^\d+$/;
+
+        // var min_coin = document.getElementById('min_coin').value;
+        // if (!regPos.test(min_coin)) {
+        //     alert("最小赠送金币必须是整数");
+        //     return false;
+        // }
+        //
+        // var max_coin = document.getElementById('max_coin').value;
+        // if (!regPos.test(max_coin)) {
+        //     alert("最大赠送金币必须是整数");
+        //     return false;
+        // }
+        //
+        // min_coin = parseInt(min_coin);
+        // max_coin = parseInt(max_coin);
+        //
+        // if (min_coin >= max_coin) {
+        //     alert("最大赠送金币 必须大于 最小赠送金币");
+        //     return false;
+        // }
+
+        return true;
+    }
+</script>

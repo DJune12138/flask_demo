@@ -1,0 +1,11 @@
+## 日志导入
+*/2 * * * * python /data/web/tj/loader_game_log.py /data/server/logs/game >> /var/crontab_loader_log.log 2>&1
+
+## 1天1次
+1 0 * * * python /data/web/tj/game_system.py server_1 >> /var/crontab_game_system.log 2>&1
+1 0 * * * python /data/web/tj/player_pump_stat.py server_1 >> /var/crontab_player_pump_stat.log 2>&1
+1 0 * * * python /data/web/tj/player_stat.py server_1 >> /var/crontab_player_stat.log 2>&1
+1 0 * * * python /data/web/tj/player_subgame_stat.py server_1 >> /var/crontab_player_subgame_stat.log 2>&1
+1 0 * * * python /data/web/tj/subgame_stat.py server_1 >> /var/crontab_subgame_stat.log 2>&1
+1 0 * * * python /data/web/tj/agent_stat.py server_1 >> /var/crontab_subgame_stat.log 2>&1
+*/5 * * * * python /data/web/tj/check_game_alarm.py server_1 >> /var/crontab_check_alarm.log 2>&1

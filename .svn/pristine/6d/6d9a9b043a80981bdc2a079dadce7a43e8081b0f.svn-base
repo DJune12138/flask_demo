@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>平台滚动公告</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style type="text/css">
+        .add_marquee {
+            width: 1000px;
+            margin: 0 auto;
+            /*border: solid;*/
+            padding: 0 140px;
+        }
+
+        .input_box, .parent_check {
+            overflow: hidden;
+            line-height: 43px;
+            margin-bottom: 10px;
+        }
+
+        .check_box {
+            width: 150px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box div {
+            height: 25px;
+            width: 150px;
+            float: left;
+        }
+
+        .input_box input {
+            height: 30px;
+            width: 333px;
+            float: left;
+            border: 1px solid #4876FF;
+            border-radius: 5px
+        }
+
+        .input_box div, .auth_logo {
+            width: 110px;
+            float: left;
+            text-align: right;
+        }
+
+        .nav {
+            margin-bottom: 4px !important;
+            position: relative;
+            top: 50px;
+        }
+
+        .nav span {
+            background: #DDDDDD;
+            color: #000;
+            padding: 5px 100px;
+            border-radius: 5px 5px 0 0;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+
+        .nav .select {
+            background: #00a0e9;
+            color: #fff;
+        }
+
+        .p-button {
+            padding-left: 100px;
+        }
+
+        .content_top {
+            text-align: right;
+        }
+
+        .content_top .button_new {
+            margin: 5px 10px !important;
+        }
+
+        #batch_cancel {
+            float: left;
+            margin: 7px;
+        }
+
+        .item-content textarea {
+            font-size: 13px;
+            width: 600px;
+            height: 300px;
+            resize: none;
+            line-height: 22px;
+            padding: 12px;
+            text-align: justify;
+        }
+        #marquee_form{
+            border: solid 1px #ededed;
+            border-radius: 5px;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.query_marquee"), beginDate = status_msg.beginDate, endDate = status_msg.endDate, QueryType = 3, Channels=False, OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<div class="refactor_content">
+    <div class="content_top">
+        <a class="button_new">新建滚动公告</a>
+        <button class="btn btn-primary btn-sm" id="batch_cancel">批量下线</button>
+    </div>
+</div>
+<nav class="nav" hidden>
+    <span class="select" onclick="show_query()">查询</span>
+    <span onclick="show_add()" id="add-page">新建</span>
+</nav>
+<table class="table table-striped table-bordered table-hover table-condensed" hidden>
+    <tr>
+        <th id="query-page" style="cursor: pointer;text-align:center;background-color: #FFE4B5" ONCLICK="show_query()">
+            查询
+        </th>
+        <th id="add-page" style="cursor: pointer;text-align:center;" ONCLICK="show_add()">新建</th>
+    </tr>
+</table>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<form id="marquee_form" hidden>
+    <div class="add_marquee">
+        <h3 id="tips" style="text-align: center"></h3>
+        <div class="input_box item-content">
+            <div><span>内容：&nbsp;&nbsp;</span></div>
+            <textarea placeholder="请输入公告内容" id="marquee_content_create"></textarea>
+        </div>
+        <div class="input_box">
+            <div><span>起止时间：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false,
+         isShowOK:false, isShowToday:false, autoPickDate:true})" id="date1" name="begin_time" value="" required><span
+                style="float:left;padding:0 10px;">  --  </span>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false,
+            isShowOK:false, isShowToday:false, autoPickDate:true})" id="date2" name="end_time" value="" required>
+        </div>
+        <div class="input_box">
+            <div><span>每日展示次数：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="必填；非负整数；不限次数请输入-1" name="push_times" value=""
+                   style="display: block;text-indent: 5px;" required id="push_times"/>
+            <!--<span>&nbsp;&nbsp;&nbsp;提示:整数，不限次数输入-1</span>-->
+        </div>
+        <p class="p-button">
+            <input class="btn btn-primary btn-sm commit" type="button" name="" value="确认" id="create"
+                   ONCLICK="create_marquee()">
+        </p>
+    </div>
+</form>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    go_new = $('.refactor_content .content_top .button_new');
+    go_new.click(function () {
+        if ($(this).text() == '新建滚动公告') {
+            $(this).text('返回公告列表');
+            $('#batch_cancel').hide();
+            show_add();
+        } else {
+            $(this).text('新建滚动公告');
+            $('#batch_cancel').show();
+            show_query();
+        }
+    })
+    $('.nav span').click(function () {
+        $(this).siblings('span').removeClass('select');
+        $(this).addClass('select');
+    })
+
+    function show_query() {
+        $("#query-page").css("background-color", "#FFE4B5");
+        $("#add-page").css("background-color", "#DDDDDD");
+        $('#marquee_form').hide();
+        $('#reportTableDiv').show()
+    }
+
+    function show_add() {
+        $("#add-page").css("background-color", "#FFE4B5");
+        $("#query-page").css("background-color", "#DDDDDD");
+        $('#reportTableDiv').hide();
+        $('#marquee_form').show();
+    }
+
+    // 新建跑马灯
+    function create_marquee() {
+        $.ajax({
+            url: '{{ url_for("busi.create_marquee") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'marquee_content': document.getElementById('marquee_content_create').value,
+                'begin_time': document.getElementById('date1').value,
+                'end_time': document.getElementById('date2').value,
+                'push_times': document.getElementById('push_times').value
+            },
+            success: function (data) {
+                if (data.result == 1) {
+                    parent.showAlert("新建滚动公告成功！");
+                    location.href = '{{ url_for("busi.show_marquee") }}'
+                }
+                else if (data.result == 2) {
+                    parent.showAlert("缺少参数！")
+                }
+                else if (data.result == 4) {
+                    parent.showAlert("新建失败！")
+                }
+                else if (data.result == 5) {
+                    parent.showAlert("开始时间不能大于结束时间！")
+                }
+                else {
+                    parent.showAlert("输入的参数有误！请根据提示输入！")
+                }
+            },
+            error: function () {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    {#// 修改跑马灯#}
+    {#function modification_marquee() {#}
+    {#    $.ajax({#}
+    {#        url: '{{ url_for("busi.editor_marquee") }}',#}
+    {#        type: 'PUT',#}
+    {#        dataType: 'json',#}
+    {#        data: {#}
+    {#            'marquee_id': $('.commit').attr('marquee_id'),#}
+    {#            'marquee_content': document.getElementById('marquee_content_create').value,#}
+    {#            'begin_time': document.getElementById('date1').value,#}
+    {#            'end_time': document.getElementById('date2').value,#}
+    {#            'push_times': document.getElementById('push_times').value#}
+    {#        },#}
+    {#        success: function (data) {#}
+    {#            if (data.result == 1) {#}
+    {#                parent.showAlert("修改跑马灯成功！");#}
+    {#                location.href = '{{ url_for("busi.show_marquee") }}'#}
+    {#            }#}
+    {#            else if (data.result == 2) {#}
+    {#                parent.showAlert("缺少参数！")#}
+    {#            }#}
+    {#            else {#}
+    {#                parent.showAlert("输入的参数有误！请根据提示输入！")#}
+    {#            }#}
+    {#        },#}
+    {#        error: function () {#}
+    {#            parent.showAlert("请求超时，请重试！")#}
+    {#        }#}
+    {#    })#}
+    {# }#}
+
+    // 组织批量下线的数组
+    function batch_list() {
+        var batch_str = '[';
+        var j = 0;
+        $('#reportTable tbody tr').each(function () {
+            if ($(this).find('input').is(':checked')) {
+                batch_str = batch_str + $(this).children().eq(1).html() + ', ';
+                j++;
+                if (j == $(this).parent().find('tr[class=selected]').length) {
+                    batch_str += ']'
+                }
+            }
+        });
+        return batch_str
+    }
+
+    // 批量下线
+    $('#batch_cancel').click(function () {
+        $.ajax({
+            url: '{{ url_for("busi.batch_cancel_marquee") }}',
+            type: 'PUT',
+            dataType: 'json',
+            data: {
+                'batch_list': batch_list()
+            },
+            success: function (data) {
+                parent.showAlert(data.msg);
+                $('.bs-checkbox').find('input').eq(0).prop('checked', false);
+                $('#reportTable tbody tr').each(function () {
+                    if ($(this).find('input').is(':checked')) {
+                        $(this).children().eq(7).html('<span style="color: red">下线</span>');
+                        $(this).children().eq(0).find('input').prop('checked', false);
+                        $(this).attr('class', '')
+                    }
+                })
+            }
+        })
+    });
+        $('#query_btn').click(function () {
+            loadingShow(true);
+            $('#reportTable').bootstrapTable('refresh');
+        })
+        $('#reportTable').bootstrapTable({
+            url: '/search/games/gm/marquee',
+            pagination: true,
+            pageSize: 100,
+            responseHandler: getHandler,
+            queryParams: function () {
+                return queryParams('marquee_content','user_id','beginDate','endDate')
+            },
+            columns:
+                [
+                    {field: "checked", checkbox: true},
+                    {field: "marquee_id", title: "滚动公告ID"},
+                    {field: "user_id", title: "后台账号"},
+                    {field: "marquee_content", title: "内容"},
+                    {field: "push_times", title: "每日展示次数"},
+                    {field: "begin_time", title: "开始时间"},
+                    {field: "end_time", title: "结束时间"},
+                    {field: "status", title: "状态",formatter:getStatus}
+                ],
+    })
+    function getStatus(status){
+        if(status == '生效'){
+            return '<span style="color: limegreen">'+status+'</span>'
+        }else{
+            return '<span style="color: red">'+status+'</span>'
+        }
+    }
+
+        function getHandler(res) {
+            loadingShow(false);
+            if (res.error == 'system_err') {
+                return {
+                    data: []
+                };
+            } else {
+                return {
+                    data: res.data
+                };
+            }
+        }
+</script>
+</body>
+</html>

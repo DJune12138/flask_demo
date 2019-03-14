@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>代理添加管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        .button_new {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<main class="refactor_content">
+    <section class="member_new">
+        <p class="content_item">
+            <label>玩家ID</label>
+            <input class="pid" type="text"/>
+        </p>
+        <p class="content_item">
+            <label>玩家昵称</label>
+            <input class="nick" type="text" disabled/>
+        </p>
+        <p class="content_item">
+            <label>代理层级</label>
+            <select class="level"></select>
+        </p>
+        <p class="content_item">
+            <label>上级代理ID</label>
+            <select class="pre_pid"></select>
+        </p>
+        <p class="content_item">
+            <label>上级代理昵称</label>
+            <input class="nick_up" type="text" disabled/>
+        </p>
+        <a class="button_new">添加</a>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+
+    $content = $('.refactor_content');
+    pid = $content.find('input.pid');
+    nick = $content.find('input.nick');
+    nick_up = $content.find('input.nick_up');
+    submit_ = $content.find('a.button_new');
+    level = $content.find('select.level')
+    pre_pid = $content.find('select.pre_pid')
+
+    pid.change(function () {
+        nick.val('')
+        $.ajax({
+            url: '/agent/list/json/nick',
+            type: 'get',
+            data: {
+                pid: pid.val(),
+            },
+            success: function (res) {
+                ajaxCallback(res, function () {
+                    nick.val(res.data)
+                }, true)
+            }
+        })
+    })
+
+    pre_pid.change(function () {
+        nick_up.val(pre_pid.val())
+    })
+
+    submit_.click(function () {
+        $.ajax({
+            url: '/agent/add/do',
+            type: 'get',
+            data: {
+                pid: pid.val(),
+                level_id: level.val(),
+                pre_pid: pre_pid.find('option:selected').text(),
+            },
+            success: function (res) {
+                if(res.error == 'system_err'){
+                    showAlert('服务器忙，请稍后再试')
+                }else if(res.result == 'fail'){
+                    showAlert(res.msg)
+                }else{
+                    showAlert('添加成功','success')
+                }
+            }
+        })
+    })
+
+    getLevel()
+
+    function getLevel() {
+        $.ajax({
+            url: '/agent/list/json/level',
+            type: 'get',
+            success: function (res) {
+                level.html('');
+                res.data.forEach(function (item) {
+                    level.append('<option value="' + item.level_id + '">' + item.level_name + '</option>');
+                })
+            }
+        })
+    }
+
+    getUpLevel()
+
+    function getUpLevel() {
+        $.ajax({
+            url: '/agent/list_simple',
+            type: 'get',
+            success: function (res) {
+                pre_pid.html('');
+                $.each(res.data, function (index, item) {
+                    pre_pid.append('<option value="' + item + '">' + index + '</option>');
+                })
+                nick_up.val(pre_pid.val())
+                getSystem()
+            }
+        })
+    }
+
+
+    function getSystem() {
+        $.ajax({
+            url: '/system/parameter/retrieve',
+            data: {
+            },
+            success: function (res) {
+                if(res.data.agent_pattern == 3){
+                    pre_pid.val('系统顶级代理').attr('disabled',true);
+                    nick_up.val('系统顶级代理');
+                }else{
+                    pre_pid.attr('disabled',false);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

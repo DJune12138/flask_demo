@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>每周分销数据</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_agent_distribution"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, Channels=True, PT = True, PlayerID = False, SelectChannel = status_msg.channel, QueryType = 1,
+    OThers = status_msg.OThers, Method = 'get') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<table>
+    <thead>
+        <tr>
+            <th>日期</th>
+            <th>渠道名称</th>
+            <th>ID</th>
+            <th>昵称</th>
+            <th>本级业绩</th>
+            <th>1级分销周业绩</th>
+            <th>2级分销周业绩</th>
+            <th>3级分销周业绩</th>
+            <th>本级佣金</th>
+            <th>1级分销佣金</th>
+            <th>2级分销佣金</th>
+            <th>3级分销佣金</th>
+            <th>总佣金</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in datas %}
+        <tr>
+            <th>{{ data.week }}</th>
+            <th>{{ data.channel }}</th>
+            <th>{{ data.agent_id }}</th>
+            <th>{{ data.nick }}</th>
+            <th>{{ data.pump }}</th>
+            <th>{{ data.pump1 }}</th>
+            <th>{{ data.pump2 }}</th>
+            <th>{{ data.pump3 }}</th>
+            <th>{{ data.commission }}</th>
+            <th>{{ data.commission1 }}</th>
+            <th>{{ data.commission2 }}</th>
+            <th>{{ data.commission3 }}</th>
+            <th>{{ data.total_commission }}</th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代理赠送数据</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+
+    </style>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_agent_presentation"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, Channels=True, PlayerID = False, SelectChannel = status_msg.channel,
+    OThers = status_msg.OThers,Method = 'get') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            showPaginationSwitch:false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader:true,
+            showToolbar:false,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+            [
+                {field:"dateStamp",title:"日期",align:"center",sortable:"true",},
+                {field:"pid",title:"代理ID",align:"center",valign:"middle",formatter:pid_format},
+                {field:"nick",title:"代理昵称",align:"center",sortable:"true"},
+                {field:"total_down_coin",title:"赠送玩家总金币（卖分）",align:"center",valign:"middle"},
+                {field:"total_down_pump",title:"赠送玩家总抽水",align:"center",valign:"middle"},
+                {field:"total_up_coin",title:"被玩家赠送总金币（买分）",align:"center",valign:"middle"},
+                {field:"total_up_pump",title:"被玩家赠送总抽水",align:"center",valign:"middle"},
+                {field:"total_agent_present",title:"赠送代理总金币",align:"center",valign:"middle"},
+                {field:"total_agent_present_pump",title:"赠送代理总抽水",align:"center",valign:"middle"},
+                {field:"total_agent_recv",title:"被代理赠送总金币",align:"center",valign:"middle"},
+                {field:"total_agent_recv_pump",title:"被代理赠送总抽水",align:"center",valign:"middle"},
+                {field:"operate",title:"操作",align:"center",valign:"middle"},
+            ],
+            data:[
+            {% for (d, pid), data in datas.items() %}
+                {
+                    dateStamp:"{{ data.dateStamp }}",
+                    pid:{{ pid }},
+                    nick:"{{ pdatas[pid]}}",
+                    total_down_coin:"{{ data.total_down_coin }}",
+                    total_down_pump:{{ data.total_down_pump }},
+                    total_up_coin:{{ data.total_up_coin }},
+                    total_up_pump:"{{ data.total_up_pump }}",
+                    total_agent_present:"{{ data.total_agent_present }}",
+                    total_agent_present_pump:"{{ data.total_agent_present_pump }}",
+                    total_agent_recv:"{{ data.total_agent_recv }}",
+                    total_agent_recv_pump:"{{ data.total_agent_recv_pump }}",
+                    operate:'<a onclick="new_iframe(\'赠送订单详情\',\'/games/presentation/detail?pid={{ pid }}&date={{ data.dateStamp }}\')">查看详情</a>',
+                },
+            {% endfor %}
+            ]
+        });
+    });
+</script>
+</html>

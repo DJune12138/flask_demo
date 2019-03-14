@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>代理列表查看</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            /*display: flex;*/
+        }
+
+        table tr th, table tr td {
+            padding: 10px !important;
+            flex: 1;
+            text-align: center;
+        }
+
+        table tr th:last-child, table tr td:last-child {
+            flex: 2;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        table tr th {
+            height: 50px !important;
+        }
+
+        .refactor_content {
+            border-radius: 5px;
+            margin-bottom: 20px !important;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 6px;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+            font-size: 12px;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .nav {
+            margin: 10px 10px;
+        }
+
+        .nav ul li {
+            float: left;
+            font-size: 12px;
+            width: 80px;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            float: left;
+            width: 80px;
+            text-align: center;
+            line-height: 30px;
+            border: 1px solid #ececec;
+            border-right: none;
+            color: #666666;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav ul li:last-child {
+            border: 1px solid #ececec;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav ul li:first-child {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .nav ul li.active-way {
+            background: #1890ff !important;
+            color: #fff;
+        }
+
+        .nav-type ul li {
+            border: none !important;
+        }
+
+        .active-type {
+            color: #1890ff !important;
+        }
+
+        .nav-way {
+            margin: 10px 15px;
+        }
+
+        .nav-type {
+            border-bottom: solid 1px #ededed;
+            padding-bottom: 5px;
+        }
+
+        .nav-type ul li {
+            font-size: 14px !important;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+
+        .refactor_content .content_item input[type=radio] {
+            display: inline-block;
+            width: 30px !important;
+            border: #000 1px solid !important;
+            height: 15px !important;
+            cursor: pointer;
+        }
+
+        .label-radio {
+            cursor: pointer;
+            border: none !important;
+            background: #fff !important;
+            text-align: left !important;
+            width: 90px !important;
+        }
+
+        .content_item .hierarchy {
+            padding: 5px 10px;
+            height: 100%;
+            font-size: 13px;
+            background-color: #d2d2d2;
+            color: #fff;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            position: relative;
+            top: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .content_item .hierarchy-select {
+            background-color: #5FB878;
+        }
+
+        body {
+            padding-bottom: 50px !important;
+        }
+
+        .member_new {
+            padding-bottom: 30px;
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+
+        }
+
+        .disabled {
+            background: #ededed !important;
+            cursor: no-drop !important;
+        }
+
+        .total {
+            font-size: 14px;
+            text-align: center;
+            padding: 5px 0 15px 0;
+        }
+
+        .total p {
+            display: inline-block;
+        }
+
+        .total span {
+            background: green;
+            color: #fff;
+            padding: 0 5px;
+            margin: 0 5px;
+            font-size: 16px;
+            border-radius: 3px;
+        }
+
+        tr td a.status {
+            color: #000 !important;
+        }
+
+        input.Wdate {
+            width: 155px !important;
+        }
+
+        .success_background {
+            background: #009688 !important;
+        }
+
+        .error_background {
+            background: #233238 !important;
+        }
+
+        .wait_background {
+            background: #ff571d !important;
+        }
+
+        input[type=submit] {
+            margin: 0px 0 -19px 1% !important;
+        }
+
+        .content_item {
+            width: 98% !important;
+            float: left;
+            margin: 10px 1% !important;
+            box-sizing: border-box;
+            padding-left: 115px !important;
+            padding-right: 5px !important;
+            position: relative;
+            height: 40px;
+        }
+
+        .content_item label:first-child {
+            position: absolute;
+            left: 0;
+        }
+
+        .member_new .content_item input[type=text] {
+            width: 100% !important;
+            box-sizing: border-box;
+            height: 75% !important;
+        }
+
+        .member_new .content_item input:disabled {
+            background: #ddd !important;
+        }
+
+        .content_item_nowarp {
+            width: 98% !important;
+        }
+
+        .status_success, .status_error {
+            display: none;
+        }
+
+        .fixed-table-loading {
+            display: none !important;
+        }
+
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            display: flex;
+        }
+
+        table tr th, table tr td {
+            padding: 10px !important;
+            flex: 1;
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .audit-tip, .item-number-exceed, .item-cost-percent, .item-cost-fix {
+            display: none;
+        }
+
+        .member_new {
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 7px !important;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+
+        .switch_button[value="0"] {
+            background-image: url(../static/images/button-open.png);
+        }
+
+        .switch_button[value="1"] {
+            background-image: url(../static/images/button-close.png);
+        }
+
+        .status {
+            display: none;
+        }
+
+        input[type=file] {
+            display: inline-block;
+        }
+
+        .member_new .content_item label select {
+            background: #FBFBFB;
+            height: 20px !important;
+        }
+
+        #search_content {
+            width: 120px !important;
+        }
+
+        .search input, .search select {
+            margin: 0 10px !important;
+        }
+
+        .content_top span {
+            float: left;
+            font-size: 14px;
+            margin: 10px 20px;
+        }
+
+        .member_new .content_item select {
+            height: 28px !important;
+        }
+        .alert .alert_cont{
+            width: 350px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.agent_list_retrieve"), beginDate = False, endDate = False, Channels = False, PlayerID =
+    '', NickName = '', Account = '',
+    QueryType = 3, OThers = content, Method='get') }}
+    {% endautoescape %}
+</div>
+<main class="refactor_content">
+    <!--<div class="content_top">-->
+    <!--<span>平台</span>-->
+    <!--<input class="btn-sm btn-primary btn" type="button" value="添加代理">-->
+    <!--</div>-->
+    <section class="member_new">
+        <p class="content_item">
+            <label>代理ID</label>
+            <input class="pid" type="text" placeholder=""/>
+        </p>
+        <p class="content_item">
+            <label>代理昵称</label>
+            <input class="nick" type="text" placeholder="" disabled/>
+        </p>
+        <p class="content_item">
+            <label>代理层级</label>
+            <select class="level level_add"></select>
+        </p>
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="确定">
+    </section>
+    <section class="member_list">
+        <table class="table"></table>
+    </section>
+</main>
+<section class="alert update_cont" hidden>
+    <div class="alert_cont">
+        <p><span class="title">审核代理</span></p>
+        <p>
+            <select class="update_status">
+                <option value="1">启用</option>
+                <option value="0">停用</option>
+                <option value="2">待审</option>
+            </select>
+        </p>
+        <p>
+            <a class="button_cancel">取消</a>
+            <a class="button_new">确定</a>
+        </p>
+    </div>
+</section>
+<section class="alert down_list" hidden>
+    <div class="alert_cont">
+        <p style="text-align: right"><a class="button_new return_list">返回</a></p>
+        <table class="table"></table>
+    </div>
+</section>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class=" btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class=" btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    var channel, pid_;
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+    $submit = $member_new.find('.submit');
+    level = $('.level');
+    level_search = $('.search #level');
+    search_type = $('.search #search_type');
+    search_content = $('.search #search_content');
+    PlayerID = $('.search #PlayerID');
+    NickName = $('.search #NickName');
+    Account = $('.search #Account');
+    level_add = $content.find('select.level_add');
+    search_type = $('.search #search_type');
+    pid = $content.find('input.pid');
+    nick = $content.find('input.nick');
+    search_btn = $('#query_btn');
+    table = $('.table');
+    content_top_span = $content.find('.content_top span');
+
+    update_cont = $('.update_cont');
+    update_cont_btn = update_cont.find('.alert_cont a');
+    update_status = update_cont.find('.update_status');
+
+    down_list = $('.down_list');
+    alert_return_list = $('.down_list .return_list');
+    alert_return_list.click(function () {
+        down_list.fadeOut(10);
+        $('#query_btn').click()
+    })
+
+    update_cont_btn.click(function () {
+        update_cont.fadeOut();
+        if (update_cont_btn.index(this) == 1) {
+            if($(this).closest('.alert_cont').find('.title').text() == '审核代理') {
+                url = '/agent/list/amend/status';
+                key = 'status';
+            }else{
+                url = '/agent/level/player/update';
+                key = 'level';
+            }
+            var obj = {};
+            obj.pid = pid_;
+            obj[key] = update_status.val();
+            $.ajax({
+                url: url,
+                type: 'put',
+                data: obj,
+                success: function (res) {
+                    ajaxCallback(res, function () {
+                        search_btn.click();
+                    })
+                }
+            })
+        }
+    })
+
+    formatSearch();
+
+    search_btn.click(function () {
+        loadingShow(true);
+        table.bootstrapTable('refreshOptions', {
+            url: '/agent/list/retrieve',
+            queryParams: queryParams,//传递参数（*）
+        });
+        content_top_span.text('平台')
+    })
+
+    $goNew.click(function () {
+        var self = this;
+        if ($(this).val() == '添加代理') {
+            checkChannel(function (res) {
+                if (res.result != 1) {
+                    showAlert('该渠道不是传统代理模式，不能手动添加代理！');
+                } else {
+                    $(self).val('返回列表');
+                    $member_new.show();
+                    $member_list.hide();
+                }
+            })
+        } else {
+            $(this).val('添加代理');
+            $member_new.hide();
+            $member_list.show();
+        }
+    })
+
+    pid.change(function () {
+        nick.val('')
+        $.ajax({
+            url: '/agent/list/json/nick',
+            type: 'get',
+            data: {
+                pid: pid.val(),
+                channel_id: channel,
+            },
+            success: function (res) {
+                ajaxCallback(res, function () {
+                    nick.val(res.data)
+                }, true)
+            }
+        })
+    })
+
+    $submit.click(function () {
+        submit();
+    })
+
+    window.operateEvents = {
+        'click #go_down': function (e, value, row, index) {
+            pid_ = row.pid;
+            content_top_span.text(content_top_span.text() + ' >>> ' + row.nick)
+            getDownList(row.pid);
+            down_list.fadeIn();
+        },
+        'click #go_audit': function (e, value, row, index) {
+            pid_ = row.pid;
+            showAlertView('审核代理',row.status);
+        },
+        'click #go_update': function (e, value, row, index) {
+            pid_ = row.pid;
+            showAlertView('编辑层级',row.agent_level);
+        },
+        'click #go_rebate': function (e, value, row, index) {
+            new_iframe('代理佣金结算','/agent_commission/init?pid='+row.pid)
+        },
+    }
+
+    function showAlertView(text,status_){
+        update_cont.find('.title').text(text);
+        update_status.empty();
+        if(text == '审核代理'){
+            update_status.append('<option value="1">启用</option><option value="0">停用</option><option value="2">待审</option>');
+            var status;
+            if(status_ == '启用'){
+                status = '1';
+            }else if(status_ == '停用'){
+                status = '0';
+            }else if(status_ == '待审'){
+                status = '2';
+            }
+            update_status.val(status);
+        }else{
+            $.ajax({
+                url:'/agent/level/retrieve',
+                success:function (res) {
+                    $.each(res.data,function (index,item) {
+                        update_status.append('<option value="'+item.level_id+'">'+item.level_name+'</option>');
+                    })
+                    update_status.find('option:contains('+status_+')').attr('selected',true)
+                }
+            })
+        }
+        update_cont.fadeIn();
+    }
+
+    table.bootstrapTable({
+        url: '/agent/list/retrieve',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: queryParams,//传递参数（*）
+        columns: getColumns(true)
+    });
+
+    function responseHandler(items) {
+        loadingShow(false);
+        channel = items.channel || '';
+        loadingShow(false)
+        if (items.error == 'system_err') {
+            showAlert('没有找到匹配的记录');
+            return {
+                total: '',
+                data: [],
+            };
+        } else if (items.result == '0') {
+            showAlert(items.msg);
+            return {
+                total: '',
+                data: [],
+            };
+        } else {
+            return {
+                total: items.dataLength,
+                data: items.data
+            };
+        }
+    };
+
+    function queryParams(params) {
+        var temp = {
+            size: params.limit,
+            offset: params.offset,
+            agent_level: level_search.val(),
+            PlayerID: PlayerID.val(),
+            NickName: NickName.val(),
+            Account: Account.val(),
+        };
+        return temp;
+    };
+
+    function queryParamsDown(params) {
+        var temp = {
+            size: params.limit,
+            offset: params.offset,
+            pid: pid_,
+        };
+        return temp;
+    };
+
+    function getColumns(visible) {
+        return [{
+            field: 'agent_level',
+            title: '代理层级',
+            visible: visible
+        }, {
+            field: 'pid',
+            title: '代理ID',
+        }, {
+            field: 'name',
+            title: '代理昵称',
+        }, {
+            field: 'coin',
+            title: '剩余金币',
+            formatter:coin_format_no_color,
+            visible: visible
+        }, {
+            field: 'register_time',
+            title: '注册时间',
+            formatter: getLocalTime
+        }, {
+            field: 'login_time',
+            title: '登录时间',
+            formatter: getLocalTime
+        }, {
+            field: 'status',
+            title: '状态',
+        }, {
+            field: '',
+            title: '操作',
+            events: operateEvents,
+            formatter: operateFormatter,
+        },]
+    }
+
+    function operateFormatter(value, row, index) {
+        return [
+            // '<a href="/search/games/users/datas/details?PlayerID=' + row.pid + '&channel_id='+channel+'">查看资料</a>',
+            '<a id="go_audit">审核</a>',
+            '<a id="go_update">编辑层级</a>',
+            '<a id="go_down">下级列表</a>',
+            '<a id="go_rebate">返佣记录</a>',
+        ].join('');
+    }
+
+    function getDownList() {
+        table.bootstrapTable('refreshOptions', {
+            url: '/agent/list/lower/agent',
+            queryParams: queryParamsDown,//传递参数（*）
+        });
+        // $.ajax({
+        //     url: '/agent/list/lower/agent',
+        //     type: 'get',
+        //     data: {
+        //         pid: pid,
+        //         channel_id: channel,
+        //     },
+        //     success: function (res) {
+        //         ajaxCallback(res)
+        //     }
+        // })
+    }
+
+    function submit() {
+        $.ajax({
+            url: '/agent/list/create',
+            type: 'post',
+            data: {
+                pid: pid.val(),
+                level_id: level_add.val(),
+                channel_id: channel,
+            },
+            success: function (res) {
+                ajaxCallback(res, function () {
+                    $goNew.click();
+                })
+            }
+        })
+    }
+
+    function getLevel() {
+        $.ajax({
+            url: '/agent/list/json/level',
+            type: 'get',
+            success: function (res) {
+                level.html('');
+                level_search.append('<option value="0">全部层级</option>');
+                res.data.forEach(function (item) {
+                    level.append('<option value="' + item.level_id + '">' + item.level_name + '</option>');
+                })
+            }
+        })
+    }
+
+    function checkChannel(callback) {
+        $.ajax({
+            url: '/agent/list/what/pattern',
+            type: 'get',
+            success: function (res) {
+                callback(res)
+            }
+        })
+    };
+
+    function formatSearch() {
+        getLevel();
+        search_type.html('');
+        search_type.append('' +
+            '<option value="1">玩家ID</option>' +
+            '<option value="2">玩家昵称</option>' +
+            '<option value="3">代理姓名</option>');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+# -*- coding:utf-8 -*-
+from flask import render_template, jsonify, url_for
+from flask.globals import session, request, g, current_app
+from werkzeug.utils import redirect
+import time
+from zs_backend import SqlOperate
+from zs_backend.busi import busi
+from zs_backend.utils import erl
+from zs_backend.utils.common import login_require
+from zs_backend.utils import time_util
+from zs_backend.utils import upload_cdn
+from zs_backend.utils.channel_qry import *
+from zs_backend.utils.const import *
+from zs_backend import redis_conn
+from zs_backend.utils.common import md5, rand_list
+import json
+from zs_backend.utils.channel_qry import GameWeb, LogQry
+import base64
+import os
+import urllib
+
+STATUS_USE = 0  ## 状态 已使用
+STATUS_NOUSE = 1  ## 状态 未使用
+
+DECIMAL_OPEN = 0
+DECIMAL_CLOSE = 1
+
+@busi.route('/pay_channel_tj/init', methods=['GET'])
+@login_require
+def pay_channel_tj_init():
+    return render_template('pay_channel_tj.html')
+
+@busi.route('/pay_channel_tj/show', methods=['GET'])
+@login_require
+def pay_channel_tj_show():
+    # 获取参数
+    channel = session['select_channel']
+    begin_time = request.args.get('beginDate')
+    end_time = request.args.get('endDate')
+
+    start_date = time_util.formatDatestamp(begin_time)
+    end_date = time_util.formatDatestamp(end_time) + 86400
+
+    pc = {}
+    sql = 'select id, name from admin_pay_channel'
+    for idx, name in LogQry(channel).qry(sql):
+        pc[idx] = name
+    sql = 'select id, api_name from admin_online_payment'
+    for idx, name in LogQry(channel).qry(sql):
+        pc[idx] = name
+
+    datas = []
+    sql = '''
+        select pay_channel, FROM_UNIXTIME(time,'%%Y%%m%%d'), ifnull(sum(cost), 0)
+        from admin_recharge
+        where time >= %d
+        and time <= %d
+        and state = %d
+        group by pay_channel, FROM_UNIXTIME(time,'%%Y%%m%%d')
+    ''' % (start_date, end_date, PAY_STATE_SUCC)
+    for pid, date, money in LogQry(channel).qry(sql):
+        datas.append({
+            "pay_channel":pid,
+            "date":date,
+            "money":money
+            })
+
+    return jsonify(result = "ok", datas = datas, pay_channel = pc)
+
+@busi.route('/channel_list_valid', methods=['GET'])
+@login_require
+def get_pay_channel_list():
+    channel = session['select_channel']
+    sql = '''
+		select id, name, pay_type, receipt_type, config
+		from admin_pay_channel
+		where channel = %d
+		and status = %d
+	''' % (channel, STATUS_USE)
+    data = LogQry(channel).qry(sql)
+    return jsonify(datas=data)
+
+
+@busi.route('/pay_channel', methods=['GET'])
+@login_require
+def show_pay_channel():
+    """收款通道管理页面"""
+
+    html_str = """<span>支付类型：</span>
+    <select id="stype" name="stype">
+    <option value="-1">全部</option>
+    <option value="0">银行卡</option>
+    <option value="1">微信</option>
+    <option value="3">支付宝</option>
+    </select>"""
+
+    return render_template('pay_channel.html', html_str=[html_str])
+
+
+@busi.route('/pay_channel/list', methods=['GET'])
+@login_require
+def pay_channel_list():
+    """公司入款查询"""
+
+    # 获取参数
+    stype = int(request.args.get("stype"))
+    channel = session['select_channel']
+
+    # 处理参数
+    where = ''
+    if stype != -1:
+        where += 'WHERE receipt_type={}'.format(stype)
+
+    # 查询玩家层级
+    retrieve_sql = """SELECT id,member_level_name
+                      FROM admin_member_level
+                      WHERE channel_id=%s;""" % channel
+    ml = dict()
+    for line in LogQry(channel).qry(retrieve_sql):
+        ml[line[0]] = line[1]
+
+    # 查询公司入款数据
+    retrieve_sql = """SELECT id,name,player_lv,min_recharge,max_recharge,
+                              config,status,decimal_open,memo,receipt_type
+                      FROM admin_pay_channel
+                        %s;""" % where
+    data = LogQry(channel).qry(retrieve_sql)
+
+    # 处理数据
+    data_list = list()
+    for primary_id, name, player_lv, min_recharge, max_recharge, \
+        config, status, decimal_open, memo, \
+        receipt_type in data:
+        data_dict = dict()
+        config = json.loads(config)
+        data_dict['id'] = primary_id
+        data_dict['name'] = name
+        data_dict['player_lv'] = ",".join([ml[int(i)] for i in player_lv.split(",")])
+        data_dict['single_income'] = str(min_recharge) + ' - ' + str(max_recharge)
+        data_dict['receipt_bank'] = config.get('receipt_bank', '')
+        data_dict['receipt_name'] = config.get('receipt_name', '')
+        data_dict['receipt_account'] = config.get('receipt_account', '')
+        data_dict['status'] = u'启用' if status == 0 else u'停用'
+        data_dict['receipt_address'] = config.get('receipt_address', '')
+        data_dict['decimal_open'] = decimal_open
+        data_dict['min_recharge'] = min_recharge
+        data_dict['max_recharge'] = max_recharge
+        data_dict['memo'] = memo
+        data_dict['receipt_type'] = receipt_type
+        data_list.append(data_dict)
+
+    # 返回数据
+    return jsonify(result=1, data=data_list)
+
+
+@busi.route('/pay_channel/<re(".+"):operation>', methods=['GET'])
+@login_require
+def pay_channel_opt(operation):
+    if operation == "add":
+        return pay_channel_add()
+
+    if operation == "edit":
+        return pay_channel_edit()
+
+    if operation == "del":
+        return pay_channel_del()
+
+
+def pay_channel_add():
+    channel = session['select_channel']
+    name = request.args.get('name')
+    pay_type = int(request.args.get('pay_type', -1))
+    receipt_type = int(request.args.get('receipt_type'))
+    config = request.args.get("config")
+    min_recharge = int(request.args.get('min_recharge'))
+    max_recharge = int(request.args.get('max_recharge'))
+    decimal_open = int(request.args.get('decimal_open'))
+    memo = request.args.get('memo')
+    player_lv = request.args.get('player_lv')
+    status = int(request.args.get('status'))
+
+    sql = '''
+		select count(1)
+		from admin_pay_channel
+		where channel = %d 
+		and name = '%s'
+	''' % (channel, name)
+
+    count = LogQry(channel).qry(sql)[0][0]
+    if count > 0:
+        return jsonify(result="fail", error_msg="channel dup")
+
+    sql = '''
+		insert into admin_pay_channel
+			(channel, name, player_lv, min_recharge, max_recharge,
+			pay_type, receipt_type, config, status, decimal_open, 
+			memo)
+		values 
+			(%d, '%s', '%s', %d, %d,
+			%d, %d, '%s', %d, %d, 
+			'%s')
+	''' % (channel, name, player_lv, min_recharge, max_recharge,
+           pay_type, receipt_type, config, status, decimal_open,
+           memo
+           )
+    LogQry(channel).execute(sql)
+
+    return jsonify(result="ok")
+
+
+def pay_channel_edit():
+    channel = session['select_channel']
+    idx = int(request.args.get('id'))
+    name = request.args.get('name')
+    pay_type = int(request.args.get('pay_type', -1))
+    receipt_type = int(request.args.get('receipt_type'))
+    config = request.args.get("config")
+    min_recharge = int(request.args.get('min_recharge'))
+    max_recharge = int(request.args.get('max_recharge'))
+    decimal_open = int(request.args.get('decimal_open'))
+    memo = request.args.get('memo')
+    player_lv = request.args.get('player_lv')
+    status = request.args.get('status')
+
+    sql = '''
+		replace into admin_pay_channel
+			(channel, name, player_lv, min_recharge, max_recharge,
+			pay_type, receipt_type, config, status, decimal_open, 
+			memo, `id`)
+		values 
+			(%d, '%s', '%s', %d, %d,
+			%d, %d, '%s', %s, %d, 
+			'%s', %d)
+	''' % (channel, name, player_lv, min_recharge, max_recharge,
+           pay_type, receipt_type, config, status, decimal_open,
+           memo, idx
+           )
+    LogQry(channel).execute(sql)
+
+    return jsonify(result="ok")
+
+
+def pay_channel_del():
+    channel = session['select_channel']
+    idx = int(request.args.get('id'))
+
+    sql = '''
+		update admin_pay_channel
+		set status = %d
+		where channel = %d
+		and id = %d
+	''' % (STATUS_NOUSE, channel, idx)
+    LogQry(channel).execute(sql)
+
+    return jsonify(result="ok")
+
+
+@busi.route('/online/payment/create/update', methods=['POST'])
+@login_require
+def online_payment_create_update():
+    """创建/修改在线支付通道"""
+
+    # 获取参数
+    channel_id = session['select_channel']
+    pay_type = request.form.get('pay_type')
+    api_name = request.form.get('api_name')
+    api_id = request.form.get('api_id')
+    api_code = request.form.get('api_code')
+    api_url = request.form.get('api_url')
+    merchant_code = request.form.get('merchant_code')
+    md5_key = request.form.get('md5_key')
+    public_key = request.form.get('public_key')
+    private_key = request.form.get('private_key')
+    single_minimum = request.form.get('single_minimum')
+    single_highest = request.form.get('single_highest')
+    status = request.form.get('status')
+    apply_level = request.form.get('apply_level')
+    primary_id = request.form.get('id')
+
+    try:
+        int(single_minimum)
+        int(single_highest)
+    except ValueError as e:
+        return jsonify(result=0, msg=u'单笔最低、单笔最高和单日停用上限为整数纯数字！')
+
+    # 创建在线支付通道
+    if not primary_id:
+        # 存进数据库
+        create_sql = """INSERT INTO admin_online_payment (channel_id, pay_type, api_name, api_id, api_url,
+                                      api_code, merchant_code, md5_key, public_key, private_key, 
+                                      single_minimum, single_highest, status, apply_level)
+                        VALUES (%s,%s,'%s','%s','%s',
+                                '%s','%s','%s','%s','%s',
+                                %s,%s,%s,'%s');""" \
+                     % (channel_id, pay_type, api_name, api_id, api_url,
+                        api_code, merchant_code, md5_key, public_key, private_key,
+                        single_minimum, single_highest, status, apply_level)
+        LogQry(channel_id).execute(create_sql)
+
+        # 返回应答
+        return jsonify(result=1, msg=u'新建成功！')
+
+    # 修改在线支付通道
+    else:
+        # 存进数据库
+        update_sql = """UPDATE admin_online_payment 
+                        SET pay_type=%s,api_name='%s',api_url='%s',merchant_code='%s',md5_key='%s',
+                            public_key='%s',private_key='%s',single_minimum=%s,single_highest=%s,status=%s,
+                            apply_level='%s',api_id = '%s',api_code = '%s'
+                        WHERE id=%s;""" \
+                     % (pay_type, api_name, api_url, merchant_code, md5_key,
+                        public_key, private_key, single_minimum, single_highest, status,
+                        apply_level, api_id, api_code, primary_id)
+        LogQry(channel_id).execute(update_sql)
+
+        # 返回应答
+        return jsonify(result=1, msg=u'修改成功！')
+
+
+@busi.route('/online/payment/retrieve', methods=['GET'])
+@login_require
+def online_payment_retrieve():
+    """查询在线支付通道"""
+
+    # 获取参数
+    channel_id = session['select_channel']
+    pay_type = request.args.get('stype')
+
+    # 处理参数
+    pay_type_str = ''
+    if pay_type:
+        pay_type_str = ' AND pay_type in (%s)' % pay_type
+
+    # 获取对应渠道的玩家层级名称，并组织成字典
+    retrieve_sql = """
+        SELECT id,member_level_name 
+        FROM admin_member_level 
+        WHERE channel_id=%s;""" % channel_id
+    datas = LogQry(channel_id).qry(retrieve_sql)
+    member_dict = dict()
+    for num, name in datas:
+        member_dict[num] = name
+
+    # 从数据库获取数据
+    retrieve_sql = """
+        SELECT id,pay_type,api_name,api_url,merchant_code,
+            md5_key,public_key,private_key,single_minimum,single_highest,
+            stop_using_limit,status,apply_level,api_id,api_code
+        FROM admin_online_payment 
+        WHERE channel_id=%s
+            %s;""" % (channel_id, pay_type_str)
+    datas = LogQry(channel_id).qry(retrieve_sql)
+
+    # 处理数据
+    datas_list = list()
+    for data in datas:
+        data_dict = dict()
+        data_dict['id'] = data[0]
+        data_dict['pay_type'] = data[1]
+        data_dict['api_name'] = data[2]
+        data_dict['api_url'] = data[3]
+        data_dict['merchant_code'] = data[4]
+        data_dict['md5_key'] = data[5]
+        data_dict['public_key'] = data[6]
+        data_dict['private_key'] = data[7]
+        data_dict['single_minimum'] = data[8]
+        data_dict['single_highest'] = data[9]
+        data_dict['stop_using_limit'] = data[10]
+        data_dict['status'] = data[11]
+        data_dict['api_id'] = data[13]
+        data_dict['api_code'] = data[14]
+        data_dict['apply_level'] = ','.join([member_dict[int(i)] for i in data[12].split(',')]) if data[12] else ''
+        datas_list.append(data_dict)
+
+    # 返回数据
+    return jsonify(datas=datas_list)
+
+
+@busi.route('/online/payment/delete', methods=['DELETE'])
+@login_require
+def online_payment_delete():
+    """删除在线支付通道"""
+
+    # 获取参数
+    primary_id = request.form.get('id')
+
+    # 删除数据库中的数据
+    delete_sql = "update admin_online_payment set status = %d WHERE id=%s;" % (STATUS_NOUSE, primary_id)
+    LogQry(session['select_channel']).execute(delete_sql)
+
+    # 返回应答
+    return jsonify(result=1, msg=u'删除成功！')
+
+@busi.route('/pay_channel/qr_code/save', methods=['POST'])
+@login_require
+def paychannel_qrcode_save():
+    """保存收款二维码"""
+
+    # 获取参数
+    file = request.files.get('qr_code')
+    timestamp = request.form.get('timestamp')
+    channel = session['select_channel']
+
+    ## 查询渠道配置
+    h5_link_url = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel), "h5_link")
+    app_hot_url = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel), "hotup_url")
+    channle_name = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel), "name")
+
+    refresh_url = None
+    dest_path = None
+    ## 生成h5更新地址
+    if h5_link_url:
+        proto, rest = urllib.splittype(h5_link_url)
+        res, rest = urllib.splithost(rest)
+        base_url = "%s://%s" % (proto, res)
+        dest_path = "/%s_h5/admin_res/" % channle_name
+    elif app_hot_url:
+        proto, rest = urllib.splittype(app_hot_url)
+        res, rest = urllib.splithost(rest)
+        if proto:
+            base_url = "%s://%s" % (proto, res)
+        else:
+            base_url = app_hot_url
+        dest_path = "/%s_app/admin_res/" % (channle_name)
+
+    # 把二维码图片保存至本地
+    try:
+        file_name = file.filename
+        filename_ = os.path.join('zs_backend/static/imgcard/', file_name)
+        file.save(filename_)
+        ## 上传到cdn
+        url = upload_cdn.addOSS(channle_name, filename_, base_url, dest_path)
+
+        ## 删除文件
+        os.remove(filename_)
+        # 返回应答与数据
+        return jsonify(result=1, msg=u'上传成功！', file_name=url + file_name)
+    except BaseException, e:
+        print "uplaod...", e
+        return jsonify(result=0, msg=u'上传失败')

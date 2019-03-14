@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代理靓号设置</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        .refactor_content {
+            margin-bottom: 20px;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 10px !important;
+        }
+
+        .member_list {
+            padding: 15px 15px 0 15px;
+        }
+
+        table tr td, table tr th {
+            width: 33%;
+        }
+    </style>
+</head>
+
+<body>
+<div class="rule">
+    <p>靓号设置规则：</p>
+    <p>1、必须使用未绑定过游戏账号和未注册过游戏账号的手机号</p>
+    <p>2、靓号ID的区间为90000-100000之间，不能超出。</p>
+    <p>3、成功添加靓号后，代理即可直接使用手机号登录游戏。</p>
+</div>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="button" value="添加靓号">
+    </div>
+    <section class="member_new" hidden>
+        <p class="content_item">
+            <label>靓号</label>
+            <input class="PlayerID" type="text" placeholder="请输入靓号"/>
+        </p>
+        <p class="content_item">
+            <label>手机号</label>
+            <input class=" phone" type="text" placeholder="请输入手机号"/>
+        </p>
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="确定">
+    </section>
+    <section class="member_list">
+        <table id="table"></table>
+    </section>
+</main>
+<div hidden>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.luck_qry"), beginDate = False, endDate = False,
+    Channels=True, SelectChannel = SelectChannel, OThers = page.otherQry, QueryType = 3,
+    Method='get') }}
+    {% endautoescape %}
+</div>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+
+<script type="text/javascript">
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+    PlayerID = $member_new.find('.PlayerID');
+    phone = $member_new.find('.phone');
+    $submit = $member_new.find('.submit');
+
+    $('#table').bootstrapTable({
+        url: '/users/lucky/qry',
+        pagination: true,
+        pageSize: 100,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        responseHandler: getHandler,
+        columns:
+            [
+                {field: "id", title: "id", sortable: true},
+                {field: "nick", title: "昵称", sortable: true},
+                {field: "phone", title: "手机号", sortable: true},
+            ]
+    });
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total: 0,
+                data: []
+            };
+        } else {
+            return {
+                total: res.data.length,
+                data: res.data
+            };
+        }
+    };
+
+    $goNew.click(function () {
+        PlayerID.val('');
+        phone.val('');
+        if ($(this).val() == '添加靓号') {
+            $(this).val('返回列表');
+            $member_new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('添加靓号');
+            $member_new.hide();
+            $member_list.show();
+        }
+    })
+    $submit.click(function () {
+        $.ajax({
+            type: 'GET',
+            url: "/users/luck/add",
+            dataType: "json",
+            data: {
+                PlayerID: PlayerID.val(),
+                phone: phone.val(),
+            },
+            success: function (data) {
+                if (data.result == "ok") {
+                    parent.showAlert("增加靓号成功", 'success');
+                    setTimeout(function () {
+                        $goNew.val('添加靓号');
+                        $member_new.hide();
+                        $member_list.show();
+                        $('#table').bootstrapTable('refresh');
+                    }, 1e3)
+                } else {
+                    parent.showAlert("增加靓号失败");
+                }
+            },
+        });
+    })
+
+</script>
+</body>
+</html>

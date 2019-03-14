@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>调控操作日志</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        table tr{
+            display: flex;
+        }
+        table tr th,table tr td{
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.show_manipulate_log_data"), beginDate = page.beginDate, endDate =
+    page.endDate, SelectChannel = page.SelectChannel, QueryType = 1,
+    Channels=True, PT = False, PlayerID = False, Method='POST') }}
+    {% endautoescape %}
+</div>
+<table>
+    <thead>
+        <tr>
+            <th style="text-align:center;">操作账号</th>
+            <th style="text-align:center;">被操作类型</th>
+            <th style="text-align:center;">事件</th>
+            <th style="text-align:center;">时间</th>
+        </tr>
+    </thead>
+
+{% autoescape false %}
+    <tbody>
+        {% for line in page.list %}
+            <tr>
+                <td>{{ line[0] }}</td>
+                <td>{{ line[1] }}</td>
+                <td>{{ line[2] }}</td>
+                <td>{{ formatDateTime(line[3]) }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endautoescape %}
+</table>
+</body>
+</html>

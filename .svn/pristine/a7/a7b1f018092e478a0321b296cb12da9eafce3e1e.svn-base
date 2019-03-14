@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收款通道管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            /*display: flex;*/
+        }
+
+        table tr th, table tr td {
+            padding: 10px !important;
+            flex: 1;
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .refactor_content {
+            border-radius: 5px;
+            margin-bottom: 20px !important;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .refactor_content_double select, .refactor_content .refactor_content_double input {
+            height: 28px !important;
+            border: none !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .audit-tip, .item-number-exceed, .item-cost-percent, .item-cost-fix {
+            display: none;
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 6px;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .nav {
+            margin: 10px 10px;
+        }
+
+        .nav ul li {
+            float: left;
+            font-size: 12px;
+            width: 80px;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            float: left;
+            width: 80px;
+            text-align: center;
+            line-height: 30px;
+            border: 1px solid #ececec;
+            border-right: none;
+            color: #666666;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav ul li:last-child {
+            border: 1px solid #ececec;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav ul li:first-child {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .nav ul li.active-way {
+            background: #1890ff !important;
+            color: #fff;
+        }
+
+        .nav-type ul li {
+            border: none !important;
+        }
+
+        .active-type {
+            color: #1890ff !important;
+        }
+
+        .nav-way {
+            margin: 10px 15px;
+        }
+
+        .nav-type {
+            border-bottom: solid 1px #ededed;
+            padding-bottom: 5px;
+        }
+
+        .nav-type ul li {
+            font-size: 14px !important;
+        }
+
+        .content_top {
+            text-align: right;
+            padding: 15px !important;
+            position: relative;
+        }
+
+        .content_top .go_new {
+            /*position: absolute;*/
+            /*top: 17px;*/
+            /*right: 20px;*/
+            color: #fff;
+            background-color: #1e9fff;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .content_top .go_new:hover {
+            background-color: #47affd;
+        }
+
+        .refactor_content .content_item input[type=radio] {
+            display: inline-block;
+            width: 30px !important;
+            border: #000 1px solid !important;
+            height: 15px !important;
+            cursor: pointer;
+        }
+
+        .label-radio {
+            cursor: pointer;
+            border: none !important;
+            background: #fff !important;
+            text-align: left !important;
+            width: 100px !important;
+        }
+
+        .content_item .hierarchy {
+            padding: 3px 10px;
+            font-size: 13px;
+            background-color: #d2d2d2;
+            color: #fff;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            position: relative;
+            top: 2px;
+            cursor: pointer;
+            margin: 5px 5px;
+        }
+
+        .content_item .hierarchy-select {
+            background-color: #5FB878;
+        }
+
+        .member_level {
+            position: relative;
+            padding-left: 110px !important;
+        }
+
+        .member_level label {
+            position: absolute;
+            left: 0;
+            height: 100% !important;
+        }
+
+        .item-ali, .item-wx, .item-qq, .decimal-tip-item{
+            display: none;
+        }
+
+        body {
+            padding-bottom: 50px !important;
+        }
+
+        .refactor_content input[type=submit] {
+            margin: 0px 0 -18px 1% !important;
+        }
+
+        .status {
+            height: 40px;
+        }
+
+        #query_form input {
+            margin: 0 !important;
+        }
+
+        #query_form select {
+            border: 1px solid #e6e6e6 !important;
+            padding: 5px 5px;
+        }
+
+        .new {
+            padding-bottom: 30px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+        }
+
+        .type_company_income {
+            display: none;
+        }
+
+        input[type=file] {
+            display: inline-block;
+            width: auto !important;
+        }
+
+        #preview {
+            height: 40px;
+            position: absolute;
+            left: 460px;
+            top: 0;
+        }
+
+        #online_pay_table td {
+            max-width: 150px;
+            max-height: 70px;
+            overflow: hidden;
+            word-break: break-all;
+        }
+
+        input.file {
+            width: 60px !important;
+        }
+
+        input.file_val, input.img_output {
+            width: 500px !important;
+            margin-left: 20px !important;
+        }
+
+        .nav_online_pay,.nav_company_income {
+            padding: 20px;
+        }
+
+        .nav_online_pay span ,.nav_company_income span{
+            font-size: 12px;
+            border: solid #ededed 1px;
+            /*border-right: none;*/
+            padding: 7px 0;
+            box-sizing: border-box;
+            cursor: pointer;
+            width: 60px;
+            display: inline-block;
+            text-align: center;
+            margin: 0;
+        }
+
+        .nav_online_pay span.active, .nav_company_income span.active {
+            background: #1E9FFF;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<nav class="nav-sub">
+    <span class="nav-select">在线支付</span>
+    <span>公司入款</span>
+    <!--<span>客服充值</span>-->
+</nav>
+<main class="refactor_content">
+    <section class="type_online_pay">
+        <nav class="nav_online_pay">
+            <span class="active" value="1,2,3,4">全部</span>
+            <span value="1,2">微信</span>
+            <span value="3,4">支付宝</span>
+        </nav>
+        <div hidden>
+            {% autoescape false %}
+            {{ search_bar(url_for("busi.online_payment_retrieve"), beginDate=False, OThers = html_str,
+            QueryType=3,
+            Method='get') }}
+            {% endautoescape %}
+        </div>
+        <div class="content_top">
+            <span class="go_new">添加在线支付</span>
+        </div>
+        <section class="new">
+            <p class="content_item">
+                <label>支付类型</label>
+                <select class="pay_type" onchange="payment_method()">
+                    <option value="1"> 微信扫码支付</option>
+                    <option value="2">微信H5支付</option>
+                    <option value="3">支付宝扫码支付</option>
+                    <option value="4">支付宝H5支付</option>
+                </select>
+            </p>
+            <p class="content_item">
+                <label>通道名称</label>
+                <input class="api_name" type="text">
+            </p>
+            <p class="content_item">
+                <label>接口地址</label>
+                <input class="api_url" type="text">
+            </p>
+            <p class="content_item">
+                <label>APP ID</label>
+                <input class="api_id" type="text">
+            </p>
+            <p class="content_item">
+                <label>支付代码</label>
+                <input class="api_code" type="text">
+            </p>
+            <p class="content_item item_merchant_code">
+                <label>商户号</label>
+                <input class="merchant_code" type="text">
+            </p>
+            <p class="content_item" id="md5">
+                <label>MD5 KEY</label>
+                <input class="md5_key" type="text">
+            </p>
+            <p class="content_item keys">
+                <label>公钥</label>
+                <input class="public_key" type="text">
+            </p>
+            <p class="content_item keys">
+                <label>私钥</label>
+                <input class="private_key" type="text">
+            </p>
+            <p class="content_item">
+                <label>单笔最低</label>
+                <input class="single_minimum" type="text" placeholder="单位：元">
+            </p>
+            <p class="content_item">
+                <label>单笔最高</label>
+                <input class="single_highest" type="text" placeholder="单位：元">
+            </p>
+            <!--<p class="content_item">-->
+                <!--<label>当日停用上限</label>-->
+                <!--<input class="stop_using_limit" type="text" placeholder="单位：元">-->
+            <!--</p>-->
+            <p class="content_item status_online">
+                <label>状态</label>
+                <span class="switch_button" value="1"></span>
+            </p>
+            <p class="content_item member_level">
+                <label>适用层级</label>
+                <span class="hierarchy hierarchy-select">默认层级1</span>
+                <span class="hierarchy">默认层级2</span>
+                <span class="hierarchy">默认层级3</span>
+            </p>
+            <input class="btn btn-primary btn-sm submit_online_pay" type="submit" name="" value="确定">
+        </section>
+        <section class="member_list">
+            <table id="online_pay_table">
+            </table>
+        </section>
+    </section>
+    <section class="type_company_income">
+        <nav class="nav_company_income">
+            <span class="active" value="-1">全部</span>
+            <span value="0">银行卡</span>
+            <span value="1">微信</span>
+            <span value="3">支付宝</span>
+        </nav>
+        <div hidden>
+            {% autoescape false %}
+            {{ search_bar(url_for("busi.pay_channel_list"),beginDate = False,OThers=html_str,QueryType=1,Method='get') }}
+            {% endautoescape %}
+        </div>
+        <div class="content_top">
+            <span class="go_new">添加公司入款账号</span>
+        </div>
+        <section class="member_list">
+            <table id="company_income_table"></table>
+            <table hidden>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>通道名称</th>
+                    <th>适用层级</th>
+                    <th>单笔入款</th>
+                    <!--<th>玩家付款方式</th>-->
+                    <th>收款银行</th>
+                    <th>收款户名</th>
+                    <th>收款账号</th>
+                    <!--<th>手续费</th>-->
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+{#                {% for data in page.datas %}#}
+{#                    <tr>#}
+{#                        <td>{{ data[0] }}</td><!--编号-->#}
+{#                        <td>{{ data[1] }}</td><!--通道名称-->#}
+{#                        <td>{{ data[2] }}</td><!--适用层级-->#}
+{#                        <td>{{ data[3] }}-{{ data[4] }}</td><!--单笔入款-->#}
+{#                        <!--<td>{{ data[5] }}</td>&lt;!&ndash;玩家付款方式&ndash;&gt;-->#}
+{#                        <!--<td>{% if data[5] == 0 %}银行卡{% elif data[5] == 1 %}支付宝{% elif data[5] == 2 %}#}
+{#                            微信{% elif data[5] == 3 %}QQ{% endif %}-->#}
+{#                        </td>#}
+{#                        <td>{{ data[7].receipt_bank }}</td><!--收款银行-->#}
+{#                        <td>{{ data[7].receipt_name }}</td><!--收款户名-->#}
+{#                        <td>{{ data[7].receipt_account }}</td><!--收款账号-->#}
+{#                        <!--<td>{{ data[10] }}</td>&lt;!&ndash;手续费&ndash;&gt;-->#}
+{#                        <!--<td>{{ data[9] }}</td>&lt;!&ndash;状态&ndash;&gt;-->#}
+{#                        <td>{% if data[8] == 0 %}启用{% else %}停用{% endif %}</td>#}
+{#                        <td>#}
+{#                            <a class="edit" item_id="{{ data[0] }}" min_recharge="{{ data[3] }}"#}
+{#                               max_recharge="{{ data[4] }}" receipt_address="{{ data[7].receipt_address }}"#}
+{#                               decimal_open="{{ data[9] }}" memo="{{ data[10] }}">编辑</a>#}
+{#                            <a class="delete" item_id="{{ data[0] }}">删除</a>#}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+                </tbody>
+            </table>
+        </section>
+        <section class="new">
+            <p class="content_item">
+                <label>通道名称</label>
+                <input class="name" type="text" placeholder="如:VIP玩家专用转账通道(工商银行)" maxlength="20"/>
+            </p>
+            <p class="content_item">
+                <label>收款方式</label>
+                <input type="radio" id="radio0" value="0" checked name="transfer_account"/>
+                <label class="label-radio" for="radio0">银行卡</label>
+                <input type="radio" id="radio1" value="1" name="transfer_account"/>
+                <label class="label-radio" for="radio1">微信</label>
+                <input type="radio" id="radio3" value="3" name="transfer_account"/>
+                <label class="label-radio" for="radio3">支付宝</label>
+            </p>
+            <p class="content_item item-bank">
+                <label>入款银行</label>
+                <select class="receipt_bank">
+                    <option value="">请选择所属银行</option>
+                    <option value="中国银行">中国银行</option>
+                    <option value="工商银行">工商银行</option>
+                    <option value="农业银行">农业银行</option>
+                    <option value="建设银行">建设银行</option>
+                    <option value="邮政银行">邮政银行</option>
+                    <option value="招商银行">招商银行</option>
+                    <option value="民生银行">民生银行</option>
+                    <option value="交通银行">交通银行</option>
+                    <option value="广发银行">广发银行</option>
+                </select>
+            </p>
+            <p class="content_item">
+                <label>收款户名</label>
+                <input class="receipt_name" type="text"/>
+            </p>
+            <p class="content_item item-bank item-ali item-wx">
+                <label>收款账号</label>
+                <input class="receipt_account" type="text"/>
+            </p>
+            <p class="content_item item-ali item-wx item-qq">
+                <label>收款二维码</label>
+                <input class="file" type="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                       id="img_input" onchange="imgUpload(this,'img_input','.img_output')" style="width: 77px !important;"/>
+                <input class="img_output" type="text" placeholder="二维码尺寸150*150">
+                <!--<input class="btn btn-primary btn-sm upload_img" type="button" value="上传" style="width: 60px;">-->
+                <!--<img id="preview"/>-->
+            </p>
+            <p class="content_item item-bank">
+                <label>开户地址</label>
+                <input class="receipt_address" type="text" placeholder="请填写详细的开户地址，以防跨行转账无法到账"/>
+            </p>
+            <!--<p class="content_item">-->
+            <!--<label>入款手续费</label>-->
+            <!--<input class="commission" type="text" placeholder="% 每次入款，银行需要收取的手续费百分比，用于财务报表计算，如没有手续费请填 0"/>-->
+            <!--</p>-->
+            <p class="content_item">
+                <label>单笔最低</label>
+                <input class="min_recharge" type="text" placeholder="单笔最低金额"/>
+            </p>
+            <p class="content_item">
+                <label>单笔最高</label>
+                <input class="max_recharge" type="text" placeholder="单笔最高金额"/>
+            </p>
+            <p class="content_item">
+                <label>强制小数点</label>
+                <select class="decimal-select decimal_open">
+                    <option value="1">关闭小数点模式</option>
+                    <option value="0">开启小数点模式</option>
+                </select>
+                <label class="decimal-tip-item">提示文字</label>
+                <input class="memo decimal-tip-item" type="text" placeholder="请输入提示玩家的文字,20个字以内" style="width: 800px;"/>
+            </p>
+            <p class="content_item item-status">
+                <label>状态</label>
+                <span class="switch_button" value="1"></span>
+            </p>
+            <p class="content_item member_level">
+                <label>适用层级</label>
+                <span class="hierarchy hierarchy-select">默认层级1</span>
+                <span class="hierarchy">默认层级2</span>
+                <span class="hierarchy">默认层级3</span>
+            </p>
+            <input class="btn btn-primary btn-sm submit" type="submit" name="" value="确定">
+        </section>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class="btn btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class="btn btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+
+    var url = 'add';
+    var id = '';
+    var receipt_type = '1';
+    var player_lv = '';
+    var online_edit_id = '';
+    var timestamp = '';
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top .go_new');
+    $new = $('.new');
+    $member_list = $content.find('.member_list');
+    $goEedit = $member_list.find('table tr td .edit');
+    $goDelete = $member_list.find('table tr td .delete');
+    $submit = $new.find('.submit');
+    $item_bank = $new.find('.item-bank');
+    $item_ali = $new.find('.item-ali');
+    $item_wx = $new.find('.item-wx');
+    $item_qq = $new.find('.item-qq');
+    file = $new.find('.file');
+    $hierarchy = $new.find('.content_item .hierarchy');
+    $decimal_select = $new.find('.decimal-select');
+    $decimal_tip_item = $new.find('.decimal-tip-item');
+
+    $name = $new.find('.name');
+    $min_recharge = $new.find('.min_recharge');
+    $max_recharge = $new.find('.max_recharge');
+    $commission = $new.find('.commission');
+    $decimal_open = $new.find('.decimal_open');
+    $memo = $new.find('.memo');
+    $receipt_type = $new.find('.receipt_type');
+
+    $receipt_name = $new.find('.receipt_name');
+    $receipt_bank = $new.find('.receipt_bank');
+    $receipt_account = $new.find('.receipt_account');
+    $receipt_code = $new.find('.receipt_code');
+    $receipt_address = $new.find('.receipt_address');
+
+    $decimal_select.change(function () {
+        if ($(this).val() == '0') {
+            $decimal_tip_item.show();
+        } else {
+            $decimal_tip_item.hide();
+        }
+    })
+
+    $item_bank.show();
+    $('input[name=transfer_account]').click(function () {
+        var index = $(this).val();
+        $item_bank.hide();
+        $item_ali.hide();
+        $item_wx.hide();
+        $item_qq.hide();
+        switch (index) {
+            case '0':
+                $item_bank.show();
+                $receipt_bank.val('')
+                break;
+            case '1':
+                $item_wx.show();
+                break;
+            case '3':
+                $item_ali.show();
+                break;
+        }
+    })
+
+    $content.find('.nav-way ul li').click(function () {
+        $(this).siblings('li').removeClass('active-way');
+        $(this).addClass('active-way');
+    })
+    $content.find('.nav-type ul li').click(function () {
+        $(this).siblings('li').removeClass('active-type');
+        $(this).addClass('active-type');
+    })
+
+    $goNew.click(function () {
+        payment_method();
+        online_edit_id = '';
+        reset()
+        url = 'add';
+        id = '';
+        if ($(this).text() == '添加公司入款账号') {
+            $(this).text('返回公司入款账号');
+            $new.show();
+            $member_list.hide();
+        } else if ($(this).text() == '返回公司入款账号') {
+            $(this).text('添加公司入款账号');
+            $new.hide();
+            $member_list.show();
+        } else if ($(this).text() == '添加在线支付') {
+            $(this).text('返回在线支付');
+            $new.show();
+            $member_list.hide();
+        } else if ($(this).text() == '返回在线支付') {
+            $(this).text('添加在线支付');
+            $new.hide();
+            $member_list.show();
+        }
+        // $('.item-status').hide();
+
+        $('.hierarchy').removeClass('hierarchy-select')
+    })
+
+    $goEedit.click(function () {
+        $goNew.click();
+        // $('.item-status').show();
+        if ($(this).closest('tr').find('td').eq(7).text() == '停用') {
+            $('.item-status .switch_button').attr('value', 0)
+        } else {
+            $('.item-status .switch_button').attr('value', 1)
+        }
+        id = $(this).attr('item_id');
+        url = 'edit';
+        $name.val($(this).closest('tr').find('td').eq(1).text());
+        $receipt_bank.val($(this).closest('tr').find('td').eq(4).text());
+        $receipt_name.val($(this).closest('tr').find('td').eq(5).text());
+        $receipt_account.val($(this).closest('tr').find('td').eq(6).text());
+        $commission.val($(this).closest('tr').find('td').eq(7).text());
+        $min_recharge.val($(this).attr('min_recharge'));
+        $max_recharge.val($(this).attr('max_recharge'));
+        $receipt_address.val($(this).attr('receipt_address'));
+        $decimal_open.val($(this).attr('decimal_open'));
+        $decimal_tip_item.val($(this).attr('memo'));
+        if ($(this).attr('decimal_open') == '0') {
+            $decimal_tip_item.show()
+        } else {
+            $decimal_tip_item.hide()
+        }
+        $item_bank.hide()
+        $item_ali.hide()
+        $item_wx.hide()
+        $item_qq.hide()
+        var pay_type_text = $(this).closest('tr').find('td').eq(4).text()
+        if (pay_type_text == '支付宝') {
+            $('#radio3').prop("checked", true)
+            $item_ali.show()
+        } else if (pay_type_text == '微信') {
+            $('#radio1').prop("checked", true)
+            $item_wx.show()
+        } else {
+            $('#radio0').prop("checked", true)
+            $item_bank.show()
+        }
+
+        $('.hierarchy').removeClass('hierarchy-select')
+        menber_ = $(this).closest('tr').find('td').eq(2).text();
+        menber_.split(',').forEach(function (item) {
+            $('.hierarchy').each(function (idx, ite) {
+                if (item == $(ite).text()) {
+                    $(ite).addClass('hierarchy-select')
+                }
+            })
+        })
+
+    })
+
+    $goDelete.click(function () {
+        id = $(this).attr('item_id');
+        url = 'del';
+        showDelete(submit)
+    })
+
+    $submit.click(function () {
+        submit();
+    })
+
+    function submit() {
+        var config;
+        $('input[name=transfer_account]').each(function () {
+            if ($(this).is(':checked')) {
+                receipt_type = $(this).val();
+            }
+        })
+        switch (receipt_type) {
+            case'0':
+                config = {
+                    receipt_bank: $receipt_bank.val(),
+                    receipt_address: $receipt_address.val(),
+                    receipt_name: $receipt_name.val(),
+                    receipt_account: $receipt_account.val()
+                }
+                break;
+            case'1':
+                config = {
+                    receipt_bank: '微信',
+                    receipt_name: $receipt_name.val(),
+                    receipt_code: $receipt_code.val(),
+                    receipt_account: $receipt_account.val()
+                }
+                break;
+            case'3':
+                config = {
+                    receipt_bank: '支付宝',
+                    receipt_name: $receipt_name.val(),
+                    receipt_account: $receipt_account.val()
+                }
+                break;
+        }
+        config.file_name = $('.img_output').val();
+        player_lv = '';
+        $('.type_company_income .hierarchy-select').each(function () {
+            if (player_lv) {
+                player_lv += ',' + $(this).attr('item_id');
+            } else {
+                player_lv += $(this).attr('item_id');
+            }
+        })
+        if(!player_lv || !$name.val() || !$min_recharge.val() || !$max_recharge.val()){
+            showAlert('请输入完整');
+            return;
+        }
+        $.ajax({
+            url: '/pay_channel/' + url,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                name: $name.val(),
+                min_recharge: $min_recharge.val(),
+                max_recharge: $max_recharge.val(),
+                commission: $commission.val(),
+                decimal_open: $decimal_open.val(),
+                memo: $memo.val(),
+                // pay_type: pay_type,
+                receipt_type: receipt_type,
+                config: JSON.stringify(config),
+                id: id,
+                player_lv: player_lv,
+                status: ($('.item-status .switch_button').attr('value') == '1') ? '0' : '1',
+                file_name: $('.img_output').val(),
+            },
+            success: function (data) {
+                if (data.error == 'system_err') {
+                    showAlert('服务器忙，请稍后再试');
+                }
+                if (data.result == 'ok') {
+                    if (url == 'add') {
+                        showAlert('添加成功!', 'success');
+                    } else if (url == 'edit') {
+                        showAlert('编辑成功!', 'success');
+                    } else if (url == 'del') {
+                        showAlert('删除成功!', 'success');
+                    }
+                    setTimeout(function () {
+                        $('.nav-sub span:last').click()
+                        $('.nav_company_income span.active').click()
+                        // location.href = '{{ url_for("busi.show_pay_channel") }}';
+                    }, 1000)
+                }else{
+                    showAlert(data.error_msg)
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function reset() {
+        $name.val('');
+        $min_recharge.val('');
+        $max_recharge.val('');
+        $commission.val('');
+        $memo.val('');
+        $receipt_bank.val('');
+        $receipt_address.val('');
+        $receipt_name.val('');
+        $receipt_account.val('');
+        $decimal_open.val(1);
+        $('#radio0').prop("checked", true)
+        $item_ali.hide()
+        $item_wx.hide()
+        $item_qq.hide()
+        $decimal_tip_item.hide()
+        $item_bank.show();
+        $('.file').val('');
+        $('#preview').attr('src', '')
+    }
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 2000)
+    }
+
+    function showDelete(fn) {
+        $confirm = $('.refactor-confirm');
+        $confirm.fadeIn();
+        $confirm.find('.cancel').click(function () {
+            $confirm.fadeOut();
+        });
+        $confirm.find('.del').click(function () {
+            $confirm.fadeOut();
+            fn();
+        })
+    }
+
+    getMemberLevel();
+    $('#channel').change(function () {
+        getMemberLevel();
+    })
+
+    function getMemberLevel() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_json_name") }}',
+            type: 'GET',
+            dataType: 'json',
+            data: {},
+            success: function (res) {
+                $('.member_level').html('');
+                $('.member_level').append($('<label>适用层级</label>'))
+                res.datas.forEach(function (item) {
+                    $('.member_level').append($('<span class="hierarchy" item_id=' + item.id + '>' + item.name + '</span>'))
+                })
+
+                $new.find('.content_item .hierarchy').click(function () {
+                    if ($(this).hasClass('hierarchy-select')) {
+                        $(this).removeClass('hierarchy-select');
+                    } else {
+                        $(this).addClass('hierarchy-select');
+                    }
+                })
+
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    $('.content_item .switch_button').click(function () {
+        if ($(this).attr('value') == '1') {
+            $(this).attr('value', '0')
+        } else {
+            $(this).attr('value', '1')
+        }
+    })
+
+    // 支付方式选择事件
+    function payment_method() {
+        // if ($('.pay_type').val() == 1) {
+        //     $('#md5').show();
+        //     $('.keys').hide();
+        //     $('.public_key').val('');
+        //     $('.private_key').val('');
+        //     $('.item_merchant_code').show();
+        // }
+        // else {
+        //     $('#md5').hide();
+        //     $('.keys').show();
+        //     $('.md5_key').val('');
+        //     $('.item_merchant_code').hide();
+        // }
+    }
+
+    // function imgPreview(fileDom) {
+    //     do_up();
+    //
+    //     // if (window.FileReader) {
+    //     //     var reader = new FileReader();
+    //     // } else {
+    //     //     showAlert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
+    //     // }
+    //     // var file = fileDom.files[0];
+    //     // var imageType = /^image\//;
+    //     // if (!imageType.test(file.type)) {
+    //     //     alert("请选择图片！");
+    //     //     return;
+    //     // }
+    //     // reader.onload = function (e) {
+    //     //     upload_img(e.target.result)
+    //     // };
+    //     // reader.readAsDataURL(file);
+    // }
+</script>
+<script>
+
+    var stype = '1,2,3,4';
+    var stype_company = '-1';
+
+    nav_span = $('.nav-sub span');
+    main = $('main');
+    type_online_pay = main.find('.type_online_pay');
+    type_company_income = main.find('.type_company_income');
+    $new = main.find('.new');
+    $member_list = main.find('.member_list');
+    $goNew = $content.find('.content_top .go_new');
+
+    submit_online_pay = main.find('.submit_online_pay');
+    search_online_pay = main.find('.type_online_pay #query_form input[type=button]');
+
+    pay_type_online = main.find('.pay_type');
+    api_name = main.find('.api_name');
+    api_url = main.find('.api_url');
+    api_code = main.find('.api_code');
+    api_id = main.find('.api_id');
+    merchant_code = main.find('.merchant_code');
+    md5_key = main.find('.md5_key');
+    stop_using_limit = main.find('.stop_using_limit');
+    public_key = main.find('.public_key');
+    private_key = main.find('.private_key');
+    single_minimum = main.find('.single_minimum');
+    single_highest = main.find('.single_highest');
+    status_online = main.find('.status_online .switch_button');
+
+    nav_online_pay_span = $('.nav_online_pay span');
+
+    nav_online_pay_span.click(function () {
+        loadingShow(true);
+        nav_online_pay_span.removeClass('active');
+        $(this).addClass('active');
+        stype = $(this).attr('value');
+        $('#online_pay_table').bootstrapTable('refreshOptions', {
+            queryParams: {
+                channel: $('#channel').val(),
+                stype: stype,
+            },
+        });
+    })
+
+    nav_company_income = $('.nav_company_income span');
+    company_income_table = $('#company_income_table');
+
+    nav_company_income.click(function () {
+        loadingShow(true)
+        nav_company_income.removeClass('active');
+        $(this).addClass('active');
+        stype_company = $(this).attr('value');
+        company_income_table.bootstrapTable('refreshOptions', {
+            queryParams: {
+                stype: stype_company,
+            },
+        });
+    })
+
+    nav_span.click(function () {
+        nav_span.removeClass('nav-select');
+        $(this).addClass('nav-select');
+        $new.hide();
+        $member_list.show();
+        $('#preview').hide();
+        if (nav_span.index(this) == '0') {
+            type_online_pay.show();
+            type_company_income.hide();
+            $goNew.text('添加在线支付');
+        } else if (nav_span.index(this) == '1') {
+            type_online_pay.hide();
+            type_company_income.show();
+            $goNew.text('添加公司入款账号');
+        } else if (nav_span.index(this) == '2') {
+            type_online_pay.hide();
+            type_company_income.show();
+            $goNew.text('添加公司入款账号');
+        }
+    })
+
+    $goNew.click(function () {
+        empty()
+    })
+
+    submit_online_pay.click(function () {
+        player_lv = '';
+        $('.type_online_pay .hierarchy-select').each(function () {
+            if (player_lv) {
+                player_lv += ',' + $(this).attr('item_id');
+            } else {
+                player_lv += $(this).attr('item_id');
+            }
+        })
+
+        $.ajax({
+            url: '{{url_for("busi.online_payment_create_update")}}',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                pay_type: pay_type_online.val(),
+                api_name: api_name.val(),
+                api_url: api_url.val(),
+                api_id: api_id.val(),
+                api_code: api_code.val(),
+                merchant_code: merchant_code.val(),
+                md5_key: md5_key.val(),
+                stop_using_limit: stop_using_limit.val(),
+                public_key: public_key.val(),
+                private_key: private_key.val(),
+                single_minimum: single_minimum.val(),
+                single_highest: single_highest.val(),
+                status: status_online.attr('value') == 1 ? 0 : 1,
+                apply_level: player_lv,
+                id: online_edit_id,
+            },
+            success: function (data) {
+                if(data.error == 'system_err'){
+                    parent.window.showAlert('服务器忙，请稍后再试');
+                    return;
+                }
+                if (data.result == '1') {
+                    showAlert(data.msg, 'success');
+                    setTimeout(function () {
+                        $new.hide();
+                        $member_list.show();
+                        $('#online_pay_table').bootstrapTable('refreshOptions', {
+                            queryParams: {
+                                channel: $('#channel').val(),
+                                stype: stype,
+                            },
+                        });
+                    }, 1000)
+                } else {
+                    showAlert(data.msg);
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    })
+
+    window.operateEvents = {
+        'click #edit': function (e, value, row, index) {
+            edit_item(row);
+        },
+        'click #delete': function (e, value, row, index) {
+            delete_item(row.id)
+        },
+        //公司入款
+        'click #edit_': function (e, value, row, index) {
+            edit_item_(row);
+        },
+        'click #delete_': function (e, value, row, index) {
+            delete_item_(row)
+        },
+    }
+
+    company_income_new = $('.type_company_income .new');
+    company_income_list = $('.type_company_income .member_list');
+
+    function edit_item_(row){
+        url = 'edit';
+        id = row.id;
+        company_income_new.show();
+        company_income_list.hide();
+        company_income_new.find('.name').val(row.name);
+        company_income_new.find('.receipt_bank').val(row.receipt_bank);
+        company_income_new.find('.receipt_name').val(row.receipt_name);
+        company_income_new.find('.receipt_account').val(row.receipt_account);
+        company_income_new.find('.receipt_address').val(row.receipt_address);
+        company_income_new.find('.min_recharge').val(row.min_recharge);
+        company_income_new.find('.max_recharge').val(row.max_recharge);
+        company_income_new.find('.decimal_open').val(row.decimal_open);
+        company_income_new.find('.decimal-tip-item').val(row.memo);
+        if(row.status == '启用'){
+            company_income_new.find('.item-status .switch_button').attr('value','1')
+        }else{
+            company_income_new.find('.item-status .switch_button').attr('value','0')
+        }
+        if (row.decimal_open == '0') {
+            company_income_new.find('.decimal-tip-item').show()
+        } else {
+            company_income_new.find('.decimal-tip-item').hide()
+        }
+
+        $('.hierarchy').removeClass('hierarchy-select')
+        row.player_lv.split(',').forEach(function (item) {
+            $('.hierarchy').each(function (idx, ite) {
+                if (item == $(ite).text()) {
+                    $(ite).addClass('hierarchy-select')
+                }
+            })
+        })
+
+        company_income_new.find('.item-bank').hide()
+        company_income_new.find('.item-ali').hide()
+        company_income_new.find('.item-wx').hide()
+        if (row.receipt_type == '3') {
+            $('#radio3').prop("checked", true)
+            company_income_new.find('.item-ali').show()
+        } else if (row.receipt_type == '1') {
+            $('#radio1').prop("checked", true)
+            company_income_new.find('.item-wx').show()
+        } else {
+            $('#radio0').prop("checked", true)
+            company_income_new.find('.item-bank').show()
+        }
+
+        $('.type_company_income .content_top span').text('返回公司入款账号');
+
+    }
+
+    function delete_item_(row){
+        $.ajax({
+            url:'/pay_channel/del',
+            type:'get',
+            data:{
+                id:row.id
+            },
+            success:function (res) {
+                if(res.result == 'ok'){
+                    showAlert('删除成功','success');
+                    setTimeout(function () {
+                        company_income_table.bootstrapTable('refresh');
+                    },1000)
+                }
+            }
+        })
+    }
+
+    $('#online_pay_table').bootstrapTable({
+        url: '{{url_for("busi.online_payment_retrieve")}}',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: {
+            channel: $('#channel').val(),
+            stype: stype,
+        },//传递参数（*）
+        columns: [{
+            field: 'id',
+            title: '编号',
+        }, {
+            field: 'api_name',
+            title: '通道名称',
+        }, {
+            field: 'pay_type',
+            title: '支付类型',
+            formatter: get_pay_type
+        }, {
+            field: 'api_id',
+            title: 'APP ID',
+        }, {
+            field: 'api_url',
+            title: '接口地址',
+            formatter: getPreview
+        }, {
+            field: 'merchant_code',
+            title: '商户号',
+        }, {
+            field: 'md5_key',
+            title: 'MD5 KEY',
+            formatter: getPreview
+        }, {
+            field: 'public_key',
+            title: '公钥',
+            formatter: getPreview
+        }, {
+            field: 'private_key',
+            title: '私钥',
+            formatter: getPreview
+        }, {
+            field: 'single_minimum',
+            title: '单笔最低',
+            formatter: coin_format_no_color
+        }, {
+            field: 'single_highest',
+            title: '单笔最高',
+            formatter: coin_format_no_color
+        }, {
+            field: 'stop_using_limit',
+            title: '单日停用上限',
+            formatter: coin_format_no_color
+        }, {
+            field: 'status',
+            title: '状态',
+            formatter: get_status
+        }, {
+            field: 'apply_level',
+            title: '使用层级',
+        }, {
+            field: '',
+            title: '操作',
+            events: operateEvents,
+            formatter: operateFormatter
+        }]
+    });
+
+
+    company_income_table.bootstrapTable({
+        url: '{{url_for("busi.pay_channel_list")}}',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler_company,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: {
+            stype: stype_company,
+        },//传递参数（*）
+        columns: [{
+            field: 'id',
+            title: '编号',
+        }, {
+            field: 'name',
+            title: '通道名称',
+        }, {
+            field: 'player_lv',
+            title: '适用层级',
+        }, {
+            field: 'single_income',
+            title: '单笔入款',
+        }, {
+            field: 'receipt_bank',
+            title: '收款银行',
+        }, {
+            field: 'receipt_name',
+            title: '收款户名',
+        }, {
+            field: 'receipt_account',
+            title: '收款账号',
+        }, {
+            field: 'status',
+            title: '状态',
+        }, {
+            field: '',
+            title: '操作',
+            events: operateEvents,
+            formatter: operateFormatter_company
+        }]
+    });
+
+    function getPreview(value) {
+        return '<span title="' + value + '">' + value + '</span>'
+    }
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a id="edit">编辑</a><a id="delete">删除</a>'
+        ].join('');
+    }
+
+    function operateFormatter_company(value, row, index) {
+        return [
+            // '<a id="edit_">编辑</a><a id="delete_">删除</a>'
+            '<a id="edit_">编辑</a>'
+        ].join('');
+    }
+
+    function responseHandler(items) {
+        loadingShow(false)
+        if (items.result == '0') {
+            showAlert(items.msg);
+            return {
+                total: '',
+                data: [],
+            };
+        } else {
+            return {
+                total: items.datas.length,
+                data: items.datas
+            };
+        }
+    };
+
+    function responseHandler_company(items) {
+        loadingShow(false)
+        if (items.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试');
+        }else if (items.result == '0') {
+            showAlert(items.msg);
+            return {
+                total: '',
+                data: [],
+            };
+        } else {
+            return {
+                total: items.data.length,
+                data: items.data
+            };
+        }
+    };
+
+    search_online_pay.click(function () {
+        // $.ajax({
+        //     url: '{{url_for("busi.online_payment_retrieve")}}',
+        //     type: 'get',
+        //     dataType: 'json',
+        //     data: {
+        //         channel: $('#channel').val(),
+        //         stype: stype,
+        //     },
+        //     success: function (items) {
+        //         if (items.error == 'system_err') {
+        //             showAlert('服务器忙，请稍后再试')
+        //         } else {
+        //             gettable(items.datas);
+        //         }
+        //     },
+        //     error: function () {
+        //         showAlert("请求超时，请重试！")
+        //     }
+        // })
+    })
+    search_online_pay.click()
+
+    function edit_item(item) {
+        online_edit_id = item.id;
+        pay_type_online.val(item.pay_type)
+        api_name.val(item.api_name)
+        api_url.val(item.api_url)
+        api_code.val(item.api_code)
+        api_id.val(item.api_id)
+        merchant_code.val(item.merchant_code)
+        md5_key.val(item.md5_key)
+        stop_using_limit.val(item.stop_using_limit)
+        public_key.val(item.public_key)
+        private_key.val(item.private_key)
+        single_minimum.val(item.single_minimum)
+        single_highest.val(item.single_highest)
+
+        if (item.status == 1) {
+            status_online.attr('value', '0')
+        } else {
+            status_online.attr('value', '1')
+        }
+
+        $('.hierarchy').removeClass('hierarchy-select')
+        item.apply_level.split(',').forEach(function (item) {
+            $('.hierarchy').each(function (idx, ite) {
+                if (item == $(ite).text()) {
+                    $(ite).addClass('hierarchy-select')
+                }
+            })
+        })
+
+        $new.show();
+        $member_list.hide();
+        $goNew.text('返回在线支付');
+    }
+
+    function delete_item(id) {
+        $.ajax({
+            url: '{{url_for("busi.online_payment_delete")}}',
+            type: 'delete',
+            dataType: 'json',
+            data: {
+                id: id,
+            },
+            success: function (items) {
+                if (items.error == 'system_err') {
+                    showAlert('服务器忙，请稍后再试')
+                } else {
+                    if (items.result == '1') {
+                        showAlert(items.msg, 'success');
+                        setTimeout(function () {
+                            $new.hide();
+                            $member_list.show();
+                            $('#online_pay_table').bootstrapTable('refreshOptions', {
+                                queryParams: {
+                                    channel: $('#channel').val(),
+                                    stype: stype,
+                                },
+                            });
+                        }, 1000)
+                    } else {
+                        showAlert(items.msg);
+                    }
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function gettable(items) {
+        online_pay_table = $('#online_pay_table');
+        online_pay_table.html('');
+        online_pay_table.append('<tr>' +
+            '<th>编号</th>' +
+            '<th>通道名称</th>' +
+            '<th>支付类型</th>' +
+            '<th>APP ID</th>' +
+            '<th>接口地址</th>' +
+            '<th>商户号</th>' +
+            '<th>MD5 KEY</th>' +
+            '<th>公钥</th>' +
+            '<th>私钥</th>' +
+            '<th>单笔最低</th>' +
+            '<th>单笔最高</th>' +
+            '<th>单日停用上限</th>' +
+            '<th>状态</th>' +
+            '<th>使用层级</th>' +
+            '<th>操作</th>' +
+            '</tr>')
+        tbody = $('<tbody>')
+        items.forEach(function (item) {
+            tbody.append('<tr>' +
+                '<td class="id">' + item.id + '</td>' +
+                '<td>' + item.api_name + '</td>' +
+                '<td>' + get_pay_type(item.pay_type) + '</td>' +
+                '<td>' + item.api_id + '</td>' +
+                '<td>' + item.api_url + '</td>' +
+                '<td>' + item.merchant_code + '</td>' +
+                '<td title="' + item.md5_key + '">' + item.md5_key + '</td>' +
+                '<td title="' + item.public_key + '">' + item.public_key + '</td>' +
+                '<td title="' + item.private_key + '">' + item.private_key + '</td>' +
+                '<td>' + coin_format_no_color(item.single_minimum) + '</td>' +
+                '<td>' + coin_format_no_color(item.single_highest) + '</td>' +
+                '<td>' + coin_format_no_color(item.stop_using_limit) + '</td>' +
+                '<td>' + get_status(item.status) + '</td>' +
+                '<td>' + item.apply_level + '</td>' +
+                '<td><a class="edit_item" item=' + JSON.stringify(item) + '>编辑</a><a class="delete_item">删除</a></td></tr>')
+        })
+        tbody.appendTo(online_pay_table);
+        $new.hide();
+        $member_list.show();
+        $goNew.text('添加在线支付');
+
+        online_pay_table.find('.delete_item').click(function () {
+            delete_item($(this).closest('td').siblings('.id').text())
+        })
+        online_pay_table.find('.edit_item').click(function () {
+            edit_item($(this).attr('item'));
+            payment_method()
+        })
+    }
+
+    function empty() {
+        pay_type_online.val('1')
+        api_name.val('')
+        api_url.val('')
+        api_id.val('')
+        api_code.val('')
+        merchant_code.val('')
+        md5_key.val('')
+        stop_using_limit.val('')
+        public_key.val('')
+        private_key.val('')
+        single_minimum.val('')
+        single_highest.val('')
+        status_online.attr('value', '1')
+    }
+
+    function get_pay_type(pay_type) {
+        if (pay_type == 1) {
+            return '微信扫码'
+        } else if (pay_type == 2) {
+            return '微信H5'
+        } else if (pay_type == 3) {
+            return '支付宝扫码'
+        } else if (pay_type == 4) {
+            return '支付宝H5'
+        }
+    }
+
+    function get_status(status) {
+        if (status == '1') {
+            return '停用'
+        } else if (status == '0') {
+            return '启用'
+        }
+    }
+
+</script>
+</body>
+</html>

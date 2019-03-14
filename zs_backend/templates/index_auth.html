@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门列表查看</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style type="text/css">
+        .member_list {
+            padding: 10px;
+        }
+
+        .input_role {
+            margin: 50px 100px;
+            padding: 0;
+            width: 600px;
+            height: 300px;
+        }
+
+        .input_box, .parent_check {
+            width: 500px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .input_box div {
+            width: 150px;
+            float: left;
+            text-align: right;
+        }
+
+        .update, .delete {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .update:hover, .delete:hover {
+            color: blue;
+        }
+
+        table tr {
+            display: flex;
+        }
+
+        table tr td, table tr th {
+            flex: 1;
+        }
+
+        table tr td > div {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        table tr td > div a {
+            padding: 0 5px;
+        }
+
+        .check_box div {
+            width: 150px;
+            float: left;
+        }
+
+        .input_box div, .auth_logo {
+            width: 90px;
+            float: left;
+            text-align: right;
+        }
+
+        input[type='checkbox'], input[type='radio'] {
+            left: -1px;
+            top: 11px;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            width: 68px;
+            margin: 23px 0;
+        }
+
+        .content {
+            /*border:solid 1px #e6e6e6;*/
+        }
+
+        .content .content_top {
+            background: #f2f2f2;
+            padding: 5px 2px;
+            border-radius: 0px;
+        }
+
+        .content .content_item {
+            margin: 10px 10px;
+            border: 1px solid #e6e6e6;
+            padding: 0;
+        }
+
+        .content .content_item label {
+            margin: 0;
+            background: #FBFBFB;
+            width: 110px;
+            height: 38px;
+            border-right: 1px solid #e6e6e6;
+            font-size: 13px;
+            box-sizing: border-box;
+            text-align: center;
+            line-height: 38px;
+        }
+
+        .content .content_item input {
+            width: 90%;
+            border: none !important;
+            height: 100% !important;
+        }
+
+        .content .content_title {
+            font-size: 13px;
+            color: #666;
+            margin: 8px 0 0 20px;
+            display: inline-block;
+        }
+
+        .content .content_item input.radio {
+            cursor: pointer;
+            width: 13px;
+            display: inline-block;
+            position: relative;
+            top: 5px;
+            margin-left: 10px !important;
+        }
+
+        .content .content_item .radio:last-child {
+            margin-left: 100px !important;
+        }
+
+        .content .content_item:last-child label {
+            height: auto;
+        }
+
+        .content .content_item input[type='checkbox'] {
+            width: 13px !important;
+            height: 13px !important;
+            border: solid 1px #000 !important;
+            top: 0;
+        }
+
+        .content .content_item_last {
+            position: relative;
+        }
+
+        .content .content_item_last .span {
+            display: inline-block;
+            padding: 5px 0 5px 120px;
+        }
+
+        .content .content_item_last span {
+            display: block;
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .content .content_item_last label {
+            height: 100%;
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+        }
+
+        .content .content_item_last label span {
+            display: inline-block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn-primary {
+            margin-bottom: 10px !important;
+        }
+
+        select {
+            border: none !important;
+            height: 100% !important;
+        }
+
+        label {
+            font-weight: normal !important;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 10px !important;
+        }
+
+        table tr td a {
+            margin: 0 15px;
+        }
+    </style>
+</head>
+<body>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="button" value="添加权限组">
+    </div>
+    <section class="member_new" hidden>
+        <form action="{{ url_for('busi.add_role') }}" , method="post" id="add_form">
+            <div class="content">
+                <p class="content_item">
+                    <label>权限组名</label>
+                    <input type="text" placeholder="请输入权限组名" name="name" value="" required/>
+                </p>
+                <p class="content_item">
+                    <label>父权限组名</label>
+                    <select name="parent" id="parent">
+                        {% for parent_role in parents %}
+                        <option value="{{ parent_role.id }}">{{ parent_role.name }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+                <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+                <input class="btn btn-primary btn-sm" type="submit" name="" value="添加">
+            </div>
+        </form>
+    </section>
+    <section class="member_list">
+        <table class="table"></table>
+    </section>
+</main>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script type="text/javascript">
+    window.operateEvents = {
+        'click .delete': function (e, value, item) {
+            $.ajax({
+                url: '{{ url_for("busi.delete_role") }}',
+                type: 'DELETE',
+                data: JSON.stringify({role_id: item.role_id}),
+                contentType: 'application/json',
+                success: function (res) {
+                    parent.showAlert(res.errmsg,'success');
+                    $('.table').bootstrapTable('refresh')
+                }
+            });
+        }
+    }
+    $('.table').bootstrapTable({
+        url: '/roles/retrieve',
+        pagination: true,
+        pageSize: 100,
+        responseHandler: getHandler,
+        columns:
+            [
+                {field: "id", title: "id", sortable: true},
+                {field: "name", title: "权限组名", sortable: true},
+                {field: "parent_name", title: "父权限组名", sortable: true},
+                {field: "", title: "操作", events: operateEvents, formatter: getOperate},
+            ],
+    });
+
+    function getOperate(value, item) {
+        return '<a href="/roles/edit?role_id=' + item.id + '&parent_id=' + item.parent_id + '">修改</a><a class="delete">删除</a>';
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                data: []
+            };
+        } else {
+            return {
+                data: res.roles
+            };
+        }
+    };
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+
+    $goNew.click(function () {
+        if ($(this).val() == '添加权限组') {
+            $(this).val('返回权限列表');
+            $member_new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('添加权限组');
+            $member_new.hide();
+            $member_list.show();
+        }
+    })
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.get_role") }}'
+    });
+
+    $('#add_role').click(function () {
+        $('#add_form').show()
+    });
+
+</script>
+</body>
+</html>

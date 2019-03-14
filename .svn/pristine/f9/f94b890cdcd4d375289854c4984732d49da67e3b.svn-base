@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>调控全盘输赢</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+
+<body style="margin: 10px 15px" onload="load()">
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div class="rule">
+    <p>1、调控全盘输赢是指通过设置当前水池的金币数量来调控游戏房间内所有玩家的盈亏走势；</p>
+    <p>2、调控房间玩家赢钱就增加水池输入正数，调控玩家输钱就扣除水池输入负数；</p>
+    <p>3、水池太高，玩家会轻松赢走水池中的金币；水池太低（为负数），游戏杀率会变高导致玩家赢不了钱。请大家谨慎设置。</p>
+</div>
+<div>
+    {% autoescape false %}
+    {{ search_bar("/games/maniplate/fullhandicaper", beginDate = False, 
+        SelectChannel = page.channel, QueryType = 1,
+        OThers = page.other_qry)}}
+    {% endautoescape %}
+</div>
+<div><input type="text" id="subgame_hidden" name="subgame_hidden" value="{{page.subgame}}" hidden></div>
+<form action="" method="POST">
+    调整水池：<input type="text" id="water" name="water" value="">
+    <input type="button" onclick="set_water()" class="btn btn-primary btn-sm" value="设置"/>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th style="text-align:center;">
+                <!--<input class="btn btn-primary btn-sm"  type="button" onclick="checked_all(this)" value="全选">-->
+            </th>
+            <th style="text-align:center;">场次</th>
+            <th style="text-align:center;">在线人数</th>
+            <th style="text-align:center;">当日税收</th>
+            <th style="text-align:center;">机器人输赢</th>
+            <th style="text-align:center;">当前水池</th>
+            <th style="text-align:center;">累计调整水池</th>
+            <th style="text-align:center;">最后设置时间</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in page.datas %}
+            <tr>
+                <td><input type="checkbox" name="check" id="{{ item.room_type }}_{{ item.room_name }}"></td>
+                <td colspan=1>{{ item.room_name }}</td>
+                <td colspan=1>{{ item.online }}</td>
+                <td colspan=1>{{ item.pump }}</td>
+                <td colspan=1>{{ item.robot_win }}</td>
+                <td colspan=1>{{ item.water }}</td>
+                <td colspan=1>{{ item.accwater }}</td>
+                <td colspan=1>{{ formatDateTime(item.last_ctl_time) }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
+
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+function load() {
+    $("#channel").change(function(){
+        $.ajax({
+            type: 'POST',
+            url: "/games/maniplate/channel_game",
+            success: function(data) {
+                $("select[id=subgame]").empty();
+                for(var p in data){
+                    var option="<option value=\"" + p + "\">" + data[p] + "</option>"; 
+                    if ($('#subgame_hidden').val() == p) {
+                        var option="<option value=\"" + p + "\" selected>" + data[p] + "</option>"; 
+                    }
+                    $("select[id=subgame]").append(option);  
+                }
+            },
+            dataType: "json"
+        });
+    });
+
+    $('#channel').trigger("change");
+}
+
+function set_water() {
+    var checklist = get_checked();
+    if (checklist == "") {
+        alert("请选择需要修改的对象");
+        return false;
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "/games/maniplate/fullhandicaper_set",
+        data: {
+                "subgame":document.getElementById("subgame").value,
+                "water":document.getElementById("water").value,
+                "check":checklist
+            },
+        success: function(data) {
+            $('#query_btn').click();
+            alert("调整水池成功");
+        },
+        dataType: "json"
+    });
+}
+
+function get_checked(){
+    var check_str = "";
+    var checklist = document.getElementsByName('check');
+    for (var i = 0; i < checklist.length; i++) {
+        if (checklist[i].checked) {
+            check_str = check_str + checklist[i].id + ",";
+        }
+    }
+
+    return check_str;
+}
+
+// function checked_all(Obj) {
+//     if (Obj.value == "全选") {
+//         Obj.value = "反选";
+//         Checked = true;
+//     } else {
+//         Obj.value = "全选";
+//         Checked = false;
+//     }
+//     var CheckList = document.getElementsByName("check");
+//     for (var i = 0; i < CheckList.length; i++) {
+//         CheckList[i].checked = Checked;
+//     }
+// }
+</script>

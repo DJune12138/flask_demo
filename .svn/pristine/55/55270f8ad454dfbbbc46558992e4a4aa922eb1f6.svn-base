@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>充值订单详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <style>
+        .member_new .content_item .Wdate[disabled]{
+            width: calc(99% - 110px) !important;
+        }
+        /*.content_top{*/
+            /*float: right;*/
+            /*background: #fff !important;*/
+        /*}*/
+        #go_manage {
+            background: #ff571d !important;
+        }
+
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            /*display: flex;*/
+        }
+
+        table tr th, table tr td {
+            /*padding: 10px !important;*/
+            /*flex: 1;*/
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        table tr th {
+            height: 50px !important;
+        }
+
+        .refactor_content {
+            border-radius: 5px;
+            margin-bottom: 20px !important;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 6px;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+            font-size: 12px;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .nav {
+            margin: 10px 10px;
+        }
+
+        .nav ul li {
+            float: left;
+            font-size: 12px;
+            width: 80px;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            float: left;
+            width: 80px;
+            text-align: center;
+            line-height: 30px;
+            border: 1px solid #ececec;
+            border-right: none;
+            color: #666666;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav ul li:last-child {
+            border: 1px solid #ececec;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav ul li:first-child {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .nav ul li.active-way {
+            background: #1890ff !important;
+            color: #fff;
+        }
+
+        .nav-type ul li {
+            border: none !important;
+        }
+
+        .active-type {
+            color: #1890ff !important;
+        }
+
+        .nav-way {
+            margin: 10px 15px;
+        }
+
+        .nav-type {
+            border-bottom: solid 1px #ededed;
+            padding-bottom: 5px;
+        }
+
+        .nav-type ul li {
+            font-size: 14px !important;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+
+        .refactor_content .content_item input[type=radio] {
+            display: inline-block;
+            width: 30px !important;
+            border: #000 1px solid !important;
+            height: 15px !important;
+            cursor: pointer;
+        }
+
+        .label-radio {
+            cursor: pointer;
+            border: none !important;
+            background: #fff !important;
+            text-align: left !important;
+            width: 90px !important;
+        }
+
+        .content_item .hierarchy {
+            padding: 5px 10px;
+            height: 100%;
+            font-size: 13px;
+            background-color: #d2d2d2;
+            color: #fff;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            position: relative;
+            top: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .content_item .hierarchy-select {
+            background-color: #5FB878;
+        }
+
+        body {
+            padding-bottom: 50px !important;
+        }
+
+        .member_new {
+            padding-bottom: 30px;
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+
+        }
+
+        .item-manage {
+            display: none;
+        }
+
+        .total {
+            font-size: 14px;
+            text-align: center;
+            padding: 5px 0 15px 0;
+        }
+
+        .total p {
+            display: inline-block;
+        }
+
+        .total span {
+            /*background: green;*/
+            color: #fff;
+            padding: 0 5px;
+            margin: 0 5px;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+
+        tr td a.status {
+            color: #000 !important;
+        }
+
+        input.Wdate {
+            width: 155px !important;
+        }
+
+        /*.success_background {*/
+        /*background: #009688 !important;*/
+        /*}*/
+
+        /*.bg_red {*/
+        /*background: #233238 !important;*/
+        /*}*/
+
+        /*.wait_background {*/
+        /*background: #ff571d !important;*/
+        /*}*/
+
+        input.submit {
+            margin: 0px 0 -19px 1% !important;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_topup_order_detail"), beginDate = 7,
+    endDate = true, Channels=True, PT = False, SelectChannel = page.channel, PlayerID = page.player_id,
+    QueryType = 3,
+    OThers = page.OThers, Method='get', PrecisionSecond = True) }}
+    {% endautoescape %}
+</div>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="button" value="新建充值订单">
+    </div>
+    <section class="member_new">
+        <p class="content_item item-manage-disabled">
+            <label>玩家ID</label>
+            <input class="input player_id" type="text" placeholder="请输入玩家ID" name="name" value=""/>
+        </p>
+        <p class="content_item item-manage-disabled">
+            <label>玩家昵称</label>
+            <input class="nick disabled" type="text" disabled/>
+        </p>
+        <p class="content_item item-number item-manage-disabled item-pay-channel">
+            <label>通道名称</label>
+            <select class="select-number-exceed pay_channel input ">
+            </select>
+            <input class="disabled" type="text" disabled>
+        </p>
+        <p class="content_item item-number">
+            <label>付款方式</label>
+            <input class="pay_channel_type disabled" type="text" disabled/>
+        </p>
+        <p class="content_item item-number-exceed">
+            <label>收款银行</label>
+            <input class="pay_channel_bank disabled" type="text" disabled/>
+        </p>
+        <p class="content_item">
+            <label>收款户名</label>
+            <input class="pay_channel_name disabled" type="text" disabled/>
+        </p>
+        <p class="content_item">
+            <label>收款卡号</label>
+            <input class="pay_channel_card disabled" type="text" disabled/>
+        </p>
+        <p class="content_item item-manage-disabled">
+            <label>充值金额</label>
+            <input class="input money" type="text" placeholder="请输入充值金额" name="name" value=""/>
+        <p class="content_item item-manage-disabled">
+            <label>提交时间</label>
+            <input class="input Wdate request_time" type="text" placeholder="请选择提交时间" readonly=""
+                   onclick="WdatePicker({firstDayOfWeek:1, isShowClear:false, isShowOK:false, isShowToday:false, autoPickDate:true,dateFmt: 'yyyy-MM-dd HH:mm:ss'})">
+        </p>
+        <p class="content_item item-manage item-look">
+            <label>充值状态</label>
+            <input type="radio" id="radio1" value="0" checked name="transfer_account"/>
+            <label class="label-radio" for="radio1">成功</label>
+            <input type="radio" id="radio2" value="1" name="transfer_account"/>
+            <label class="label-radio" for="radio2">失败</label>
+        </p>
+        <p class="content_item item-manage">
+            <label>操作人</label>
+            <input class="input cost-fix disabled" type="text" value="{{ username }}" disabled/>
+        </p>
+        <p class="content_item item-memo">
+            <label>备注信息</label>
+            <input class="input memo" type="text" placeholder="" name="name" value=""/>
+        </p>
+        <p class="content_item item-cost-fix item-mew">
+            <label>申请人</label>
+            <input class="input cost-fix disabled request_pid" type="text" value="{{ username }}" disabled/>
+        </p>
+        <input class="btn btn-primary btn-sm submit item-look" type="submit" name="" value="提交充值订单">
+    </section>
+    <section class="member_list">
+        <div class="total">
+            <p class="num">本页订单<span class="bg_green">0</span>笔，</p>
+            <p class="success">成功<span class="bg_blue">0</span>笔，</p>
+            <p class="error">失败<span class="bg_black">0</span>笔，</p>
+            <p class="pending">待审<span class="bg_orange">0</span>笔，</p>
+            <p class="money">本页充值<span class="bg_green">0</span>元，</p>
+            <p class="success_money">成功<span class="bg_blue">0</span>元，</p>
+            <p class="error_money">失败<span class="bg_black">0</span>元，</p>
+            <p class="pending_money">待审<span class="bg_orange">0</span>元</p>
+        </div>
+        <div id="reportTableDiv">
+            <table id="reportTable"></table>
+        </div>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    formReport()
+
+    function formReport() {
+        var url = window.location.href.split('?');
+        if (url.length > 1) {
+            if (url[1].split('&')[0].split('=')[1] == 'report') {
+                data = url[1].split('&')[1].split('=')[1];
+                $('#beginDate').val(data + ' 0:00:00');
+                $('#endDate').val(data + ' 23:59:59');
+            }
+        }
+    }
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_list = $content.find('.member_list');
+    $new = $content.find('.member_new');
+    $submit = $new.find('.submit');
+
+    player_id = $new.find('.player_id');
+    nick = $new.find('input.nick');
+    pay_channel = $new.find('.pay_channel');
+    money = $new.find('.money');
+    request_time = $new.find('.request_time');
+    memo = $new.find('.memo');
+    pay_channel_type = $new.find('.pay_channel_type');
+
+    player_id.change(function () {
+        nick.val('')
+        $.ajax({
+            url: '/agent/list/json/nick',
+            type: 'get',
+            data: {
+                pid: player_id.val(),
+            },
+            success: function (res) {
+                ajaxCallback(res, function () {
+                    nick.val(res.data)
+                }, true)
+            }
+        })
+    })
+
+    $goNew.click(function () {
+        reset()
+        // url = 'add';
+        // id = '';
+        if ($(this).val() == '新建充值订单') {
+            $(this).val('返回充值订单');
+            $new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('新建充值订单');
+            $new.hide();
+            $member_list.show();
+        }
+        $('.item-memo').find('.input').removeClass('disabled');
+        $('.item-memo').find('.input').attr('disabled', false);
+        $('.item-manage-disabled').find('.input').removeClass('disabled')
+        $('.item-manage-disabled').find('.input').attr('disabled', false);
+        $('.item-look').show()
+        $('.item-manage').hide()
+
+        getChannelList();
+        $submit.val('提交充值订单');
+        $('.item-pay-channel select').show();
+        $('.item-pay-channel input').hide();
+    });
+
+    $submit.click(function () {
+        if ($('#radio1').prop("checked")) {
+            state = '1';
+        } else {
+            state = '2';
+        }
+        if ($(this).val() == '提交充值订单') {
+            submit();
+        } else {
+            update()
+        }
+    })
+
+    function submit() {
+        var pay_type;
+        if (pay_channel_type.val() == '银行卡') {
+            pay_type = '0';
+        } else if (pay_channel_type.val() == '支付宝') {
+            pay_type = '1';
+        } else if (pay_channel_type.val() == '微信') {
+            pay_type = '2';
+        } else if (pay_channel_type.val() == 'QQ') {
+            pay_type = '3';
+        }
+        $.ajax({
+            url: '/topup/menual_add',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                player_id: player_id.val(),
+                pay_channel: pay_channel.val(),
+                money: money.val() * 100,
+                pay_type: pay_type,
+                memo: memo.val(),
+                request_time: new Date(request_time.val()).getTime() / 1000,
+            },
+            success: function (res) {
+                if (res.result == 'ok') {
+                    showAlert('新建成功', 'success');
+                    setTimeout(function () {
+                        // location.href = '{{ url_for("busi.search_topup_order_detail") }}';
+                        $('.content_top input').val('新建充值订单');
+                        $new.hide();
+                        $member_list.show();
+                        $('#query_btn').click()
+                    }, 1000)
+                } else {
+                    showAlert('请输入完整');
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function update() {
+        $.ajax({
+            url: '/topup/review',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                orderno: orderno,
+                memo: memo.val(),
+                result: state,
+            },
+            success: function (res) {
+                if (res.result == 'ok') {
+                    showAlert('处理成功', 'success');
+                    setTimeout(function () {
+                        // location.href = '{{ url_for("busi.search_topup_order_detail") }}';
+                        $('.content_top input').val('新建充值订单');
+                        $new.hide();
+                        $member_list.show();
+                        $('#query_btn').click()
+                    }, 1000)
+                } else {
+                    showAlert(res.error);
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function reset() {
+        player_id.val('');
+        pay_channel.val('');
+        memo.val('');
+        money.val('');
+        request_time.val('');
+        $('.pay_channel_bank').val('');
+        $('.pay_channel_name').val('');
+        $('.pay_channel_card').val('');
+        $('.pay_channel_type').val('');
+        $('.item-manage').hide();
+        $('.item-mew').show();
+    }
+
+    function getChannelList() {
+        $.ajax({
+            url: '/channel_list_valid',
+            type: 'GET',
+            dataType: 'json',
+            data: {},
+            success: function (res) {
+                $('.pay_channel').html('');
+                res.datas.forEach(function (item, index) {
+                    re = JSON.parse(item[4])
+                    $('.pay_channel').append($('<option value="' + item[0] + '" receipt_bank="' + re.receipt_bank + '" receipt_address="' + re.receipt_address + '" receipt_name="' + re.receipt_name + '" receipt_account="' + re.receipt_account + '" pay_channel_type="' + item[2] + '">' + item[1] + '</option>'))
+                    if (index == 0) {
+                        $('.pay_channel_bank').val(re.receipt_bank);
+                        $('.pay_channel_name').val(re.receipt_name);
+                        $('.pay_channel_card').val(re.receipt_account);
+                        if (item[2] == 0) {
+                            $('.pay_channel_type').val('银行卡');
+                        } else if (item[2] == 1) {
+                            $('.pay_channel_type').val('支付宝');
+                        } else if (item[2] == 2) {
+                            $('.pay_channel_type').val('微信');
+                        } else if (item[2] == 3) {
+                            $('.pay_channel_type').val('QQ');
+                        }
+                    }
+                })
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    $('.pay_channel').change(function () {
+        var option = $(this).find('option:selected')
+        $('.pay_channel_bank').val(option.attr('receipt_bank'));
+        $('.pay_channel_name').val(option.attr('receipt_name'));
+        $('.pay_channel_card').val(option.attr('receipt_account'));
+        if (option.attr('pay_channel_type') == 0) {
+            $('.pay_channel_type').val('银行卡');
+        } else if (option.attr('pay_channel_type') == 1) {
+            $('.pay_channel_type').val('支付宝');
+        } else if (option.attr('pay_channel_type') == 2) {
+            $('.pay_channel_type').val('微信');
+        } else if (option.attr('pay_channel_type') == 3) {
+            $('.pay_channel_type').val('QQ');
+        }
+
+    })
+
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 2000)
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+
+        var orderno, state;
+        $member_list = $content.find('.member_list');
+        $new = $content.find('.member_new');
+        player_id = $new.find('.player_id');
+        pay_channel = $new.find('.pay_channel');
+        money = $new.find('.money');
+        request_time = $new.find('.request_time');
+        memo = $new.find('.memo');
+        pay_channel_type = $new.find('.pay_channel_type');
+
+        $('#reportTable').bootstrapTable({
+            url: "/games/users/datas",
+            method: 'get',
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+            striped: true,
+            pagination: true,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            dataField: 'data',
+            showPaginationSwitch: false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination: 'server',
+            showHeader: true,
+            buttonsAlign: "right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            silentSort: false,
+            queryParamsType: 'limit',
+            queryParams: queryParams,//传递参数（*）
+            columns:
+                [
+                    {field: "id", title: "玩家ID", align: "center", valign: "middle", formatter: pid_format},
+                    {field: "nick", title: "玩家昵称", align: "center", valign: "middle"},
+                    // {field: "account", title: "玩家账号", align: "center", valign: "middle"},
+                    {field: "vip", title: "玩家层级", align: "center", valign: "middle"},
+                    {field: "order_no", title: "充值单号", align: "center", valign: "middle"},
+                    {field: "pay_type", title: "充值类型", align: "center", valign: "middle", formatter: getPayType},
+                    {field: "pay_chanel", title: "充值通道", align: "center", valign: "middle"},
+                    {field: "pay_chanel_config", title: "充值通道配置", align: "center", valign: "middle", visible: false},
+                    {field: "cost", title: "充值金额", align: "center", valign: "middle", formatter: getMoney},
+                    {field: "coin", title: "金币数量", align: "center", valign: "middle", formatter: coin_format_no_color},
+                    {field: "request_time", title: "申请时间", align: "center", valign: "middle", formatter: getLocalTime},
+                    {field: "request_pid", title: "申请人", align: "center", valign: "middle"},
+                    {field: "state", title: "状态", align: "center", valign: "middle", formatter: getState},
+                    {field: "review_time", title: "审核时间", align: "center", valign: "middle", formatter: getLocalTime},
+                    {field: "review_pid", title: "审核人", align: "center", valign: "middle"},
+                    {field: "memo", title: "备注", align: "center", valign: "middle"},
+                    {
+                        field: "opt",
+                        title: "操作",
+                        align: "center",
+                        valign: "middle",
+                        events: operateEvents,
+                        formatter: operateFormatter
+                    },
+                ],
+
+        });
+
+        $('#query_btn').click(function () {
+            loadingShow(true);
+            setTimeout(function () {
+                var success_num = 0;
+                var error_num = 0;
+                var pending_num = 0;
+                $('.total .num span').text($('#reportTable').find('tr').length - 1 - $('tr.no-records-found').length);
+                $('#reportTable tr td .status').each(function () {
+                    if ($(this).text() == '成功') {
+                        success_num++;
+                    } else if ($(this).text() == '失败') {
+                        error_num++;
+                    } else if ($(this).text() == '待审核') {
+                        pending_num++;
+                    }
+                })
+                $('.total .success span').text(success_num);
+                $('.total .error span').text(error_num);
+                $('.total .pending span').text(pending_num);
+                var money_num = 0;
+                var success_money_num = 0;
+                var error_money_num = 0;
+                var pending_money_num = 0;
+                $('#reportTable tr td .money').each(function () {
+                    money_num += Number($(this).text())
+                    var status = $(this).closest('tr').find('.status').text();
+                    if (status == '成功') {
+                        success_money_num += Number($(this).text())
+                    } else if (status == '失败') {
+                        error_money_num += Number($(this).text())
+                    } else if (status == '待审核') {
+                        pending_money_num += Number($(this).text())
+                    }
+                })
+                $('.total .money span').text(money_num);
+                $('.total .success_money span').text(success_money_num);
+                $('.total .error_money span').text(error_money_num);
+                $('.total .pending_money span').text(pending_money_num);
+            }, 300)
+        })
+
+    });
+
+    function getMoney(money) {
+        return '<span class="money">' + money / 100 + '</span>'
+    }
+
+    function getPayType(payType) {
+        if (payType == '1') {
+            return '公司入款'
+        } else if (payType == '2') {
+            return '客服充值'
+        } else if (payType == '3') {
+            return '在线支付'
+        }
+    }
+
+    function getState(state) {
+        if (state == 0) {
+            return '<span class="status">待支付</span>'
+        } else if (state == 1) {
+            return '<span class="status">成功</span>'
+        } else if (state == 2) {
+            return '<span class="status">失败</span>'
+        } else if (state == 3) {
+            return '<span class="status">待审核</span>'
+        } else if (state == 4) {
+            return '<span class="status">锁定</span>'
+        }
+    }
+
+    function operateFormatter(value, row, index) {
+        if (row.payType == '3') {
+            return '-';
+        } else {
+            if (row.state == 3) {
+                return [
+                    '<input type="button" class="btn btn-primary btn-sm wait_background" id="go_manage" value="处理">',
+                ].join('');
+            } else {
+                return [
+                    '<input type="button" class="btn btn-primary btn-sm" id="go_look" value="查看">',
+                ].join('');
+            }
+        }
+
+    }
+
+    function goDetail(e, value, row, index) {
+        var pay_chanel_config = JSON.parse(row.pay_chanel_config);
+        $new.show();
+        $member_list.hide();
+        $('.item-mew').hide();
+        player_id.val(row.id)
+        money.val(Math.floor(row.cost)/100)
+        request_time.val(getLocalTime(row.request_time))
+        memo.val(row.memo)
+        $('.request_pid').val(row.request_pid)
+        $('.item-manage').show();
+        $('.submit').val('确认处理')
+        orderno = row.order_no;
+        $('.item-manage-disabled').find('.input').addClass('disabled');
+        $('.item-manage-disabled').find('.input').attr('disabled', true);
+        $('.content_top input').val('返回充值订单')
+        $('.pay_channel_bank').val(pay_chanel_config.receipt_bank);
+        $('.pay_channel_name').val(pay_chanel_config.receipt_name);
+        $('.pay_channel_card').val(pay_chanel_config.receipt_account);
+        $('.item-look').show();
+        $('.item-pay-channel select').hide();
+        $('.item-pay-channel input').show();
+        $('.item-pay-channel input').val(row.pay_chanel);
+        $('#radio1').prop("checked", true);
+    }
+
+    window.operateEvents = {
+        'click #go_manage': function (e, value, row, index) {
+            goDetail(e, value, row, index);
+            $.ajax({
+                url: '/recharge/order/lock',
+                type: 'get',
+                data: {
+                    orderid: row.order_no
+                }
+            })
+        },
+        'click #go_look': function (e, value, row, index) {
+            goDetail(e, value, row, index)
+            $('.item-look').hide()
+            $('.item-memo').find('.input').addClass('disabled');
+            $('.item-memo').find('.input').attr('disabled', true);
+        }
+
+    }
+
+    //得到查询的参数
+    function queryParams(params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            PlayerID: $("#PlayerID").val(),
+            channel: $("#channel").val(),
+            Account: $("#Account").val(),
+            beginDate: $("#beginDate").val(),
+            endDate: $("#endDate").val(),
+            type: $("#type").val(),
+            pay_state: $("#paystate").val(),
+        };
+        return temp;
+    };
+
+    //请求成功方法
+    function responseHandler(result) {
+        loadingShow(false)
+        if (result.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试')
+        }
+        var errcode = result.errcode;//在此做了错误代码的判断
+        if (errcode != 0) {
+            // alert("错误代码" + errcode);
+            return {
+                total: 0,
+                data: []
+            }
+        }
+        //如果没有错误则返回数据，渲染表格
+        return {
+            total: result.dataLength, //总页数,前面的key必须为"total"
+            data: result.rowDatas //行数据，前面的key要与之前设置的dataField的值一致.
+        };
+    };
+
+    $('#query_btn').click(function () {
+        $('#reportTable').bootstrapTable('refreshOptions', {pageNumber: 1});
+        $('#reportTable').bootstrapTable('refresh', {url: '/search/topup/detail'});
+    });
+    setTimeout(function () {
+        $('#query_btn').click()
+    }, 100)
+
+</script>
+</body>
+</html>

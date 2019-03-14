@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>数据走势概括</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<style type="text/css">
+    #reportTableDiv {
+        margin: 20px 0;
+    }
+
+    ul, li {
+        /*box-sizing: border-box;*/
+    }
+
+    .real-time {
+        width: 1300px;
+        overflow: hidden;
+        margin: 20px 10px;
+        padding: 0;
+
+    }
+
+    .today-real-time, .today-gold-amount, .proxy-point-change {
+        width: 300px;
+        height: 400px;
+        border: 2px solid blue;
+        border-radius: 50px;
+        margin-top: 20px;
+        float: left;
+        display: inline-block;
+        margin-left: 20px;
+    }
+
+    .today-real-time .today-real-title {
+        display: block;
+        margin-top: 0;
+        margin-bottom: 30px;
+        padding-top: 70px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .today-gold-amount .today-gold-title {
+        display: block;
+        margin-top: 0;
+        margin-bottom: 30px;
+        padding-top: 70px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .proxy-point-change .today-point-title {
+        display: block;
+        margin-top: 0;
+        margin-bottom: 30px;
+        padding-top: 70px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .today-data {
+        display: block;
+        margin: auto;
+        padding-left: 20px;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 600;
+        overflow: hidden;
+    }
+
+    .today-real-time span {
+        width: 150px;
+        height: 22px;
+        text-align: right;
+        display: block;
+    }
+
+    .a-link a:visited {
+        color: #f00;
+    }
+
+    .main-data {
+        margin: 50px auto;
+        width: 90%;
+        height: 350px;
+    }
+
+    .main-data .list {
+        margin: 20px auto;
+        width: 1000px;
+        position: relative;
+    }
+
+    .main-data .list li {
+        width: 200px;
+        padding: 20px 30px;
+        background: #f9f9f9;
+        border: solid 1px #dedede;
+        margin: 20px;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    .main-data .list > li {
+        float: left;
+        background: linear-gradient(to top, #9edcff, #effbff);
+        box-shadow: 10px 10px 10px rgba(51, 51, 51, .3);
+        /*background-image: url(/static/images/data_bg2.png);*/
+        /*background-repeat: no-repeat;*/
+        /*background-size: 100% 100%;*/
+        list-style: none;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .main-data .list > li p {
+
+        font-size: 14px;
+    }
+
+    .main-data .list > li p:first-child {
+        font-size: 25px;
+    }
+
+    .main-data .list > li img {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .main-data .list > li .span {
+        position: absolute;
+        right: -223px;
+        padding: 15px;
+        top: -23px;
+        z-index: 1;
+        border-radius: 5px;
+        background: #43a3db;
+        display: inline-block;
+        color: #fff;
+        width: 200px;
+        font-size: 12px;
+        display: none;
+    }
+
+    .main-data .list > li .span p {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .main-data .list > li .span::after {
+        content: '';
+        position: absolute;
+        top: 11px;
+        left: -10px;
+        width: 0;
+        height: 0;
+        border-top: 5px solid transparent;
+        border-right: 5px solid #43a3db;
+        border-bottom: 5px solid #43a3db;
+        border-left: 5px solid transparent;
+    }
+
+    .main-data .list_datail {
+        width: 250px;
+        margin: 20px;
+        position: absolute;
+        left: -15px;
+        top: 100px;
+        display: none;
+    }
+
+    .main-data .list_datail > li {
+        float: none;
+        width: 150px;
+        height: 80px;
+        padding: 15px 30px;
+        position: relative;
+        margin-top: 35px !important;
+    }
+
+    .main-data .list .list_datail > li p {
+
+        font-size: 12px;
+    }
+
+    .main-data .list .list_datail > li p:first-child {
+        font-size: 18px;
+    }
+
+    .main-data .list_datail b {
+        position: absolute;
+        top: -45px;
+        left: 64px;
+        font-size: 40px;
+    }
+
+    .new_data {
+        font-size: 12px;
+    }
+
+    .new_data ul {
+        overflow: hidden;
+        background: #f8f8f8;
+        padding: 40px 20px 15px 20px;
+        border: solid 1px #ededed;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    .new_data ul .ul-span {
+
+        position: absolute;
+        left: 23px;
+        top: 10px;
+        font-size: 14px;
+    }
+
+    .new_data ul li {
+        /*border: solid red 1px;*/
+        float: left;
+        position: relative;
+        padding-left: 50px;
+        margin-right: 50px;
+        cursor: pointer;
+    }
+
+    .new_data ul li img {
+        width: 40px;
+        height: 40px;
+        left: 0px;
+        position: absolute;
+    }
+
+    .new_data ul li p {
+        font-size: 18px;
+        color: #5b5f7d;
+        /*font-weight: 600;*/
+    }
+
+    .new_data ul li div {
+        position: absolute;
+        background: #00a0e9;
+        padding: 11px;
+        border-radius: 5px;
+        width: 150px;
+        top: -15px;
+        left: 110px;
+        display: none;
+        color: #fff;
+        height: 72px;
+        cursor: pointer;
+        z-index: 1;
+        text-align: justify;
+        word-break: break-all;
+    }
+
+    .new_data ul li .new_data_tip_long {
+        width: 300px;
+    }
+
+    .new_data ul li p:nth-child(2) {
+        font-size: 10px;
+        color: #98a5ba;
+        font-weight: 300;
+    }
+
+    .new_search {
+    }
+
+    .new_search .search {
+        /*text-align: right;*/
+    }
+
+    .new_chart {
+        font-size: 12px;
+    }
+
+    .new_chart .new_chart_top {
+        background: #f8f8f8;
+        padding: 15px 20px;
+        border-radius: 5px 5px 0 0;
+        border: #ddd solid 1px;
+        /*margin-top: 20px;*/
+        position: relative;
+    }
+
+    .new_chart .new_chart_top img {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .new_chart .new_chart_top img.bottom {
+        right: 40px;
+    }
+
+    .new_chart .new_chart_cont {
+        background: #ebf0f3;
+        padding: 20px;
+    }
+
+    .new_chart .new_chart_cont .new_chart_nav {
+        position: relative;
+        top: 4px;
+    }
+
+    .new_chart .new_chart_cont .new_chart_nav ul {
+        overflow: hidden;
+        margin: 0 20px;
+        display: inline-block;
+    }
+
+    .new_chart .new_chart_cont .new_chart_nav .avg {
+        display: inline-block;
+        font-size: 14px;
+        position: relative;
+        top: -10px;
+    }
+
+    .new_chart .new_chart_cont .new_chart_nav .avg .span_key {
+        color: orange;
+        padding: 0 5px;
+    }
+
+    .new_chart .new_chart_cont .new_chart_nav ul li {
+        float: left;
+        margin: 0 2px;
+        background: #71889f;
+        cursor: pointer;
+        padding: 5px 10px;
+        color: #fff;
+        border-radius: 5px 5px 0 0;
+        border: solid 1px #bdc9d3;
+        border-bottom: none;
+        user-select: none;
+    }
+
+    .select_nav {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    table {
+        border: solid 1px #dbdcde !important;
+    }
+
+    table th {
+        background: #ebf0f3 !important;
+    }
+
+    table tr:hover th {
+        background: #ebf0f3 !important;
+    }
+
+    table tr:hover td {
+        background: #fff !important;
+    }
+
+    table tr {
+        border-bottom: solid 1px #dbdcde !important;
+    }
+
+    table tr:last-child {
+        border-bottom: none !important;
+    }
+
+    table tr th {
+        border-right: solid 1px #dbdcde !important;
+    }
+
+    table tr th:last-child {
+        border-right: none !important;
+    }
+
+    table tr td {
+        border-right: solid 1px #dbdcde !important;
+    }
+
+    table tr td:last-child {
+        border-right: none !important;
+    }
+
+    .new_chart {
+        margin-bottom: 30px;
+    }
+
+    .new_chart_main {
+        background: #fff;
+    }
+
+    .new_chart_main .container {
+        width: 100%;
+        height: 400px;
+        padding: 20px;
+    }
+
+    .new_chart_main .table {
+        padding: 10px;
+        width: 100%;
+        height: 400px;
+        display: none;
+        margin: 0;
+    }
+
+    .new_chart_main .table table {
+        width: 100%;
+    }
+
+    .new_chart_main #container > div {
+
+        border-radius: 5px;
+    }
+
+    .table_switch img {
+        width: 20px;
+        height: 20px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+    }
+
+    .new_chart_top h4 {
+        font-size: 16px;
+    }
+
+    .new_chart_top div {
+        position: absolute;
+        right: 10px;
+        top: 40px;
+        width: 200px;
+        background: #00a0e9;
+        padding: 15px;
+        z-index: 1;
+        border-radius: 5px;
+        display: none;
+        color: #fff;
+    }
+
+    .new_chart_top div p {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 40%;
+    }
+
+    .new_chart_top div p:last-child {
+        margin-bottom: 0px;
+    }
+
+    .new_chart_top div p span {
+        display: inline-block;
+    }
+
+    .new_chart_top div p span:first-child {
+        font-weight: 600;
+        margin-right: 10px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .new_chart .new_chart_main .table {
+        overflow-y: auto;
+    }
+
+    .new_chart .new_chart_main .table table tr:nth-child(even) {
+        background: #fff;
+    }
+
+    .new_chart .new_chart_main .table table {
+        background: #fff;
+        width: 100%;
+        text-align: center !important;
+    }
+
+    .new_chart .new_chart_main .table table tr {
+        display: flex;
+    }
+
+    .new_chart .new_chart_main .table table tr th, .new_chart .new_chart_main .table table tr td {
+        text-align: center !important;
+        flex: 1;
+    }
+
+    .new_chart .new_chart_main .table table tr th, .new_chart .new_chart_main .table table tr td {
+        padding: 10px;
+    }
+
+    .new_chart .new_chart_main .table table tr:hover td {
+        background: #e6f7ff;
+    }
+</style>
+
+<body>
+<section class="new_search">
+    <div>
+        {% autoescape false %}
+        {{ search_bar(url_for("busi.search_daily_data"), beginDate = status_msg.beginDate, endDate =
+        status_msg.endDate,QueryType = 3,
+        Channels=True, PT = True, SelectChannel = status_msg.channel, PlayerID = False, Method='get') }}
+        {% endautoescape %}
+    </div>
+</section>
+<section class="new_data" hidden>
+    <ul>
+        <span class="ul-span">今日实时数据</span>
+        <li><img src="/static/images/nav1.png"/>
+            <p>注册人数</p>
+            <p id="rt_register_num" class="reg_count">0</p>
+            <!--<div>注册人数：今日注册的用户数</div>-->
+        </li>
+        <li><img src="/static/images/nav2.png"/>
+            <p>游戏人数</p>
+            <p id="rt_game_num" class="player_count">0</p>
+            <!--<div>游戏人数：今日登录过且进行了游戏的用户数</div>-->
+        </li>
+        <li><img src="/static/images/nav3.png"/>
+            <p>活跃人数</p>
+            <p id="rt_active_num" class="active_count">0</p>
+            <!--<div>活跃人数：今日登录过的用户数</div>-->
+        </li>
+        <li><img src="/static/images/nav4.png"/>
+            <p>充值人数</p>
+            <p class="recharge">0</p>
+            <!--<div>活跃人数：今日登录过的用户数</div>-->
+        </li>
+        <li><img src="/static/images/nav5.png"/>
+            <p>提现人数</p>
+            <p class="withdraw">0</p>
+            <!--<div>活跃人数：今日登录过的用户数</div>-->
+        </li>
+        <!--<li><img src="/static/images/nav5.png"/>-->
+        <!--<p>游戏盈亏</p>-->
+        <!--<p id="rt_profit">&#45;&#45;</p>-->
+        <!--<div class="new_data_tip_profit new_data_tip_long">游戏盈亏：游戏盈利+游戏抽水</div>-->
+        <!--</li>-->
+        <!--<li><img src="/static/images/nav8.png"/>-->
+        <!--<p>代理卖分与收分</p>-->
+        <!--<p id="rt_score">&#45;&#45;</p>-->
+        <!--<div class="new_data_tip_updown new_data_tip_long">代理卖分与收分：玩家代理卖分(0)-玩家代理收分(0)</div>-->
+        <!--</li>-->
+        <li><img src="/static/images/nav7.png"/>
+            <p>游戏金币存量</p>
+            <p id="rt_gold">0</p>
+            <div class="new_data_tip_coin new_data_tip_long">游戏金币存量：代理金币+玩家金币</div>
+            <!--</li>-->
+            <!--<li><img src="/static/images/nav6.png"/>-->
+            <!--<p>出入账</p>-->
+            <!--<p id="rt_revenue">&#45;&#45;</p>-->
+            <!--<div class="new_data_tip_inout new_data_tip_long">出入账：充值-提现</div>-->
+            <!--</li>-->
+    </ul>
+</section>
+<!--2、注册与活跃-->
+<sevtion class="new_chart">
+    <div class="new_chart_top">
+        <h4>注册与活跃</h4>
+        <img class="bottom" src="/static/images/bottom.png" alt="">
+        <img class="tip" src="/static/images/tip2.png" alt="">
+        <div>
+            <p><span>新增人数</span><span>当日新增加的注册玩家数量</span></p>
+            <p><span>活跃人数</span><span>当日登录的玩家数量，其中当日新增玩家带来的活跃以区别的颜色显示</span></p>
+            <p><span>游戏人数</span><span>当日活跃人数中有进行过游戏的人数</span></p>
+            <p><span>新增设备</span><span>当日新增加的设备量</span></p>
+        </div>
+    </div>
+    <div class="new_chart_cont">
+        <div class="new_chart_nav">
+            <ul>
+                <li class="select_nav">新增人数与设备</li>
+                <li>活跃人数</li>
+                <li>游戏人数</li>
+                <li>最高在线人数</li>
+            </ul>
+            <p class="avg avg2"><span class="span">新增人数平均值：</span><span class="span_key">0</span></p>
+            <p class="avg avg_double2"><span class="span">新增设备平均值：</span><span class="span_key">0</span></p>
+        </div>
+        <div class="new_chart_main">
+            <div id="container2" class="container"></div>
+            <div class="table table2">
+                <table></table>
+            </div>
+        </div>
+        <div class="table_switch">
+            <img class="img_chart" src="/static/images/table1.png" alt="">
+            <img class="img_table" src="/static/images/table4.png" alt="">
+        </div>
+    </div>
+</sevtion>
+<!--3、游戏收入-->
+<sevtion class="new_chart">
+    <div class="new_chart_top">
+        <h4>游戏收入</h4>
+        <img class="bottom" src="/static/images/bottom.png" alt="">
+        <img class="tip" src="/static/images/tip2.png" alt="">
+        <div>
+            <p><span>代理卖分与收分</span><span>当日玩家代理卖分和代理收分金额</span></p>
+            <p><span>游戏盈亏</span><span>当日游戏的总盈亏</span></p>
+            <p><span>游戏抽水</span><span>当日游戏的牌局抽水和赠送抽水金额</span></p>
+            <p><span>充值提现</span><span>当日玩家充值和提示金额</span></p>
+        </div>
+    </div>
+    <div class="new_chart_cont">
+        <div class="new_chart_nav">
+            <ul>
+                <li class="select_nav">代理卖分与收分</li>
+                <li>游戏盈亏</li>
+                <li>充值提现</li>
+                <li>活跃玩家人均充值和充值玩家人均充值</li>
+            </ul>
+            <p class="avg avg3"><span class="span">代理卖分平均值：</span><span class="span_key">0</span></p>
+            <p class="avg avg_double3"><span class="span">代理收分平均值：</span><span class="span_key">0</span></p>
+        </div>
+        <div class="new_chart_main">
+            <div id="container3" class="container"></div>
+            <div class="table table3">
+                <table></table>
+            </div>
+        </div>
+        <div class="table_switch">
+            <img class="img_chart" src="/static/images/table1.png" alt="">
+            <img class="img_table" src="/static/images/table4.png" alt="">
+        </div>
+    </div>
+</sevtion>
+<!--4、玩家留存-->
+<sevtion class="new_chart">
+    <div class="new_chart_top">
+        <h4>玩家留存</h4>
+        <img class="bottom" src="/static/images/bottom.png" alt="">
+        <img class="tip" src="/static/images/tip2.png" alt="">
+        <div>
+            <p><span>2日留存</span><span>当日注册的玩家在第2天登录的人数</span></p>
+            <p><span>3日留存</span><span>当日注册的玩家在第3天登录的人数</span></p>
+            <p><span>5日留存</span><span>当日注册的玩家在第5天登录的人数</span></p>
+            <p><span>7日留存</span><span>当日注册的玩家在第7天登录的人数</span></p>
+            <p><span>15日留存</span><span>当日注册的玩家在第15天登录的人数</span></p>
+            <p><span>30日留存</span><span>当日注册的玩家在第30天登录的人数</span></p>
+        </div>
+    </div>
+    <div class="new_chart_cont">
+        <div class="new_chart_nav">
+            <ul>
+                <li class="select_nav">2日留存</li>
+                <li>3日留存</li>
+                <li>7日留存</li>
+                <li>15日留存</li>
+                <li>30日留存</li>
+            </ul>
+            <p class="avg avg4"><span class="span">2日留存平均值：</span><span class="span_key">0</span></p>
+        </div>
+        <div class="new_chart_main">
+            <div id="container4" class="container"></div>
+            <div class="table table4">
+                <table></table>
+            </div>
+        </div>
+        <div class="table_switch">
+            <img class="img_chart" src="/static/images/table1.png" alt="">
+            <img class="img_table" src="/static/images/table4.png" alt="">
+        </div>
+    </div>
+</sevtion>
+<!--5、平均游戏时长与次数-->
+<sevtion class="new_chart">
+    <div class="new_chart_top">
+        <h4>平均游戏时长与次数</h4>
+        <img class="bottom" src="/static/images/bottom.png" alt="">
+        <img class="tip" src="/static/images/tip2.png" alt="">
+        <div>
+            <p><span>游戏时长</span><span>当日所有用户的人均游戏时长，单位分</span></p>
+            <p><span>登录次数</span><span>当日所有用户的人均登录次数</span></p>
+        </div>
+    </div>
+    <div class="new_chart_cont">
+        <div class="new_chart_nav">
+            <p class="avg avg5"><span class="span">游戏时长平均值：</span><span class="span_key">0</span>分钟 </p>
+            <p class="avg avg_double5" style="padding-left: 30px"><span class="span">  登录次数平均值：</span><span
+                    class="span_key">0</span></p>
+        </div>
+        <div class="new_chart_main">
+            <div id="container5" class="container"></div>
+            <div class="table table5">
+                <table></table>
+            </div>
+        </div>
+        <div class="table_switch">
+            <img class="img_chart" src="/static/images/table1.png" alt="">
+            <img class="img_table" src="/static/images/table4.png" alt="">
+        </div>
+    </div>
+</sevtion>
+<table id="table"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+<script>
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    self.setInterval("refresh()", 60000);
+    refresh();
+    new_data = $('.new_data');
+    active_count = new_data.find('.active_count');
+    player_count = new_data.find('.player_count');
+    recharge = new_data.find('.recharge');
+    reg_count_ = new_data.find('.reg_count');
+    withdraw_ = new_data.find('.withdraw');
+
+    function refresh() {
+        $.ajax({
+            url: '/player_tj',
+            type: 'get',
+            data: {
+                start_time: $('#beginDate').val(),
+                end_time: $('#endDate').val(),
+            },
+            success: function (res) {
+                active_count.text(res.active_count);
+                player_count.text(res.player_count);
+                recharge.text(res.recharge);
+                reg_count_.text(res.reg_count);
+                withdraw_.text(res.withdraw);
+            }
+        })
+        // $.ajax({
+        //     type: 'GET',
+        //     url: "/games/datas/rt",
+        //     dataType: "json",
+        //     success: function(data) {
+        //
+        //         $('#rt_register_num').text((data.reg_count) || '无数据');//注册人数
+        //         $('#rt_game_num').text((data.game_active_count) || '无数据');//游戏人数
+        //         $('#rt_active_num').text((data.active_count) || '无数据');//活跃人数
+        //         $('#rt_online_num').text((data.onlinenum) || '无数据');//在线人数
+        //
+        //         $('#rt_profit').text(coin_format_no_color((data.stake - data.output)) || '无数据');//游戏盈亏
+        //         $('#rt_score').text(coin_format_no_color((data.agent_sell - data.agent_buy)) || '无数据');//代理卖分与收分
+        //         $('#rt_gold').text(coin_format_no_color((data.player_coin + data.agent_coin)) || '无数据');//游戏金币存量
+        //         $('#rt_revenue').text(coin_format_no_color((data.recharge - data.withdraw)) || '无数据');//出入账
+        //
+        //         $('.new_data ul li .new_data_tip_profit').text('游戏盈亏：玩家押注('+(data.stake || '0')+')-玩家产出('+(data.output || '0')+')')
+        //         $('.new_data ul li .new_data_tip_inout').text('出入账：充值('+(data.recharge || '0')+')-提现('+(data.withdraw || '0')+')')
+        //         $('.new_data ul li .new_data_tip_coin').text('游戏金币存量：玩家金币('+(data.player_coin || '0')+')+代理金币('+(data.agent_coin || '0')+')')
+        //         $('.new_data ul li .new_data_tip_updown').text('代理卖分与收分：玩家代理卖分('+(data.agent_sell || '0')+')-玩家代理收分('+(data.agent_buy || '0')+')')
+        //     }
+        // });
+    }
+
+    $('#table').bootstrapTable({
+        url: '/search/daily/datas',
+        pagination: true,
+        pageSize: 100,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('beginDate', 'endDate')
+        },
+        columns:
+            [
+                {field: "date_text", title: "查询日期", sortable: true},
+                {field: "reg_count", title: "注册人数", sortable: true},
+                {field: "active_count", title: "活跃人数",},
+                {field: "login_count", title: "登陆次数",},
+                {field: "recharge_count", title: "充值人数",},
+                {field: "bankrupt_player_count", title: "日破产人数"},
+                {field: "bankrupt_count", title: "日破产次数"},
+                {field: "total_recharge", title: "充值总额"},
+                {field: "game_win", title: "游戏总盈亏", sortable: true, formatter: coin_format},
+                {field: "pump", title: "游戏抽水额", sortable: true, formatter: coin_format_no_color},
+                {field: "recharge_coin", title: "充值产出金币", sortable: true},
+                {field: "withdraw", title: "提现总额", sortable: true},
+                {field: "active_arpu", title: "活跃玩家人均充值", sortable: true},
+                {field: "active_arppu", title: "活跃ARPPU", sortable: true},
+                {field: "day2", title: "2日留存", sortable: true},
+                {field: "day3", title: "3日留存", sortable: true},
+                {field: "day7", title: "7日留存", sortable: true},
+                {field: "day15", title: "15日留存", sortable: true},
+                {field: "day30", title: "30日留存", sortable: true},
+                {field: "avg_online_time", title: "日人均在线时长", sortable: true},
+                {field: "max_online_num", title: "最高在线人数", sortable: true},
+                // {field:"operate",title:"操作",sortable:true},
+            ],
+        // data:[
+        // {% for data in datas %}
+        //     {
+        //         date_text:"{{ data.date_text }}",
+        //         os:"{{ data.os }}",
+        //         reg_count:{{ data.reg_count }},
+        //         active_count:{{ data.active_count }},
+        //         login_count:{{ data.login_count }},
+        //         recharge_count:{{ data.recharge_count }},
+        //         bankrupt_player_count:{{ data.bankrupt_player_count }},
+        //         bankrupt_count:{{ data.bankrupt_count }},
+        //         total_recharge:{{ data.total_recharge }},
+        //         game_win:{{ data.game_win }},
+        //         pump:{{ data.pump }},
+        //         recharge_coin:{{ data.recharge_coin }},
+        //         withdraw:{{ data.withdraw }},
+        //         active_arpu:{{ data.active_arpu }},
+        //         active_arppu:{{ data.active_arppu }},
+        //         day2:{{ data.day2 }},
+        //         day3:{{ data.day3 }},
+        //         day7:{{ data.day7 }},
+        //         day15:{{ data.day15 }},
+        //         day30:{{ data.day30 }},
+        //         avg_online_time:{{ data.avg_online_time }},
+        //         max_online_num:{{ data.max_online_num }},
+        //         // operate: '<a href="{{ url_for('busi.search_daily_data_detail') }}?beginDate={{ data.date_text }}&channel={{ status_msg.channel }}">查看详情</a>',
+        //     },
+        // {% endfor %}
+        // ]
+    });
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                data: []
+            };
+        } else {
+            queryData(res.data);
+            return {
+                data: res.data
+            };
+        }
+    };
+
+    $('.main-data .list li .span').hide();
+    $('.main-data .list li img').mouseenter(function () {
+        $(this).next().fadeIn()
+    })
+    $('.main-data .list li img').mouseleave(function () {
+        $(this).next().fadeOut()
+    })
+
+    $('.new_data_tip ul li').eq(2).show()
+    $('.new_chart .new_chart_cont .table_switch .img_chart').click(function () {
+        $(this).closest('.new_chart_cont').find('.container').show();
+        $(this).closest('.new_chart_cont').find('.table').hide();
+        $(this).attr('src', '/static/images/table1.png')
+        $(this).siblings('.img_table').attr('src', '/static/images/table4.png')
+    })
+    $('.new_chart .new_chart_cont .table_switch .img_table').click(function () {
+        $(this).closest('.new_chart_cont').find('.container').hide();
+        $(this).closest('.new_chart_cont').find('.table').show();
+        $(this).attr('src', '/static/images/table3.png')
+        $(this).siblings('.img_chart').attr('src', '/static/images/table2.png')
+    })
+    $('.new_chart .new_chart_top .tip').mouseover(function () {
+        $(this).siblings('div').show()
+    })
+    $('.new_chart .new_chart_top .tip').mouseleave(function () {
+        $(this).siblings('div').hide()
+    })
+    $('.new_chart .new_chart_cont .new_chart_nav ul li').click(function () {
+        title = $(this).closest('.new_chart').find('h4').text();
+        $(this).closest('ul').find('li').removeClass('select_nav');
+        $(this).addClass('select_nav')
+        index = $(this).closest('ul').find('li').index(this);
+        switch (title) {
+            case '注册与活跃':
+                $('.avg_double2').hide();
+                if (index == 0) {
+                    $('.avg_double2').show();
+                    $('.avg2 .span').text('新增人数平均值：');
+                    $('.avg_double2 .span').text('新增设备平均值：');
+                    $('.avg2 .span_key').text(getArrayAverage(reg_count));
+                    $('.avg_double2 .span_key').text(getArrayAverage(new_device));
+                    newChart('container2', [{name: '新增人数', data: reg_count}, {
+                        name: '新增设备',
+                        data: new_device,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table2', {name: '查询日期', data: date_text}, {name: '新增人数', data: reg_count}, {
+                        name: '新增设备',
+                        data: new_device
+                    })
+                } else if (index == 1) {
+                    $('.avg_double2').show();
+                    $('.avg2 .span').text('活跃人数平均值：');
+                    $('.avg_double2 .span').text('新用户人数平均值：');
+                    $('.avg2 .span_key').text(getArrayAverage(active_count_old));
+                    $('.avg_double2 .span_key').text(getArrayAverage(active_count_new));
+                    newChart('container2', [{name: '活跃人数', data: active_count_old}, {
+                        name: '新用户人数',
+                        data: active_count_new,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table2', {name: '查询日期', data: date_text}, {
+                        name: '活跃人数',
+                        data: active_count_old
+                    }, {name: '新用户人数', data: active_count_new})
+                } else if (index == 2) {
+                    $('.avg_double2').show();
+                    $('.avg2 .span').text('游戏人数平均值：');
+                    $('.avg_double2 .span').text('活跃人数平均值：');
+                    $('.avg2 .span_key').text(getArrayAverage(game_active_count));
+                    $('.avg_double2 .span_key').text(getArrayAverage(active_count_old));
+                    newChart('container2', [{name: '活跃人数', data: active_count_old}, {
+                        name: '游戏人数',
+                        data: game_active_count,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table2', {name: '查询日期', data: date_text}, {
+                        name: '游戏人数',
+                        data: game_active_count
+                    }, {name: '活跃人数', data: active_count_old})
+                } else if (index == 3) {
+                    $('.avg2 .span').text('最高在线人数平均值：');
+                    $('.avg2 .span_key').text(getArrayAverage(max_online_num));
+                    newChart('container2', [{name: '最高在线人数', data: max_online_num}])
+                    newTable('.table2', {name: '查询日期', data: date_text}, {name: '最高在线人数', data: max_online_num})
+                }
+                break
+            case '游戏收入':
+                $('.avg_double3').hide();
+                if (index == 0) {
+                    $('.avg_double3').show();
+                    $('.avg3 .span').text('代理卖分平均值：');
+                    $('.avg3 .span_key').text(getArrayAverage(give_coin_a2p))
+                    $('.avg_double3 .span').text('代理收分平均值：');
+                    $('.avg_double3 .span_key').text(getArrayAverage(give_coin_p2a))
+                    newChart('container3', [{name: '代理卖分', data: give_coin_a2p}, {
+                        name: '代理收分',
+                        data: give_coin_p2a,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table3', {name: '查询日期', data: date_text}, {
+                        name: '代理卖分',
+                        data: give_coin_a2p
+                    }, {name: '代理收分', data: give_coin_p2a})
+                } else if (index == 1) {
+                    $('.avg_double3').show();
+                    $('.avg3 .span').text('游戏盈亏平均值：');
+                    $('.avg_double3 .span').text('游戏抽水平均值：');
+                    $('.avg3 .span_key').text(getArrayAverage(game_win));
+                    $('.avg_double3 .span_key').text(getArrayAverage(pump))
+                    newChart('container3', [{name: '游戏盈亏', data: game_win}, {
+                        name: '游戏抽水',
+                        data: pump,
+                        yAxis: 1,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table3', {name: '查询日期', data: date_text}, {name: '游戏盈亏', data: game_win}, {
+                        name: '游戏抽水',
+                        data: pump
+                    })
+                } else if (index == 2) {
+                    $('.avg_double3').show();
+                    $('.avg3 .span').text('充值平均值：');
+                    $('.avg3 .span_key').text(getArrayAverage(total_recharge));
+                    $('.avg_double3 .span').text('提现平均值：');
+                    $('.avg_double3 .span_key').text(getArrayAverage(withdraw));
+                    newChart('container3', [{name: '充值', data: total_recharge}, {
+                        name: '提现',
+                        data: withdraw,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table3', {name: '查询日期', data: date_text}, {
+                        name: '充值',
+                        data: total_recharge
+                    }, {name: '提现', data: withdraw})
+                } else if (index == 3) {
+                    $('.avg_double3').show();
+                    $('.avg3 .span').text('活跃玩家人均充值：');
+                    $('.avg3 .span_key').text(getArrayAverage(active_arpu))
+                    $('.avg_double3 .span').text('充值玩家人均充值：');
+                    $('.avg_double3 .span_key').text(getArrayAverage(active_arppu))
+                    newChart('container3', [{name: '活跃玩家人均充值', data: active_arpu}, {
+                        name: '充值玩家人均充值',
+                        data: active_arppu,
+                        color: '#efd07d'
+                    }])
+                    newTable('.table3', {name: '查询日期', data: date_text}, {
+                        name: '活跃玩家人均充值',
+                        data: active_arpu
+                    }, {name: '充值玩家人均充值', data: active_arppu})
+                }
+                break
+            case '玩家留存':
+                if (index == 0) {
+                    $('.avg4 .span').text('2日留存平均值：');
+                    $('.avg4 .span_key').text(getArrayAverage(day2) + '%');
+                    newChart('container4', [{name: '2日留存', data: day2, tooltip: {valueSuffix: '%'}},], '', '%')
+                    newTable('.table4', {name: '查询日期', data: date_text}, {name: '2日留存', data: day2_table})
+                } else if (index == 1) {
+                    $('.avg4 .span').text('3日留存平均值：');
+                    $('.avg4 .span_key').text(getArrayAverage(day3) + '%');
+                    newChart('container4', [{name: '3日留存', data: day3, tooltip: {valueSuffix: '%'}},], '', '%')
+                    newTable('.table4', {name: '查询日期', data: date_text}, {name: '3日留存', data: day3_table})
+                } else if (index == 2) {
+                    $('.avg4 .span').text('7日留存平均值：');
+                    $('.avg4 .span_key').text(getArrayAverage(day7) + '%');
+                    newChart('container4', [{name: '7日留存', data: day7, tooltip: {valueSuffix: '%'}},], '', '%')
+                    newTable('.table4', {name: '查询日期', data: date_text}, {name: '7日留存', data: day7_table})
+                } else if (index == 3) {
+                    $('.avg4 .span').text('15日留存平均值：');
+                    $('.avg4 .span_key').text(getArrayAverage(day15) + '%');
+                    newChart('container4', [{name: '15日留存', data: day15, tooltip: {valueSuffix: '%'}},], '', '%')
+                    newTable('.table4', {name: '查询日期', data: date_text}, {name: '15日留存', data: day15_table})
+                } else if (index == 4) {
+                    $('.avg4 .span').text('30日留存平均值：');
+                    $('.avg4 .span_key').text(getArrayAverage(day30) + '%');
+                    newChart('container4', [{name: '30日留存', data: day30, tooltip: {valueSuffix: '%'}},], '', '%')
+                    newTable('.table4', {name: '查询日期', data: date_text}, {name: '30日留存', data: day30_table})
+                }
+                break
+            case '平均游戏时长与次数':
+                if (index == 0) {
+                    newChart('container5', [{name: '游戏时长', data: avg_online_time},])
+                    newTable('.table5', {name: '查询日期', data: date_text}, {name: '游戏时长', data: avg_online_time})
+                } else if (index == 1) {
+                    newChart('container5', [{name: '登录次数', data: login_count}])
+                    newTable('.table5', {name: '查询日期', data: date_text}, {name: '登录次数', data: login_count})
+                }
+                break
+        }
+    })
+
+    function queryData(data) {
+        date_text = [];//日期
+
+        new_device = [];//新增设备
+        reg_count = [];//新增人数
+        active_count_old = [];//活跃人数
+        active_count_new = [];//活跃人数
+        game_active_count = [];//游戏人数
+        max_online_num = [];//最高在线人数
+
+        total_recharge = [];//充值
+        withdraw = [];//提现
+        give_coin_a2p = [];//代理卖分
+        give_coin_p2a = [];//代理收分
+        pump = [];//游戏抽水
+        game_win = [];//总盈亏
+        active_arpu = [];
+        active_arppu = [];
+
+        day2 = [];//留存
+        day3 = [];//留存
+        day7 = [];//留存
+        day15 = [];//留存
+        day30 = [];//留存
+
+        avg_online_time = [];//游戏时长
+        login_count = [];//登录次数
+        $.each(data, function (index, item) {
+            reg_count.push(item.reg_count)
+            date_text.push(item.date_text)
+            day2.push(item.day2)
+            day3.push(item.day3)
+            day7.push(item.day7)
+            day15.push(item.day15)
+            day30.push(item.day30)
+            avg_online_time.push(item.avg_online_time / 60)
+            if (item.active_count == 0 || item.login_count == 0) {
+                login_count.push(0)
+            } else {
+                login_count.push(item.login_count / item.active_count)
+            }
+            total_recharge.push(item.total_recharge)
+            withdraw.push(item.withdraw)
+            game_win.push(coin_format_no_color(item.game_win))
+            pump.push(coin_format_no_color(item.pump))
+            new_device.push(item.new_device)
+            active_count_old.push(item.active_count)
+            active_count_new.push(item.reg_count)
+            game_active_count.push(item.game_active_count)
+            active_arpu.push(item.active_arpu)
+            active_arppu.push(item.active_arppu)
+            max_online_num.push(item.max_online_num)
+
+            give_coin_a2p_give_coin = JSON.parse(item.give_coin_a2p)
+            give_coin_p2a_give_coin = JSON.parse(item.give_coin_p2a)
+            give_coin_a2p.push(coin_format_no_color(give_coin_a2p_give_coin.give_coin))
+            give_coin_p2a.push(coin_format_no_color(give_coin_p2a_give_coin.give_coin))
+        })
+
+
+        day2_table = [];
+        day2.forEach(function (value, index) {
+            day2_table[index] = value.toFixed(2) + '%';
+        })
+        day3_table = [];
+        day3.forEach(function (value, index) {
+            day3_table[index] = value.toFixed(2) + '%';
+        })
+        day7_table = [];
+        day7.forEach(function (value, index) {
+            day7_table[index] = value.toFixed(2) + '%';
+        })
+        day15_table = [];
+        day15.forEach(function (value, index) {
+            day15_table[index] = value.toFixed(2) + '%';
+        })
+        day30_table = [];
+        day30.forEach(function (value, index) {
+            day30_table[index] = value.toFixed(2) + '%';
+        })
+
+        init();
+    }
+
+    // day2.forEach(function (item,index) {
+    //     day2[index] = item+'%'
+    // })
+
+    function newChart(div, series, yAxisText, yAxisLabel) {
+        fillOpacity = 0.3;
+        if (yAxisText) {
+            yAxisText = yAxisText;
+        } else {
+            yAxisText = ['', ''];
+        }
+        if (yAxisLabel) {
+            yAxisLabel = yAxisLabel;
+        } else {
+            yAxisLabel = '';
+        }
+        if (div == 'container5') {
+            fillOpacity = 0;
+        }
+        chart = Highcharts.chart(div, {
+            chart: {
+                type: series[0].data.length == 1 ? 'column' : 'area'
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            yAxis: [
+                {
+                    title: {
+                        text: yAxisText[0]
+                    },
+                    labels: {
+                        format: '{value}' + yAxisLabel
+
+                    },
+                    gridLineDashStyle: 'longdash',//横向网格线样式
+                },
+                {
+                    title: {
+                        text: yAxisText[1]
+                    },
+                    opposite: true,
+                    gridLineDashStyle: 'longdash',//横向网格线样式
+                },],
+            xAxis: {
+                gridLineWidth: 1,
+                gridLineDashStyle: 'longdash',//横向网格线样式
+                categories: date_text,
+                tickmarkPlacement: 'on',
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+            series: series,
+            exporting: {enabled: false},
+            credits: {enabled: false},
+            plotOptions: {
+                area: {
+                    fillOpacity: fillOpacity,
+                },
+                column: {
+                    pointPadding: 200,
+                    borderWidth: 0,
+                    pointWidth: 30
+                }
+            },
+        });
+    };
+
+    function newTable(div, date, series, series2) {
+        $('.new_chart .new_chart_main').find(div).find('table').html('');
+
+        $thead = $('<thead></thead>');
+        if (series2) {
+            $('<tr><th>' + date.name + '</th><th>' + series.name + '</th><th>' + series2.name + '</th></tr>').appendTo($thead)
+        } else {
+
+            $('<tr><th>' + date.name + '</th><th>' + series.name + '</th></tr>').appendTo($thead)
+        }
+        $thead.appendTo($('.new_chart .new_chart_main').find(div).find('table'))
+
+
+        $tbody = $('<tbody></tbody>')
+        date.data.forEach(function (item, index) {
+            $tr = $('<tr></tr>')
+            if (series2) {
+                $('<td>' + date.data[index] + '</td><td>' + series.data[index] + '</td><td>' + series2.data[index] + '</td>').appendTo($tr);
+            } else {
+                $('<td>' + date.data[index] + '</td><td>' + series.data[index] + '</td>').appendTo($tr);
+            }
+            $tr.appendTo($tbody)
+        })
+        $tbody.appendTo($('.new_chart .new_chart_main').find(div).find('table'))
+    }
+
+    function init() {
+
+        newChart('container2', [{name: '新增人数', data: reg_count}, {name: '新增设备', data: new_device, color: '#efd07d'}])
+        newTable('.table2', {name: '查询日期', data: date_text}, {name: '新增人数', data: reg_count}, {
+            name: '新增设备',
+            data: new_device
+        })
+
+        newChart('container3', [{name: '代理卖分', data: give_coin_a2p}, {
+            name: '代理收分',
+            data: give_coin_p2a,
+            color: '#efd07d'
+        }])
+        newTable('.table3', {name: '查询日期', data: date_text}, {name: '代理卖分', data: give_coin_a2p}, {
+            name: '代理收分',
+            data: give_coin_p2a
+        })
+
+        newChart('container4', [{name: '2日留存', data: day2, tooltip: {valueSuffix: '%'}}], '', '%')
+        newTable('.table4', {name: '查询日期', data: date_text}, {name: '2日留存', data: day2_table})
+
+        newChart('container5', [{
+            name: '游戏时长',
+            data: avg_online_time,
+            type: 'column',
+            yAxis: 0,
+            color: '#6dc5fd',
+            tooltip: {valueSuffix: '分钟'}
+        }, {name: '登录次数', data: login_count, yAxis: 1, color: '#efd07d'}], '', '分钟')
+        newTable('.table5', {name: '查询日期', data: date_text}, {
+            name: '游戏时长(单位：分钟)',
+            data: avg_online_time
+        }, {name: '登录次数', data: login_count})
+        $('.avg2 .span_key').text(getArrayAverage(reg_count));
+        $('.avg_double2 .span_key').text(getArrayAverage(new_device));
+        $('.avg3 .span_key').text(getArrayAverage(give_coin_a2p));
+        $('.avg_double3 .span_key').text(getArrayAverage(give_coin_p2a));
+        $('.avg4 .span_key').text(getArrayAverage(day2) + '%');
+        $('.avg5 .span_key').text(getArrayAverage(avg_online_time));
+        $('.avg_double5 .span_key').text(getArrayAverage(login_count));
+    }
+
+    function getArrayAverage(arr, length) {
+        total = 0;
+        arr.forEach(function (item) {
+            total += item
+        })
+        if (total != 0 && arr.length) {
+            return (total / arr.length).toFixed(length || 1)
+        } else {
+            return 0;
+        }
+    }
+</script>
+</body>
+</html>

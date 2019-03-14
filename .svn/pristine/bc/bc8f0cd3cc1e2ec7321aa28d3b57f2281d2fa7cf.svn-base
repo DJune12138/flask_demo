@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工账号管理添加</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .content_top{
+        text-align: right;
+        padding-right: 10px !important;
+    }
+    .add_user {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        height: 25px;
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 150px;
+        float: left;
+        text-align: right;
+    }.update_user {
+         margin: 50px 100px;
+         padding: 0;
+         width: 600px;
+         height: 300px;
+     }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 90px;
+        float: left;
+        text-align: right;
+    }
+    input[type='checkbox'], input[type='radio'] {
+        left: -1px;
+        top: 11px;
+    }
+    h2{
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        width: 68px;
+        margin: 23px 0;
+    }
+
+    .content{
+        border:solid 1px #e6e6e6;
+    }
+    .content .content_top{
+        background: #f2f2f2;
+        padding: 5px 2px;
+        border-radius: 0px;
+    }
+    .content .content_item{
+        margin: 10px 10px;
+        border: 1px solid #e6e6e6;
+        padding: 0;
+    }
+    .content .content_item label{
+        margin: 0;
+        background: #FBFBFB;
+        width: 110px;
+        height: 38px;
+        border-right: 1px solid #e6e6e6;
+        font-size: 13px;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 38px;
+    }
+    .content .content_item input{
+        width: 90%;
+        border: none !important;
+        height: 100% !important;
+    }
+
+    .content .content_title {
+        font-size: 13px;
+        color: #666;
+        margin: 8px 0 0 20px;
+        display: inline-block;
+    }
+
+    .content .content_item input.radio {
+        cursor: pointer;
+        width: 13px;
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        margin-left: 10px !important;
+    }
+
+    .content .content_item .radio:last-child {
+        margin-left: 100px !important;
+    }
+
+    .content .content_item:last-child label {
+        height: auto;
+    }
+    .content .content_item input[type='checkbox']{
+        width: 13px !important;
+        height: 13px !important;
+        border: solid 1px #000 !important;
+        top: 0;
+    }
+    .content .content_item_last{
+        position: relative;
+    }
+    .content .content_item_last .span{
+        display: inline-block;
+        padding: 5px 0 5px 120px;
+    }
+    .content .content_item_last span{
+        display: block;
+        font-size: 13px;
+        margin: 3px 0;
+    }
+    .content .content_item_last label{
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+    .content .content_item_last label span{
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+    .btn-primary{
+        margin-bottom: 10px !important;
+    }
+
+
+
+</style>
+<body>
+<form action="{{ url_for('busi.register') }}" , method="post">
+    <div class="content">
+        <div class="content_top">
+            <input class="btn btn-primary btn-sm" type="button" id="cancel" value="返回员工列表">
+        </div>
+        <span class="content_title">添加员工</span>
+        <p class="content_item">
+            <label>员工账号</label>
+            <input type="text" placeholder="请输入员工账号" name="username" value="{{ user.name }}" required/>
+        </p>
+        <p class="content_item">
+            <label>员工昵称</label>
+            <input type="text" placeholder="请输入员工昵称" name="nick" value="{{ user.nick }}" required/>
+        </p>
+        <p class="content_item">
+            <label>登录密码</label>
+            <input type="password" placeholder="请输入登录密码" name="password" value="" required/>
+        </p>
+        <p class="content_item">
+            <label>游戏ID</label>
+            <input type="text" placeholder="ID绑定后，则该账号只能看到自己和下级玩家数据；若ID填0，则该账号可看所有代理数据；若ID填空，则该账号无法看到任何数据。" name="game_player_id" value="" required/>
+        </p>
+        <p class="content_item content_item_last">
+            <label><span>所需权限</span></label>
+            <span class="span">
+            {% for role in roles %}
+                    <span><input type="checkbox" id='check{{ role.id }}' name="role" value="{{ role.id }}"/>{{ role.name }}</span>
+                {% endfor %}
+            </span>
+        </p>
+        <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+        <input class="btn btn-primary btn-sm" type="submit" name="" value="添加">
+    </div>
+    <!--<div class="add_user">-->
+        <!--<h3>添加员工：</h3>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>员工账号：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="text" placeholder="请输入员工账号" name="username" value="{{ user.name }}"-->
+                   <!--style="display: block;height: 20px;text-indent: 5px;" required/>-->
+        <!--</div>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>员工昵称：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="text" placeholder="请输入员工昵称" name="nick" value="{{ user.nick }}"-->
+                   <!--style="display: block;height: 20px;text-indent: 5px;" required/>-->
+        <!--</div>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>登录密码：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="password" placeholder="请输入登录密码" name="password" value=""-->
+                   <!--style="display: block;height: 20px;text-indent: 5px;" required/>-->
+        <!--</div>-->
+        <!--<div class="parent_check">-->
+            <!--<div class="auth_logo"><span>所属权限：&nbsp;&nbsp;</span></div>-->
+            <!--<div class="check_box">-->
+                <!--{% for role in roles %}-->
+                    <!--<div><input type="checkbox" id='check{{ role.id }}' name="role" value="{{ role.id }}"/>{{ role.name }}</div>-->
+                <!--{% endfor %}-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<p style="text-indent: 150px;color: red">{{ errmsg }}</p>-->
+        <!--<input style="margin-left: 150px;margin-top: 10px;padding: 5px;border: 0.5px solid;border-radius: 5px;background: #3071a9; color: white"-->
+               <!--type="submit" name="" value="添加">-->
+        <!--&lt;!&ndash;<input style="margin-left: 20px;padding: 5px;border: 0.5px solid;border-radius: 5px; background: white" type="button" id="cancel" value="取消">&ndash;&gt;-->
+    <!--</div>-->
+</form>
+</body>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.get_user") }}'
+    })
+
+</script>
+</html>

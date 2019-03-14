@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主内容</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style type="text/css">
+        .index_topbg {
+            background-image: url(/static/images/top-right.gif);
+            background-repeat: repeat-x;
+        }
+
+        .admin_txt {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #FFFFFF;
+            text-decoration: none;
+            height: 38px;
+            width: 100%;
+            line-height: 38px;
+            text-align: right;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body leftmargin="0" topmargin="0">
+</form>
+<tr>
+    {% for channel_name in channel_names %}
+        <td width="12%"><a width="70" height="20" href="#" target="main">{{ channel_name }}</a></td>
+    {% endfor %}
+</tr>
+<br>
+<br>
+<br>
+{% for channel_tup in channels %}
+    <li>
+    {% for channel_msg in channel_tup %}
+        <td width="12%"><a width="70" height="20" href="#" target="main">{{ channel_msg }}</a></td>
+    {% endfor %}
+    </li>
+{% endfor %}
+
+
+</body>
+</html>

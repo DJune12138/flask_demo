@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主内容</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_subgame_data"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate,
+    Channels=True, PT = False, PlayerID = False, Method='get') }}
+    {% endautoescape %}
+</div>
+<table class="table table-striped table-bordered table-hover table-condensed" style="text-align: center">
+    <tr>
+        <th style="text-align:center;">游戏名称</th>
+        <th style="text-align:center;">活跃人数</th>
+        <th style="text-align:center;">总局数</th>
+        <th style="text-align:center;">投注总额</th>
+        <th style="text-align:center;">产出总额</th>
+        <th style="text-align:center;">盈利人数</th>
+        <th style="text-align:center;">亏损人数</th>
+        <th style="text-align:center;">玩家盈利金额</th>
+        <th style="text-align:center;">玩家亏损金额</th>
+        <th style="text-align:center;">游戏抽水额</th>
+        <th style="text-align:center;">游戏盈利</th>
+        <th style="text-align:center;">平均游戏局数</th>
+        <th style="text-align:center;">操作</th>
+    </tr>
+    {% for data in datas %}
+    <tr>
+        <th style="text-align:center;">{{ data.game_name }}游戏名称</th>
+        <th style="text-align:center;">{{ data.active_count }}活跃人数</th>
+        <th style="text-align:center;">{{ data.total_game_times }}总局数</th>
+        <th style="text-align:center;">{{ data.total_stake_coin }}投注总额</th>
+        <th style="text-align:center;">{{ data.total_get_coin }}产出总额</th>
+        <th style="text-align:center;">{{ data.win_player_num }}盈利人数</th>
+        <th style="text-align:center;">{{ data.lose_player_num }}亏损人数</th>
+        <th style="text-align:center;">{{ data.total_win }}玩家盈利金额</th>
+        <th style="text-align:center;">{{ data.total_lose }}玩家亏损金额</th>
+        <th style="text-align:center;">{{ data.pump }}游戏抽水额</th>
+        <th style="text-align:center;">{{ data.ai_win }}游戏盈利</th>
+        <th style="text-align:center;">{{ data.average_game_count }}平均游戏局数</th>
+        <th style="text-align:center;"><a
+                href="{{ url_for('busi.get_sub_detail') }}?date={{ data.date_text }}&pt={{ data.os }}">查看详情</a>
+        </th>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

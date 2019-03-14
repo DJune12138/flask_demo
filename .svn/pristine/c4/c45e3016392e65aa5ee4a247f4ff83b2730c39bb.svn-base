@@ -1,0 +1,39 @@
+# -*- coding:utf-8 -*-
+
+from __future__ import division
+import time
+import json
+from flask import render_template, jsonify
+from flask.globals import session, request, current_app
+from zs_backend import SqlOperate
+from . import api
+from zs_backend.utils.channel_qry import LogQry, GameWeb
+from zs_backend.utils.common import login_require, rand, md5
+from zs_backend.utils import time_util, html_translate, httpc_util
+from zs_backend.utils.const import *
+from zs_backend import redis_conn
+from zs_backend.utils.recharge_util import gen_order_no, do_add_order_menual
+
+@api.route('/do_pay', methods=['GET'])
+def do_pay_for_game():
+    ## 玩家ID
+    player_id = int(request.args.get('pid'))
+    # 接收渠道
+    channel_name = request.args.get('channel')
+    ## 支付通道
+    pay_channel = int(request.args.get('pay_channel'))
+    ## 充值金币
+    money = int(request.args.get('money'))
+    ## 充值时间 时间戳
+    request_time = time_util.now_sec()
+    ## 备注
+    memo = ""
+
+    ## 查询渠道ID
+    channel = int(redis_conn.hget(CHANNEL_CONFIG_TABLE + channel_name, "id"))
+
+    ## 生成本次订单编号
+    orderno = gen_order_no(channel, pay_channel)
+
+    return do_add_order_menual(channel, orderno, player_id, pay_channel,
+                               money, request_time, memo, 0)

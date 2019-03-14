@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>赠送统计报表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_daily_presentation"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate,
+    Channels=True, PT = True, SelectChannel = status_msg.channel, PlayerID = False, OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+<script type="text/javascript">
+    {% if status_msg.present_type == 0 %}
+        $('#present_type').find('option').eq(0).attr("selected", true)
+    {% elif status_msg.present_type == 1 %}
+        $('#present_type').find('option').eq(1).attr("selected", true)
+    {% elif status_msg.present_type == 2 %}
+        $('#present_type').find('option').eq(2).attr("selected", true)
+    {% elif status_msg.present_type == 3 %}
+        $('#present_type').find('option').eq(3).attr("selected", true)
+    {% elif status_msg.present_type == 4 %}
+        $('#present_type').find('option').eq(4).attr("selected", true)
+    {% endif %}
+
+
+        window.operateEvents = {
+            'click #go_detail': function (e, value, row, index) {
+                new_iframe('赠送订单详情','/games/presentation/detail?date='+row.date_text+'&present_type='+$('#present_type').val())
+            },
+        }
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            showPaginationSwitch:false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader:true,
+            showToolbar:false,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+            [
+                {field:"date_text",title:"日期",sortable:"true"},
+                {field:"reg_count",title:"注册人数",align:"center",sortable:"true",valign:"middle"},
+                {field:"active_count",title:"活跃人数",align:"center",valign:"middle"},
+                {field:"money",title:"日全部赠送总额",align:"center",valign:"middle"},
+                {field:"pump",title:"日全部赠送总税收",align:"center",valign:"middle"},
+                {field:"give_count",title:"赠送人数",align:"center",valign:"middle"},
+                {field:"recv_count",title:"被赠送人数",align:"center",valign:"middle"},
+                {field:"present_count",title:"赠送次数",align:"center",valign:"middle"},
+                {field:"averge_presentation",title:"平均赠送金额",align:"center",sortable:"true",valign:"middle"},
+                // {field:"bankrupt_player_count",title:"日破产人数",align:"center",sortable:"true",valign:"middle"},
+                // {field:"bankrupt_count",title:"日破产次数",align:"center",sortable:"true",valign:"middle"},
+                {field: '',title: '操作',align: 'center',events: operateEvents,formatter: '<a id="go_detail">查看详情</a>'}
+            ],
+            data:[
+            {% for data in datas %}
+                {
+                    date_text:"{{ data.date_text }}",
+                    reg_count:{{ data.reg_count }},
+                    active_count:{{ data.active_count }},
+                    money:{{ data.money }},
+                    pump:{{ data.pump }},
+                    give_count:{{ data.give_count }},
+                    recv_count:{{ data.recv_count }},
+                    present_count:{{ data.present_count }},
+                    averge_presentation:{{ data.averge_presentation }},
+                    bankrupt_player_count:{{ data.bankrupt_player_count }},
+                    bankrupt_count:{{ data.bankrupt_count }},
+                    operate: '',
+                },
+            {% endfor %}
+            ]
+        });
+</script>
+</html>

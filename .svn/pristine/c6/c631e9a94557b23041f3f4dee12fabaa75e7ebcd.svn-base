@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分销佣金结算</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        /*.rule {*/
+            /*padding: 5px 5px;*/
+            /*border-left: 5px solid #009688;*/
+            /*border-radius: 0 2px 2px 0;*/
+            /*background-color: #f2f2f2;*/
+            /*margin: 10px 0;*/
+        /*}*/
+
+        /*.rule p {*/
+            /*font-size: 14px;*/
+            /*margin: 8px;*/
+        /*}*/
+
+        .down_list .alert_cont{
+            width: 95% !important;
+            height: 90% !important;
+            overflow-y: auto;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.distribution_commission_show"), beginDate = 11, endDate = 11, Channels =
+    False, QueryType = 3, PlayerID = '', Method='get') }}
+    {% endautoescape %}
+</div>
+<section class="main">
+    <nav class="nav-sub">
+        <span class="nav-select">佣金计算</span>
+        <span>发放记录</span>
+    </nav>
+    <div class="nav-data">
+        <table class="commission"></table>
+    </div>
+    <div class="nav-data">
+        <table class="record"></table>
+    </div>
+</section>
+<sction class="vice" hidden>
+    <span class="button_new return_index">返回</span>
+    <table class="detail_table"></table>
+    <div class="rule">
+        <p>由于各厅主针对代理的返佣政策不一致，所以系统没办法根据各厅主的需求自动计算出代理的实际返佣；</p>
+        <p>为了方便厅主操作，我们将各平台的返佣金额计算出以后，同时将会员反水、存款、取款、手续费等数据一同展示；</p>
+        <p>输赢字段下的数值，正数表示玩家输钱，可以获得返佣。负数表示玩家赢钱，赢钱的玩家无法获得返佣；
+        </p>
+        <p>厅主可根据实际情况自行计算好需要额外扣除的费用，将最终返佣金额填写到返佣输入框内即可；</p>
+        <p>佣金计算方式：总佣金-所有下级输赢返佣 + 所有下级抽水反水 - 存取款手续费 - 行政费用 = 本级代理最终返佣</p>
+        <p>佣金发放方式：银行卡（人工与代理确认银行账号并转账）、钱包（直接发放到代理的钱包中，代理可以下注、为下级充值、申请提款）</p>
+        <p>为保证代理的最大利益，后台显示的最小单位为分，但在计算时保留毫、厘单位，所以会出现实际求和值略大的情况是正常现象。
+        </p>
+        <p>在输赢金额下，玩家输钱是显示正值 玩家赢钱是显示负值。玩家输钱才能获得返佣，玩家赢钱没有返佣。</span></p>
+        <p>如果代理最终返佣为 负数 ，则根据各厅主的代理规定来决定是否累计到下一期，如果代理规定是：负数清零，只要修改最终返佣为 0.00 即可。</p>
+    </div>
+    <table>
+        <thead>
+        <!--<tr>-->
+        <!--<th colspan="20">zjt6688【 2018-09-02 - 2018-10-31 】佣金发放</th>-->
+        <!--</tr>-->
+        <tr>
+            <th>反水</th>
+            <th>+</th>
+            <th>返佣</th>
+            <th>-</th>
+            <th>手续费</th>
+            <th>-</th>
+            <th>行政费</th>
+            <th>=</th>
+            <th>最终返佣</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th><input class="go_pump" type="text" disabled></th>
+            <th>+</th>
+            <th><input class="go_win" type="text" disabled></th>
+            <th>-</th>
+            <th><input class="go_fee" type="text" value="0"></th>
+            <th>-</th>
+            <th><input class="go_other_fee" type="text" value="0"></th>
+            <th><a class="button_new go_sum_btn">计算</a></th>
+            <th><input class="go_sum" type="text"></th>
+            <th><a class="button_new" onclick="go_commission(1)">发放到银行卡</a></th>
+            <th><a class="button_new" onclick="go_commission(2)">发放到钱包</a></th>
+            <th><a class="button_new" onclick="go_commission(3)">累积到下一期</a></th>
+        </tr>
+        </thead>
+    </table>
+    <table class="record" style="margin: 10px 0 20px 0;"></table>
+</sction>
+
+<section class="alert down_list" hidden>
+    <div class="alert_cont">
+        <p style="text-align: right"><a class="button_new return_list">返回</a></p>
+        <table class="commission"></table>
+    </div>
+</section>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    var account,go_win_,go_pump_;
+    main = $('.main');
+    vice = $('.vice');
+    commission = main.find('.commission');
+    return_index = vice.find('.return_index');
+    begin_time = $('.search #beginDate');
+    end_time = $('.search #endDate');
+    pid = $('.search #PlayerID');
+
+    go_pump = vice.find('.go_pump');
+    go_win = vice.find('.go_win');
+    go_fee = vice.find('.go_fee');
+    go_other_fee = vice.find('.go_other_fee');
+    go_sum = vice.find('.go_sum');
+    go_sum_btn = vice.find('.go_sum_btn');
+
+    down_list = $('.down_list');
+    alert_return_list = $('.down_list .return_list');
+    alert_return_list.click(function () {
+        $('#query_btn').click()
+        down_list.hide();
+    })
+
+    commission.find('tr td:last-child').click(function () {
+        main.hide();
+        vice.show();
+    })
+    return_index.click(function () {
+        record.bootstrapTable('refreshOptions', {
+            queryParams: function (params) {
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    pid: pid.val(),
+                };
+            }
+        });
+        main.show();
+        vice.hide();
+    })
+
+    // 查询按钮点击事件
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        commission.bootstrapTable('refreshOptions',{queryParams: function (params) {
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    PlayerID: $('#PlayerID').val(),
+                    begin_time: begin_time.val(),
+                    end_time: end_time.val(),
+                };
+            },});
+        record.bootstrapTable('refreshOptions', {
+            queryParams: function (params) {
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    pid: pid.val(),
+                };
+            }
+        });
+    })
+
+    commission = $('.commission');
+    record = $('.record');
+    detail_table = $('.vice .detail_table');
+
+    window.operateEvents = {
+        'click #detail': function (e, value, row, index) {
+            down_list.hide();
+            console.log(row)
+            account = row.account;
+            var len = Object.getOwnPropertyNames(row.pump_).length;
+            var data = [];
+            for (var i = 0; i < len; i++) {
+                data.push({
+                    id: i + '级代理',
+                    pump: row.pump_[i],
+                    win: row.win_[i],
+                    pump_commission: row.pump_commission_[i],
+                    win_commission: row.win_commission_[i],
+                })
+            }
+
+            var obj = {
+                columns:
+                    [
+                        {field: "id", title: "下级代理"},
+                        {field: "pump", title: "游戏抽水", formatter: coin_format_no_color},
+                        {field: "win", title: "输赢金额", formatter: coin_format_no_color},
+                        {field: "pump_commission", title: "反水金额", formatter: coin_format_no_color},
+                        {field: "win_commission", title: "返佣金额", formatter: coin_format_no_color},
+                    ],
+                data: data
+            };
+            detail_table.bootstrapTable(obj);
+            detail_table.bootstrapTable('refreshOptions', obj);
+
+            main.hide();
+            vice.show();
+
+            go_win.val(coin_format_no_color(row.win_commission));
+            go_win_ = row.win_commission;
+            go_pump.val(coin_format_no_color(row.pump_commission));
+            go_pump_ = row.pump_commission;
+
+            record.bootstrapTable('refreshOptions', {
+                queryParams: function (params) {
+                    return {
+                        size: params.limit,
+                        offset: params.offset,
+                        pid: row.account,
+                    };
+                }
+            });
+        },
+        'click #down':function (e, value, row, index) {
+            commission.bootstrapTable('refreshOptions',{
+                queryParams:function (params) {
+                    return {
+                        size: params.limit,
+                        offset: params.offset,
+                        begin_time: begin_time.val(),
+                        PlayerID: row.account,
+                        end_time: end_time.val(),
+                    };
+                },
+            })
+            down_list.show();
+        }
+    }
+
+    commission.bootstrapTable({
+        url: '/distribution_commission/show',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: function (params) {
+            return {
+                size: params.limit,
+                offset: params.offset,
+                begin_time: begin_time.val(),
+                PlayerID: $('#PlayerID').val(),
+                end_time: end_time.val(),
+            };
+        },
+        columns: [{
+            field: 'account',
+            title: '代理账号',
+            formatter: pid_format
+        }, {
+            field: 'members_count',
+            title: '会员',
+        }, {
+            field: 'pump',
+            title: '抽水',
+            formatter: coin_format_no_color
+        }, {
+            field: 'win',
+            title: '输赢',
+            formatter: coin_format_no_color
+        }, {
+            field: 'pump_commission',
+            title: '反水',
+            formatter: coin_format_no_color
+        }, {
+            field: 'win_commission',
+            title: '返佣',
+            formatter: coin_format_no_color
+        }, {
+            field: '',
+            title: '操作',
+            events: operateEvents,
+            formatter: operateFormatter
+        },]
+    });
+
+    record.bootstrapTable({
+        url: '/distribution_commission_his',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandlerRecord,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: function (params) {
+            return {
+                size: params.limit,
+                offset: params.offset,
+                pid: pid.val(),
+            };
+        },
+        columns: [{
+            field: 'pid',
+            title: '代理账号',
+            formatter: pid_format
+        }, {
+            field: '',
+            title: '佣金时间范围',
+            formatter: get_date
+        }, {
+            field: 'win_commission',
+            title: '输赢返佣',
+            formatter: coin_format_no_color
+        }, {
+            field: 'pump_commission',
+            title: '抽水返佣',
+            formatter: coin_format_no_color
+        }, {
+            field: 'fee',
+            title: '手续费',
+            formatter: coin_format_no_color
+        }, {
+            field: 'other_fee',
+            title: '行政费',
+            formatter: coin_format_no_color
+        }, {
+            field: '',
+            title: '最终返佣',
+            formatter: get_sum,
+            // sortable:true,
+        }, {
+            field: 'stype',
+            title: '返佣方式',
+            formatter: get_stype
+        },]
+    });
+
+    function operateFormatter(value, row, index) {
+        return '<a id="down">下级列表</a>' +
+            '<a id="detail">佣金统计</a>'
+    }
+
+    function responseHandler(items) {
+        loadingShow(false);
+        channel = items.channel || '';
+        loadingShow(false)
+        if (items.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试');
+        }
+        if (items.result == '0') {
+            showAlert(items.msg);
+            return {
+                total: '',
+                data: [],
+            };
+        } else {
+            var data = []
+            $.each(items.datas, function (index, item) {
+                data.push({
+                    account: index,
+                    members_count: item.members_count,
+                    pump: getSum(item.pump),
+                    pump_commission: getSum(item.pump_commission),
+                    win: getSum(item.win),
+                    win_commission: getSum(item.win_commission),
+                    pump_: item.pump,
+                    pump_commission_: item.pump_commission,
+                    win_: item.win,
+                    win_commission_: item.win_commission,
+                })
+            })
+            return {
+                total: data.length,
+                data: data
+            };
+        }
+    };
+
+    function responseHandlerRecord(items) {
+        console.log(items.datas)
+        // loadingShow(false);
+        if (items.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试');
+        }
+        return {
+            total: items.datas.length,
+            data: items.datas
+        };
+
+    };
+
+    function getSum(obj) {
+        var sum = 0;
+        $.each(obj, function (index, item) {
+            sum += item;
+        })
+        return sum;
+    }
+
+    go_sum_btn.click(function () {
+        go_sum.val(Number(go_pump.val()) + Number(go_win.val()) - Number(go_fee.val()) - Number(go_other_fee.val()))
+    })
+
+    function go_commission(type) {
+        $.ajax({
+            url: '/distribution_commission/do',
+            type: 'get',
+            data: {
+                begin_time: begin_time.val(),
+                end_time: end_time.val(),
+                pid: account,
+                pump: go_pump_,
+                win: go_win_,
+                fee: go_fee.val(),
+                other_fee: go_other_fee.val(),
+                memo: go_sum.val(),
+                type: type,
+            },
+            success: function (items) {
+                if (items.error == 'system_err') {
+                    showAlert();
+                } else {
+                    showAlert('操作成功', 'success');
+                    record.bootstrapTable('refresh');
+                }
+            }
+        })
+    }
+
+    function get_date(value, row) {
+        return row.date1 + '-' + row.date2
+    }
+
+    function get_sum(value, row) {
+        return coin_format_no_color(row.win_commission + row.pump_commission - row.fee - row.other_fee)
+    }
+
+    function get_stype(id) {
+        var str;
+        if (id == 1) {
+            str = '发放到银行卡'
+        } else if (id == 2) {
+            str = '发放到钱包'
+        } else if (id == 3) {
+            str = '累积到下一期'
+        }
+        ;
+        return str;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+# -*- coding:utf-8 -*-
+# 使用蓝图按照接口版本划分模块
+
+from flask import Blueprint
+
+# 创建版本1.0的蓝图 http://www.example.com/api/1.0/info
+sdk = Blueprint('sdk', __name__)
+
+from . import wx, first, sms, pre_pay

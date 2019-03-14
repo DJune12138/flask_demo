@@ -1,0 +1,27 @@
+# _*_ coding:utf-8 _*_
+# 模拟静态文件的访问
+
+
+from flask import Blueprint
+# 创建静态文件访问的蓝图对象
+from flask import current_app
+from flask.helpers import make_response
+from flask_wtf.csrf import generate_csrf
+
+
+html_blue = Blueprint('html_blue', __name__)
+
+
+# @html_blue.route('/<re(".*"):file_name>')
+# def get_static_file(file_name):
+#
+#     if not file_name:
+#         file_name = 'index.html'
+#     if file_name != 'favicon.ico':
+#         file_name = '%s' % file_name
+#
+#     response = make_response(current_app.send_static_file(file_name))
+#     csrf_token = generate_csrf()
+#     response.set_cookie('csrf_token', csrf_token)
+#
+#     return response

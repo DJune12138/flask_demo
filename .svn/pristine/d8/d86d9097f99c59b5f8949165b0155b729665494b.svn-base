@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>平台活动管理</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style type="text/css">
+        .add_activity {
+            margin: 0 auto;
+            padding: 0 140px;
+            width: 1000px;
+        }
+
+        .input_box, .parent_check {
+            width: 1200px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box {
+            width: 150px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box div {
+            height: 25px;
+            width: 150px;
+            float: left;
+        }
+
+        .input_box input {
+            height: 30px;
+            width: 333px;
+            border:1px solid #4876FF;
+            border-radius: 5px
+        }
+
+        .input_box div, .auth_logo {
+            width: 110px;
+            float: left;
+            text-align: right;
+            font-size: 14px;
+        }
+        .content_top{
+            text-align: right;
+        }
+        .content_top .button_new{
+            margin: 5px 10px !important;
+        }#batch_cancel{
+             float: left;
+             margin: 7px;
+         }input[type=file] {
+              display: inline-block;
+                               color: #fff;
+            border: none !important;
+            width: 75px;
+          }
+        .file_val1,.file_val2,.file_val3,.file_val4{
+            border: none !important;
+        }
+        .item-content textarea {
+            font-size: 13px;
+            width: 600px;
+            height: 300px;
+            resize: none;
+            line-height: 22px;
+            padding: 12px;
+            text-align: justify;
+        }
+        .p_commit{
+            padding-left: 100px;
+        }
+        #activity_form{
+            border: solid 1px #ededed;
+            padding: 20px 0;
+            border-radius:5px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+        {{ search_bar(url_for("busi.retrieve_activity"), beginDate = status_msg.beginDate, endDate = status_msg.endDate, QueryType = 3, Channels=True, OThers = status_msg.OThers, Method='get', SelectChannel = status_msg.SelectChannel) }}
+    {% endautoescape %}
+</div>
+<div class="refactor_content">
+    <div class="content_top">
+{#        <button class="btn btn-primary btn-sm" id="batch_cancel">批量下线</button>#}
+        <a class="button_new">新建平台活动</a>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover table-condensed" hidden>
+    <tr>
+        <th id="query-page" style="cursor: pointer;text-align:center;background-color: #FFE4B5" ONCLICK="show_query()">查询</th>
+        <th id="add-page" style="cursor: pointer;text-align:center;" ONCLICK="show_add()">新建</th>
+    </tr>
+</table>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<form id="activity_form" hidden>
+    <div class="add_activity">
+        <h3 id="tips" style="text-align: center"></h3>
+        <div class="input_box">
+            <div><span>活动类型：&nbsp;&nbsp;</span></div>
+            <select id="activity_type">
+                <option value="1">赚金币</option>
+                <option value="2">瓜分现金</option>
+                <option value="3">彩金盛宴</option>
+                <option value="4">礼品兑换</option>
+                <option value="5">代理返现</option>
+            </select>
+        </div>
+        <div class="input_box img_show">
+            <div><span>活动页签角标图片：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input1" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input1','.img_output1')"/>
+            <input class="img_output1 file_val1" type="text" disabled>
+        </div>
+        <div class="input_box img_show">
+            <div><span>活动内容图片：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input2" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input2','.img_output2')"/>
+            <input class="img_output2 file_val2" type="text" disabled>
+        </div>
+        <div class="input_box img_show">
+            <div><span>活动页签图片1：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input3" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input3','.img_output3')"/>
+            <input class="img_output3 file_val3" type="text" disabled>
+        </div>
+        <div class="input_box img_show">
+            <div><span>活动页签图片2：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input4" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input4','.img_output4')"/>
+            <input class="img_output4 file_val4" type="text" disabled>
+        </div>
+        <div class="input_box item-content">
+            <div><span>活动规则描述：&nbsp;&nbsp;</span></div>
+{#            <div><script id="editor_content" type="text/plain" style="width:800px;height:400px;"></script></div>#}
+            <textarea placeholder="请输入活动规则" id="activity_content_create"></textarea>
+        </div>
+{#        <div class="input_box" id="award">#}
+{#            <div><span>活动奖励：&nbsp;&nbsp;</span></div>#}
+{#            {% for id, name in property_map_id.items() %}#}
+{#                <span>{{ name }}&nbsp;<input type="text" placeholder="请输入数量" class="quantity" id="{{ id }}">&nbsp;&nbsp;&nbsp;</span>#}
+{#            {% endfor %}#}
+{#            <span>奖励的道具在对应框填数量，没有则不填</span>#}
+{#        </div>#}
+        <div class="input_box">
+            <div><span>起至日期：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" id="begin_time" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1,isShowClear:false,isShowOK:false,isShowToday:false,autoPickDate:true})"> <span style="padding:5px;">--</span>
+            <input class="Wdate" id="end_time" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1,isShowClear:false,isShowOK:false,isShowToday:false,autoPickDate:true})">
+        </div>
+        <div class="input_box">
+            <div><span>优先级：&nbsp;&nbsp;</span></div>
+            <input type="text" id="priority" placeholder="必填；非负整数；数值越大优先级越高">
+        </div>
+        <div class="input_box" id="hid_fee" hidden>
+            <div><span>报名费：&nbsp;&nbsp;</span></div>
+            <input type="text" id="entry_fee" placeholder="请输入报名费" style="display:block;text-indent:5px;">
+        </div>
+        <p class="p_commit">
+            <input type="button" name="" value="确认" class="commit btn btn-primary btn-sm" ONCLICK="create_activity()">
+        </p>
+    </div>
+</form>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    img_show = $('.img_show');
+    img_show.hide()
+    $('#activity_type').change(function () {
+        if($(this).val() >= 4){
+            img_show.show()
+        }else{
+            img_show.hide()
+        }
+    })
+    var file_name = '';
+    file = $('.file');
+    go_new = $('.refactor_content .content_top .button_new');
+    go_new.click(function () {
+        if($(this).text() == '新建平台活动'){
+            $(this).text('返回活动列表');
+            $('#batch_cancel').hide();
+            show_add();
+        }else{
+            $(this).text('新建平台活动');
+            $('#batch_cancel').show();
+            show_query();
+        }
+    });
+
+    function show_query() {
+        $("#query-page").css("background-color","#FFE4B5");
+        $("#add-page").css("background-color","#DDDDDD");
+        $('#activity_form').hide();
+        $('#reportTableDiv').show()
+    }
+
+    function show_add() {
+        $("#add-page").css("background-color","#FFE4B5");
+        $("#query-page").css("background-color","#DDDDDD");
+        $('#reportTableDiv').hide();
+        $('#activity_form').show();
+    }
+
+    // 根据活动类型构造报名费
+    function return_entry_fee() {
+        if ($('#activity_type').val()==2) {
+            return $('#entry_fee').val()
+        }
+        else {
+            return ''
+        }
+    }
+
+    // 新建活动
+    function create_activity() {
+        $.ajax({
+            url: '{{ url_for("busi.create_activity") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'activity_title': $('.file_val1').val(),
+                {#'activity_content': ue_content.getContent(),#}
+                'activity_content': $('#activity_content_create').val(),
+                {#'activity_award': get_award(),#}
+                'picture_url': $('.file_val2').val(),
+                'tab1_url': $('.file_val3').val(),
+                'tab2_url': $('.file_val4').val(),
+                'begin_time': $('#begin_time').val(),
+                'end_time': $('#end_time').val(),
+                'entry_fee': return_entry_fee(),
+                'priority': $('#priority').val(),
+                'activity_type': $('#activity_type').val()
+            },
+            success: function(data) {
+                if(data.result == 1){
+                    parent.showAlert("新建活动成功！");
+                    location.href = '{{ url_for("busi.show_activity") }}'
+                }
+                else{
+                    parent.showAlert(data.errormsg)
+                }
+            },
+            error: function() {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    // 修改活动
+    function update_mail() {
+        $.ajax({
+            url: '{{ url_for("busi.update_activity") }}',
+            type: 'PUT',
+            dataType: 'json',
+            data: {
+                'activity_title': $('.file_val1').val(),
+                {#'activity_content': ue_content.getContent(),#}
+                'activity_content': $('#activity_content_create').val(),
+                'picture_url': $('.file_val2').val(),
+                'tab1_url': $('.file_val3').val(),
+                'tab2_url': $('.file_val4').val(),
+                'begin_time': $('#begin_time').val(),
+                'end_time': $('#end_time').val(),
+                'entry_fee': return_entry_fee(),
+                'priority': $('#priority').val(),
+                'activity_id': $('.commit').attr('activity_id'),
+                'activity_type': $('#activity_type').val()
+            },
+            success: function(data) {
+                if(data.result == 1){
+                    parent.showAlert("修改活动成功！");
+                    location.href = '{{ url_for("busi.show_activity") }}'
+                }
+                else{
+                    parent.showAlert(data.errormsg)
+                }
+            },
+            error: function() {
+                parent.showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    // 活动类型改变事件
+    $('#activity_type').change(function () {
+        if ($(this).val()==2) {
+            $('#hid_fee').show()
+        }
+        else {
+            $('#hid_fee').hide()
+        }
+    });
+
+        window.operateEvents = {
+            'click .update': function (e, value, row, index) {
+                go_new.text('返回邮件列表');
+                $('#batch_cancel').hide();
+                $.ajax({
+                    url: '{{ url_for("busi.update_activity_json") }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        'activity_id': $(this).attr('activity_id')
+                    },
+                    success: function(data) {
+                        $('#activity_content_create').val(data.data.activity_content);
+                        $('.file_val1').val(data.data.activity_title);
+                        $('.file_val2').val(data.data.picture_url);
+                        $('.file_val3').val(data.data.tab1_url);
+                        $('.file_val4').val(data.data.tab2_url);
+                        $('#activity_type').val(data.data.activity_type).change();
+                        $('#begin_time').val(data.data.begin_time);
+                        $('#end_time').val(data.data.end_time);
+                        $('#entry_fee').val(data.data.entry_fee);
+                        $('#priority').val(data.data.priority);
+                        $('#add-page').html('修改');
+                        $('#tips').html('正在修改id为' + data.data.activity_id + '的活动');
+                        $('.commit').attr('ONCLICK','update_mail()').attr('activity_id',data.data.activity_id);
+                        show_add();
+                    }
+                })
+            },
+        }
+
+        $('#query_btn').click(function () {
+            loadingShow(true);
+            $('#reportTable').bootstrapTable('refresh');
+        })
+        $('#reportTable').bootstrapTable({
+            url: '/games/gm/activity/retrieve',
+            pagination: true,
+            pageSize: 100,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            responseHandler: getHandler,
+            queryParams: function () {
+                return queryParams('activity_content_search','user_id','beginDate','endDate')
+            },
+            columns:
+            [
+                {field:"priority",title:"优先级",sortable:true},
+                {field:"activity_id",title:"活动ID"},
+                {field:"user_id",title:"后台账号"},
+                {field:"activity_content",title:"活动规则描述"},
+                {field:"activity_type",title:"活动类型"},
+                {field:"entry_fee",title:"报名费"},
+                {field:"begin_time",title:"开始时间"},
+                {field:"end_time",title:"结束时间"},
+                {field:"status",title:"状态"},
+                {field: '',title: '操作',events: operateEvents,formatter: '<a class="update">修改</a>'}
+            ],
+        });
+        function getHandler(res) {
+            loadingShow(false);
+            if (res.error == 'system_err') {
+                return {
+                    data: []
+                };
+            } else {
+                return {
+                    data: res.data
+                };
+            }
+        };
+</script>
+
+</body>
+</html>

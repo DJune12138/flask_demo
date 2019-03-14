@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台渠道管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style type="text/css">
+        .update, .delete {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .update:hover, .delete:hover {
+            color: blue;
+        }
+        table tr td{
+            word-break: break-all;
+        }
+        table tr td a{
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/all.js"></script>
+
+<input type="button" onclick="link_to()" id="add_channel" class="btn btn-primary btn-sm" value="添加渠道"/>
+<!--<input type="button" onclick="sync_channel()" id="sync_channel" class="btn btn-primary btn-sm" value="同步配置"/>-->
+<div class="container" style="margin:20px 0 5px;padding: 0">◆渠道信息</div>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+<script type="text/javascript">
+$(function () {
+    $('#reportTable').bootstrapTable({
+        striped: true,
+        pagination: true,
+        contentType: "application/x-www-form-urlencoded",
+        paginationPreText:'上一页',
+        paginationNextText:'下一页',
+        showPaginationSwitch:false,//是否显示数据条数选择框
+        pageSize: 100,
+        pageNumber:1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination:'client',
+        showColumns: false,
+        showRefresh: false,
+        showHeader:true,
+        showToolbar:false,
+        buttonsAlign:"right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        columns:
+        [
+            {field:"checked",checkbox:true},
+            {field:"id",title:"渠道ID",valign:"middle"},
+            {field:"name",title:"渠道名字",align:"center",valign:"middle", sortable:"true"},
+            {field:"game_log_db",title:"日志数据库",align:"center",valign:"middle"},
+            {field:"web_url",title:"游戏web地址",align:"center",valign:"middle"},
+            {field:"h5_link",title:"H5跳转url",align:"center",valign:"middle"},
+            {field:"coin_rate",title:"金币转换比例",align:"center",valign:"middle"},
+            {field:"api",title:"API地址",align:"center",valign:"middle"},
+            {field:"hotup_url",title:"APP热更地址",align:"center",valign:"middle"},
+            {field:"h5_api_key",title:"H5通信KEY",align:"center",valign:"middle"},
+            {field:"wx_appid",title:"微信APPID",align:"center",valign:"middle"},
+            {field:"wx_token",title:"微信TOKEN",align:"center",valign:"middle"},
+            {field:"h5_wx_appid",title:"H5微信APPID",align:"center",valign:"middle"},
+            {field:"h5_wx_token",title:"H5微信TOKEN",align:"center",valign:"middle"},
+            {field:"role_text",title:"所属权限组",align:"center",valign:"middle"},
+            {field:"opt",title:"操作",align:"center",valign:"middle"},
+        ],
+        data:[
+        {% for data in channels %}
+            {
+                id:"{{ data.id }}",
+                name:"{{ data.name }}",
+                game_log_db:"{{ data.game_log_db }}",
+                web_url:"{{ data.web_url }}",
+                h5_link:"{{ data.other_msg.h5_link }}",
+                coin_rate:"{{ data.other_msg.coin_rate }}",
+                api:"{{ data.other_msg.api }}",
+                hotup_url:"{{ data.other_msg.hotup_url }}",
+                h5_api_key:"{{ data.other_msg.h5_api_key }}",
+                wx_appid:"{{ data.other_msg.wx_appid }}",
+                wx_token:"{{ data.other_msg.wx_token }}",
+                h5_wx_appid:"{{ data.other_msg.h5_wx_appid }}",
+                h5_wx_token:"{{ data.other_msg.h5_wx_token }}",
+                role_text:"{{ data.role_text }}",
+                opt:'<div style="width: 100px;"><a class="update" href="/channels/edit?channel_id={{ data.id }}&role_str={{ data.role_str }}">修改</a>' +
+                    '<a class="delete" href="/channels/delete?channel_id={{ data.id }}">删除</a></div>',
+            },
+        {% endfor %}
+        ]
+    });
+});
+
+
+function link_to(){
+    window.location.href = '/channels/add';
+}
+
+function sync_channel(){
+    $.ajax({
+        type: 'POST',
+        url: "/channels/sync",   
+        data: {"channel_list":get_checked('reportTable', 1)},
+        success: function(data) {
+            parent.window.showAlert("同步配置成功",'success');
+        },
+        dataType: "json"
+    });
+}
+</script>
+</html>

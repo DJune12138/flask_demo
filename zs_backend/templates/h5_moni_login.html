@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主内容</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar("/gm/h5_moni_login", beginDate = False, endDate = False, Channels=True, PT = False, PlayerID = False, Account = page.acc_id, SelectChannel = page.channel, QueryType = 1,
+    OThers = [], Method = 'POST') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ page.url }}</p>

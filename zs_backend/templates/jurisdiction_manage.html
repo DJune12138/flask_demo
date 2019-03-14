@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门权限管理</title>
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        footer{
+            text-align: center;
+        }
+        body{
+            background: #fff;
+            padding: 0 20px !important;
+        }
+        header {
+            text-align: center;
+            padding: 15px 0;
+        }
+        header select,header .button_new{
+            height: 28px;
+            line-height: 28px;
+            margin: 0 150px !important;
+        }
+        main{
+        }
+        main .item {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        main .item .item-title {
+            float: left;
+            width: 110px;
+            height: 44px;
+            border: 1px solid #e6e6e6;
+            background-color: #FBFBFB;
+            line-height: 44px;
+            text-align: center;
+            border-right: none;
+            font-size: 14px;
+        }
+
+        main .item ul {
+            display: inline-block;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+            /*height: 38px;*/
+            padding: 3px 10px;
+            width: calc(100% - 111px);
+        }
+
+        main .item ul li {
+            float: left;
+            position: relative;
+            height: 28px;
+            line-height: 26px;
+            padding-right: 30px;
+            border: 1px solid #d2d2d2;
+            cursor: pointer;
+            border-radius: 2px;
+            -webkit-transition: .1s linear;
+            box-sizing: border-box;
+            margin: 5px;
+        }
+
+        main .item ul li span {
+            padding: 0 10px;
+            font-size: 13px;
+            background-color: #d2d2d2;
+            color: #fff;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            height: 26px;
+            user-select: none;
+        }
+
+        main .item ul li i {
+            position: absolute;
+            /* right: 0; */
+            width: 26px;
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        main .item ul li i:before {
+            content: "√";
+        }
+
+        main .item ul li.active {
+            border-color: #5FB878;
+        }
+
+        main .item ul li.active span {
+            background-color: #5FB878;
+        }
+
+        main .item ul li.active i {
+            color: #5FB878;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <select></select>
+    <!--<a class="button_new">保存</a>-->
+</header>
+<main></main>
+<footer><a class="button_new">保存</a></footer>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+
+    header_select = $('header select');
+    sure = $('footer a');
+    main = $('main');
+
+    getHeader()
+
+    header_select.change(function () {
+        getList(header_select.val())
+    })
+
+    sure.click(function () {
+        var item_id = [];
+        $('.active').each(function (index,item) {
+            item_id.push(Number($(item).attr('item_id')))
+        })
+        $.ajax({
+            url: '/menus/list/update',
+            type:'post',
+            data: {
+                role_id: header_select.val(),
+                menu_list: JSON.stringify(item_id)
+            },
+            success: function (res) {
+                ajaxCallback(res)
+            }
+        })
+    })
+
+    function queryData(res) {
+        main.empty();
+        $.each(res.data,function (index,item) {
+            cont = $('<div class="item"><span class="item-title">'+item.group+'</span><ul></ul></div>');
+            $.each(item.menu_list,function (idx,ite) {
+                if(ite.select == 1){
+                    cont.find('ul').append('<li class="active" item_id="'+ite.id+'"><span>'+ite.name+'</span><i></i></li>')
+                }else{
+                    cont.find('ul').append('<li item_id="'+ite.id+'"><span>'+ite.name+'</span><i></i></li>')}
+            })
+            cont.appendTo(main)
+        })
+
+        $('main .item ul li').click(function () {
+            if($(this).attr('class') == 'active'){
+                $(this).removeClass('active');
+            }else{
+                $(this).addClass('active');
+            }
+        })
+        loadingShow(false);
+        // $('footer').show();
+    }
+
+    function getHeader() {
+        $.ajax({
+            url: '/menus/jurisdiction/group',
+            success: function (res) {
+                ajaxCallback(res, function (res) {
+                    header_select.empty();
+                    $.each(res.data, function (index, item) {
+                        header_select.append('<option value="' + item.id + '">' + item.name + '</option>')
+                    })
+                    getList(header_select.val())
+                },true)
+            }
+        })
+    }
+
+    function getList(id) {
+        loadingShow(true);
+        $.ajax({
+            url: '/menus/list/get',
+            data: {
+                role_id: id
+            },
+            success: function (res) {
+                ajaxCallback(res, queryData,true)
+            }
+        })
+    }
+</script>
+</body>
+</html>

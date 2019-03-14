@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统参数设置</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .content_top {
+            text-align: right;
+        }
+
+        .content_top input {
+            margin-right: 10px !important;
+        }
+
+        .new {
+            /*display: none;*/
+        }
+
+        main {
+            margin-top: 20px;
+        }
+
+        .item-submit {
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .explain {
+            font-size: 14px;
+            color: #8E8E8E;
+            margin-left: 20px;
+        }
+
+        select {
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+<main class="refactor_content">
+    <section class="new">
+        <p class="content_item">
+            <label>代理模式</label>
+            <select class="agent_pattern">
+                <option value="1">传统代理模式</option>
+                <option value="2">分销代理模式</option>
+                <option value="3">关闭</option>
+            </select>
+            <span class="explain" style="color: red;">更改代理模式将会清空之前所有代理信息！（首次配置或没有变更代理模式可忽略）</span>
+        </p>
+        <div class="rule">
+            <p><span class="highlight">传统代理模式</span>是指平台在后台设置玩家成为代理获得推荐码，其他玩家注册账号时填写推荐码则成为其发展下线玩家。代理只能获取其下线代理所得的返佣和反水。
+            </p>
+            <p>例如：平台->B->C,则B为C的代理，B可以获得平台的返佣和反水。</p>
+            <br>
+            <p>分销代理模式是平台代理使用N级分销模式（具体级数可在分销参数设置页面设置），N级分销是指，每一级代理均可以往下再发展N级代理。代理只能获取N级代理所得的佣金，超过N级就与己无关。</p>
+            <p>代理自己或下级代理不管是哪一级代理达到指定条件，都可以获得佣金。佣金最多只有N级。</p>
+            <p>由于分销等级是N级，由代理产生关系的最多只有N级，且根据圈子裂变理论，每个人都可能成为推广中的一级分销商（无须平台认证），拿一级推广佣金和反水。</p>
+            <p>例如：A->B->C->D->E....->X，则B为A的一级代理，C为A的二级代理，D为A的三级代理;C为B的一级代理，D为B的二级代理,依次类推</p>
+        </div>
+        <p class="content_item">
+            <label>默认层级</label>
+            <select class="default_level"></select>
+            <span class="explain">新玩家注册成功后将自动归该层级</span>
+        </p>
+        <p class="content_item">
+            <label>客服网址</label>
+            <input class="phone_service_url" type="text" placeholder=""/>
+        </p>
+        <p class="content_item">
+            <label>落地页</label>
+            <input class="arrive_web" type="text" placeholder=""/>
+        </p>
+        <p class="content_item">
+            <label>仓库号</label>
+            <input class="warehouse_no" type="text" placeholder=""/>
+        </p>
+        <p class="content_item">
+            <label>流水要求</label>
+            <input class="need_water" type="text" value="2" placeholder="" style="
+    height: 30px !important;
+    width: 120px;
+    border: solid 1px #ddd !important;"/>
+            <span style="display: inline-block;font-size: 14px;color: #8E8E8E">充值需要2倍流水提现，则填2。例：玩家充值500，则需要达到1000元流水才能提现 </span>
+        </p>
+        <p class="item-submit">
+            <input class="btn btn-primary btn-sm submit" type="submit" name="" value="保存">
+        </p>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">更改代理模式将会清空之前所有代理信息！确认要更改吗？（首次配置或没有变更代理模式可忽略）</p>
+        <p class="refactor-confirm-button">
+            <input class=" btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class=" btn-primary btn-sm del" type="submit" name="" value="确定">
+        </p>
+    </div>
+</section>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    var channel;
+
+    $content = $('.refactor_content');
+    $new = $content.find('.new');
+    submit_btn = $new.find('input.submit');
+
+    agent_pattern = $new.find('.agent_pattern');
+    default_level = $new.find('.default_level');
+    phone_service_url = $new.find('.phone_service_url');
+    arrive_web = $new.find('.arrive_web');
+    warehouse_no = $new.find('.warehouse_no');
+    need_water = $new.find('.need_water');
+
+    getHierarchyList();
+
+    function getHierarchyList() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_json_name") }}',
+            type: 'get',
+            success: function (res) {
+                default_level_list = res.datas;
+                default_level.html('');
+                res.datas.forEach(function (item) {
+                    default_level.append('<option value="' + item.id + '">' + item.name + '</option>')
+                })
+                getList();
+            }
+        })
+    }
+
+    function getList() {
+        $.ajax({
+            url: '/system/parameter/retrieve',
+            data: {
+            },
+            success: function (res) {
+                agent_pattern.val(res.data.agent_pattern);
+                default_level.val(res.data.default_level);
+                phone_service_url.val(res.data.phone_service_url);
+                arrive_web.val(res.data.arrive_web);
+                warehouse_no.val(res.data.warehouse_no);
+                if(res.data.need_water){
+                    need_water.val(res.data.need_water);
+                }else{
+                    need_water.val(2);
+                }
+            },
+        })
+    }
+
+    submit_btn.click(function () {
+        showDelete(submit)
+    })
+
+    function submit() {
+        $.ajax({
+            url: '/system/parameter/create/update',
+            type: 'post',
+            data: {
+                agent_pattern: agent_pattern.val(),
+                default_level: default_level.val(),
+                phone_service_url: phone_service_url.val(),
+                arrive_web: arrive_web.val(),
+                warehouse_no: warehouse_no.val(),
+                need_water: need_water.val(),
+            },
+            success: function (res) {
+                if(res.error == 'system_err'){
+                    showAlert('服务器忙，请稍后再试')
+                }else{
+                    showAlert(res.msg, 'success');
+                }
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3541e9e5-ee6e-48b9-b69b-264bad0957bf" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/zs_backend/templates/index_channel.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/zs_backend/templates/index_menu.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/zs_backend/templates/index_user.html" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/all.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap-theme.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap-theme.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap-theme.min.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/bootstrap.min.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/login/invalid.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/login/reset.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/css/login/style.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.eot" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.woff" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/404.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/404_2.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/500.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/bg-login.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/button-green.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/cpwd.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/icon_add.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/icon_user.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/left_1.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/left_2.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/b.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-body.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-button-green.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-content-box.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-form-field.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-login-top.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-login.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-menu-item-current.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-menu-item-green.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-radial-gradient.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bg-sidebar.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/bl.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/br.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/bullet_black.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/clock_48.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/comment_48.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/cross.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/cross_circle.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/cross_grey_small.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/exclamation.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/hammer_screwdriver.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/image_add_48.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/information.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/jquery.wysiwyg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/paper_content_pencil_48.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/pencil.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/pencil_48.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/icons/tick_circle.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/logo.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/menu-current-arrow.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/shortcut-button-bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/tl.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/login/tr.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_bg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_bg1.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_bg2.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_bgs.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_topimg.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/menu_topline.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/modify.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/out.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/remove.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/search.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/top-right.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/images/up.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/all.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/bootstrap.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/bootstrap.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/exporting.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/float.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/highcharts.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/jquery-1.8.3.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/jquery-2.1.1.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/jquery.form.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/jquery.form.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/jquery.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/moo.fx.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/moo.fx.pack.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/My97DatePicker.htm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/WdatePicker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/calendar.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/config.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/calendar-green.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/calendar.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/jquery.datepick-zh-CN.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/jquery.datepick.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/jquery.datepick.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/jquery-datepick/jquery.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/lang/en.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/lang/zh-cn.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/lang/zh-tw.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/notice.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/WdatePicker.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/datePicker.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/default/datepicker.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/default/img.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/whyGreen/bg.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/whyGreen/datepicker.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/my97date/skin/whyGreen/img.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/prototype.lite.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/scrolltop.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/js/senfefooter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/templates/channel_index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/templates/menu_index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/templates/user_index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/captcha/__init__.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/captcha/captcha.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/captcha/fonts/Arial.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/captcha/fonts/Georgia.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/captcha/fonts/actionj.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/zs_backend/utils/response_code.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.eot" afterPath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.eot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.ttf" afterPath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.ttf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.woff" afterPath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.woff" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/404.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/images/404.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/404_2.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/images/404_2.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/500.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/images/500.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/bg-login.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/bg-login.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/bg.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/bg.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/button-green.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/button-green.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/cpwd.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/cpwd.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/icon_add.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/icon_add.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/icon_user.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/icon_user.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/left_1.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/images/left_1.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/left_2.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/images/left_2.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/b.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/b.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-body.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-body.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-button-green.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-button-green.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-content-box.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-content-box.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-form-field.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-form-field.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-login-top.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-login-top.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-login.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-login.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-menu-item-current.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-menu-item-current.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-menu-item-green.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-menu-item-green.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-radial-gradient.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-radial-gradient.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bg-sidebar.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bg-sidebar.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/bl.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/bl.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/br.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/br.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/bullet_black.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/bullet_black.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/clock_48.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/clock_48.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/comment_48.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/comment_48.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross_circle.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross_circle.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross_grey_small.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/cross_grey_small.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/exclamation.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/exclamation.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/hammer_screwdriver.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/hammer_screwdriver.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/image_add_48.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/image_add_48.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/information.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/information.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/jquery.wysiwyg.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/jquery.wysiwyg.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/paper_content_pencil_48.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/paper_content_pencil_48.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/pencil.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/pencil.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/pencil_48.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/pencil_48.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/icons/tick_circle.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/icons/tick_circle.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/logo.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/logo.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/menu-current-arrow.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/menu-current-arrow.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/shortcut-button-bg.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/shortcut-button-bg.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/tl.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/tl.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/login/tr.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/login/tr.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_bg.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_bg.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_bg1.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_bg1.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_bg2.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_bg2.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_bgs.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_bgs.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_topimg.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_topimg.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/menu_topline.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/menu_topline.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/modify.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/modify.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/out.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/out.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/remove.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/remove.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/search.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/search.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/top-right.gif" afterPath="$PROJECT_DIR$/zs_backend/static/images/top-right.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/images/up.png" afterPath="$PROJECT_DIR$/zs_backend/static/images/up.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/calendar-green.gif" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/calendar-green.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/calendar.gif" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/calendar.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/datePicker.gif" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/datePicker.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/default/img.gif" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/default/img.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/bg.jpg" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/bg.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/img.gif" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/img.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.py" afterPath="$PROJECT_DIR$/config.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/log" afterPath="$PROJECT_DIR$/logs/log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/manage.py" afterPath="$PROJECT_DIR$/manage.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/__init__.py" afterPath="$PROJECT_DIR$/zs_backend/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/api_1_0/__init__.py" afterPath="$PROJECT_DIR$/zs_backend/api_1_0/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py" afterPath="$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/api_1_0/channel.py" afterPath="$PROJECT_DIR$/zs_backend/api_1_0/channel.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/api_1_0/index.py" afterPath="$PROJECT_DIR$/zs_backend/api_1_0/index.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/api_1_0/menu.py" afterPath="$PROJECT_DIR$/zs_backend/api_1_0/menu.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/sql.py" afterPath="$PROJECT_DIR$/zs_backend/sql.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/all.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/all.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.css.map" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.css.map" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.min.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap-theme.min.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.css.map" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.css.map" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.min.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/bootstrap.min.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/login/invalid.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/login/invalid.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/login/reset.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/login/reset.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/css/login/style.css" afterPath="$PROJECT_DIR$/zs_backend/static/css/login/style.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.svg" afterPath="$PROJECT_DIR$/zs_backend/static/fonts/glyphicons-halflings-regular.svg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/all.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/all.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/bootstrap.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/bootstrap.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/bootstrap.min.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/bootstrap.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/exporting.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/exporting.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/float.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/float.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/highcharts.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/highcharts.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/jquery-1.8.3.min.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/jquery-1.8.3.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/jquery-2.1.1.min.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/jquery-2.1.1.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/jquery.form.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/jquery.form.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/jquery.form.min.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/jquery.form.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/jquery.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/jquery.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/moo.fx.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/moo.fx.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/moo.fx.pack.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/moo.fx.pack.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/My97DatePicker.htm" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/My97DatePicker.htm" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/WdatePicker.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/WdatePicker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/calendar.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/calendar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/config.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/config.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/index.html" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick-zh-CN.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick-zh-CN.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick.css" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.datepick.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/jquery-datepick/jquery.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/en.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/en.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/zh-cn.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/zh-cn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/zh-tw.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/lang/zh-tw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/notice.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/notice.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/WdatePicker.css" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/WdatePicker.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/default/datepicker.css" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/default/datepicker.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/datepicker.css" afterPath="$PROJECT_DIR$/zs_backend/static/js/my97date/skin/whyGreen/datepicker.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/prototype.lite.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/prototype.lite.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/scrolltop.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/scrolltop.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/static/js/senfefooter.js" afterPath="$PROJECT_DIR$/zs_backend/static/js/senfefooter.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/templates/base.html" afterPath="$PROJECT_DIR$/zs_backend/templates/base.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/templates/index.html" afterPath="$PROJECT_DIR$/zs_backend/templates/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/templates/left.html" afterPath="$PROJECT_DIR$/zs_backend/templates/left.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/templates/login.html" afterPath="$PROJECT_DIR$/zs_backend/templates/login.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/templates/top.html" afterPath="$PROJECT_DIR$/zs_backend/templates/top.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/thirdlibs/__init__.py" afterPath="$PROJECT_DIR$/zs_backend/thirdlibs/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/utils/__init__.py" afterPath="$PROJECT_DIR$/zs_backend/utils/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/utils/common.py" afterPath="$PROJECT_DIR$/zs_backend/utils/common.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zs_backend/web_html.py" afterPath="$PROJECT_DIR$/zs_backend/web_html.py" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/zs_backend$sql.coverage" NAME="sql Coverage Results" MODIFIED="1528631704634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zs_backend" />
+    <SUITE FILE_PATH="coverage/zs_backend$admin_user.coverage" NAME="admin_user Coverage Results" MODIFIED="1527566016025" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zs_backend/api_1_0" />
+    <SUITE FILE_PATH="coverage/zs_backend$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1527562221638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zs_backend" />
+    <SUITE FILE_PATH="coverage/zs_backend$manage.coverage" NAME="manage Coverage Results" MODIFIED="1528698719493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="channel.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/channel.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1839">
+              <caret line="152" column="41" lean-forward="false" selection-start-line="152" selection-start-column="41" selection-end-line="152" selection-end-column="41" />
+              <folding>
+                <element signature="e#23#49#0" expanded="true" />
+                <marker date="1528704710973" expanded="true" signature="395:435" ph="SELECT name,... user" />
+                <marker date="1528704710973" expanded="true" signature="720:768" ph="SELECT * FRO... channel" />
+                <marker date="1528704710973" expanded="true" signature="2161:2213" ph="INSERT INTO channel... " />
+                <marker date="1528704710973" expanded="true" signature="2948:3037" ph="UPDATE chann... " />
+                <marker date="1528704710973" expanded="true" signature="3524:3553" ph="DELETE FROM " />
+                <marker date="1528704710973" expanded="true" signature="4179:4237" ph="SELECT name,... channel" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="menu.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/menu.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="387">
+              <caret line="164" column="53" lean-forward="false" selection-start-line="164" selection-start-column="53" selection-end-line="164" selection-end-column="53" />
+              <folding>
+                <marker date="1528704808368" expanded="true" signature="393:428" ph="SELECT role_... user" />
+                <marker date="1528704808368" expanded="true" signature="707:755" ph="SELECT name menu" />
+                <marker date="1528704808368" expanded="true" signature="1388:1428" ph="SELECT name,... user" />
+                <marker date="1528704808368" expanded="true" signature="1464:1497" ph="SELECT id,na... menu" />
+                <marker date="1528704808368" expanded="true" signature="2514:2552" ph="INSERT INTO menu... " />
+                <marker date="1528704808368" expanded="true" signature="3138:3187" ph="UPDATE menu " />
+                <marker date="1528704808368" expanded="true" signature="3610:3636" ph="DELETE FROM " />
+                <marker date="1528704808368" expanded="true" signature="4265:4296" ph="SELECT name menu" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="auth.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/auth.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="321">
+              <caret line="112" column="0" lean-forward="true" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
+              <folding>
+                <element signature="e#23#49#0" expanded="true" />
+                <marker date="1528704927698" expanded="true" signature="390:430" ph="SELECT name,... user" />
+                <marker date="1528704927698" expanded="true" signature="466:490" ph="SELECT id,na... role" />
+                <marker date="1528704927698" expanded="true" signature="1268:1300" ph="INSERT INTO role... " />
+                <marker date="1528704927698" expanded="true" signature="1769:1804" ph="UPDATE role " />
+                <marker date="1528704927698" expanded="true" signature="2217:2243" ph="DELETE FROM " />
+                <marker date="1528704927698" expanded="true" signature="2623:2654" ph="SELECT name role" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin_user.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1474">
+              <caret line="195" column="24" lean-forward="false" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="24" />
+              <folding>
+                <marker date="1528704710965" expanded="true" signature="778:813" ph="SELECT id FR... user" />
+                <marker date="1528704710965" expanded="true" signature="856:897" ph="SELECT passw... user" />
+                <marker date="1528704710965" expanded="true" signature="2058:2147" ph="INSERT INTO user... " />
+                <marker date="1528704710965" expanded="true" signature="2559:2599" ph="SELECT name,... user" />
+                <marker date="1528704710965" expanded="true" signature="2635:2653" ph="SELECT * FRO... user" />
+                <marker date="1528704710965" expanded="true" signature="4054:4129" ph="UPDATE user " />
+                <marker date="1528704710965" expanded="true" signature="4731:4757" ph="DELETE FROM " />
+                <marker date="1528704710965" expanded="true" signature="5387:5436" ph="SELECT name,... user" />
+                <marker date="1528704710965" expanded="true" signature="6142:6182" ph="SELECT name,... user" />
+                <marker date="1528704710965" expanded="true" signature="6217:6235" ph="SELECT * FRO... user" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="11" column="51" lean-forward="false" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/index.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="506">
+              <caret line="27" column="37" lean-forward="false" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-205">
+              <caret line="28" column="25" lean-forward="false" selection-start-line="28" selection-start-column="25" selection-end-line="28" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web_html.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/web_html.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="389">
+              <caret line="26" column="21" lean-forward="false" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/utils/common.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="484">
+              <caret line="26" column="23" lean-forward="false" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="top.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/zs_backend/templates/top.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="264">
+              <caret line="12" column="36" lean-forward="false" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Flask Main" />
+        <option value="Python Script" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/zs_backend.py" />
+        <option value="$PROJECT_DIR$/api_1_0/user.py" />
+        <option value="$PROJECT_DIR$/templates/login.html" />
+        <option value="$PROJECT_DIR$/uwsgi.ini" />
+        <option value="$PROJECT_DIR$/zs_backend/static/login.html" />
+        <option value="$PROJECT_DIR$/zs_backend/web_html.py" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/index.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/base.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/login.html" />
+        <option value="$PROJECT_DIR$/zs_backend/utils/common.py" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/index.py" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/userinfo.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/user_index.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/edit_user.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/channel_index.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/menu_index.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/add_user.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/edit_channel.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/add_channel.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/edit_menu.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/add_menu.html" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/__init__.py" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/left.html" />
+        <option value="$PROJECT_DIR$/zs_backend/__init__.py" />
+        <option value="$PROJECT_DIR$/manage.py" />
+        <option value="$PROJECT_DIR$/zs_backend/sql.py" />
+        <option value="$PROJECT_DIR$/config.py" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/index_channel.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/index_menu.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/index_user.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/edit_role.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/edit_auth.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/index_auth.html" />
+        <option value="$PROJECT_DIR$/zs_backend/templates/top.html" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/channel.py" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/menu.py" />
+        <option value="$PROJECT_DIR$/zs_backend/api_1_0/auth.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="45" />
+    <option name="y" value="24" />
+    <option name="width" value="1671" />
+    <option name="height" value="903" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api_1_0" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="zs_backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="logs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../iHome_GZ01" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="SearchEverywhereHistoryKey" value="cpwd&#9;FILE&#9;file:///home/python/Desktop/code/zs_backend/static/images/cpwd.gif" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/zs_backend/static" />
+      <recent name="$PROJECT_DIR$/zs_backend/static/html" />
+      <recent name="$PROJECT_DIR$/zs_backend" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/zs_backend/templates" />
+      <recent name="$PROJECT_DIR$/zs_backend/static" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/templates" />
+      <recent name="$PROJECT_DIR$/zs_backend" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.manage">
+    <configuration default="false" name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="__init__" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/zs_backend" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zs_backend/__init__.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="admin_user" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/zs_backend/api_1_0" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="sql" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/zs_backend" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zs_backend/sql.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <module name="zs_backend" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="zs_backend" type="PythonConfigurationType" factoryName="Python" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="zs_backend" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zs_backend.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.zs_backend" />
+      <item index="1" class="java.lang.String" itemvalue="Python.manage" />
+      <item index="2" class="java.lang.String" itemvalue="Python.__init__" />
+      <item index="3" class="java.lang.String" itemvalue="Python.admin_user" />
+      <item index="4" class="java.lang.String" itemvalue="Python.sql" />
+    </list>
+    <recent_temporary>
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.manage" />
+        <item index="1" class="java.lang.String" itemvalue="Python.sql" />
+        <item index="2" class="java.lang.String" itemvalue="Python.admin_user" />
+        <item index="3" class="java.lang.String" itemvalue="Python.__init__" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3541e9e5-ee6e-48b9-b69b-264bad0957bf" name="Default" comment="" />
+      <created>1527338786572</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1527338786572</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="45" y="24" width="1671" height="903" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12968653" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29577464" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24953903" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3828425" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39948782" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="3" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/flask/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-121">
+          <caret line="142" column="27" lean-forward="true" selection-start-line="142" selection-start-column="27" selection-end-line="142" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/flask/templating.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="114" column="4" lean-forward="false" selection-start-line="114" selection-start-column="4" selection-end-line="114" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/uwsgi.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="417">
+          <caret line="20" column="8" lean-forward="true" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="1460" column="0" lean-forward="false" selection-start-line="1460" selection-start-column="0" selection-end-line="1460" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/static/js/all.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="46" lean-forward="true" selection-start-line="7" selection-start-column="46" selection-end-line="7" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/werkzeug/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-675">
+          <caret line="346" column="37" lean-forward="false" selection-start-line="346" selection-start-column="37" selection-end-line="346" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/static/base.html" />
+    <entry file="file://$PROJECT_DIR$/zs_backend/static/index.html" />
+    <entry file="file://$PROJECT_DIR$/zs_backend/static/login.html" />
+    <entry file="file://$PROJECT_DIR$/zs_backend/static/top.html" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/-410965948/__builtin__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="1858" column="8" lean-forward="false" selection-start-line="1858" selection-start-column="8" selection-end-line="1858" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/images/cpwd.gif" />
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/lib/python2.7/site-packages/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="1819" column="0" lean-forward="false" selection-start-line="1819" selection-start-column="0" selection-end-line="1819" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/lib/python2.7/site-packages/flask/helpers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="35">
+          <caret line="809" column="8" lean-forward="false" selection-start-line="809" selection-start-column="8" selection-end-line="809" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/werkzeug/local.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-355">
+          <caret line="291" column="8" lean-forward="false" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/Flask_py/local/lib/python2.7/site-packages/flask/globals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="41" column="15" lean-forward="true" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="16" column="51" lean-forward="false" selection-start-line="16" selection-start-column="51" selection-end-line="16" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/utils/response_code.py" />
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="70">
+          <caret line="26" column="7" lean-forward="false" selection-start-line="26" selection-start-column="7" selection-end-line="26" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/edit_user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="38" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/add_user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="67" column="18" lean-forward="true" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/add_channel.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4">
+          <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/add_menu.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="59" column="0" lean-forward="false" selection-start-line="59" selection-start-column="0" selection-end-line="60" selection-end-column="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-28851">
+          <caret line="1588" column="0" lean-forward="false" selection-start-line="1588" selection-start-column="0" selection-end-line="1588" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/ltv.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="20" column="65" lean-forward="false" selection-start-line="20" selection-start-column="65" selection-end-line="20" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/utils/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/pycharm.jar!/resources/html5-schema/html5/tables.rnc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="231" column="16" lean-forward="false" selection-start-line="231" selection-start-column="16" selection-end-line="231" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/userinfo.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1188">
+          <caret line="54" column="23" lean-forward="true" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="5" column="11" lean-forward="false" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="9" column="17" lean-forward="false" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+          <folding>
+            <element signature="e#23#37#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="11" lean-forward="false" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
+          <folding>
+            <element signature="e#24#82#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/edit_channel.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-698">
+          <caret line="16" column="25" lean-forward="true" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/edit_menu.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="55" column="59" lean-forward="false" selection-start-line="55" selection-start-column="59" selection-end-line="55" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/index_menu.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="62" column="22" lean-forward="true" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/index_user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="71" column="33" lean-forward="false" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/index_auth.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2024">
+          <caret line="92" column="52" lean-forward="false" selection-start-line="92" selection-start-column="52" selection-end-line="92" selection-end-column="52" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/edit_auth.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1188">
+          <caret line="54" column="10" lean-forward="true" selection-start-line="54" selection-start-column="10" selection-end-line="54" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/sql.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1563">
+          <caret line="143" column="5" lean-forward="false" selection-start-line="143" selection-start-column="5" selection-end-line="143" selection-end-column="5" />
+          <folding>
+            <element signature="e#24#45#0" expanded="false" />
+            <marker date="1528703883273" expanded="true" signature="100:463" ph="CREATE TABLE... IF" />
+            <marker date="1528703883273" expanded="true" signature="477:731" ph="CREATE TABLE... IF" />
+            <marker date="1528703883273" expanded="true" signature="745:893" ph="CREATE TABLE... IF" />
+            <marker date="1528703883273" expanded="true" signature="907:1019" ph="CREATE TABLE... IF" />
+            <marker date="1528703883273" expanded="true" signature="3961:3994" ph="SELECT name role" />
+            <marker date="1528703883273" expanded="true" signature="3961:3996" ph="SELECT name role" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/left.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="295" column="73" lean-forward="false" selection-start-line="295" selection-start-column="73" selection-end-line="295" selection-end-column="73" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/index_channel.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="62" column="36" lean-forward="false" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-66">
+          <caret line="9" column="31" lean-forward="false" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" column="51" lean-forward="false" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/index.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="506">
+          <caret line="27" column="37" lean-forward="false" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-205">
+          <caret line="28" column="25" lean-forward="false" selection-start-line="28" selection-start-column="25" selection-end-line="28" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/web_html.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="389">
+          <caret line="26" column="21" lean-forward="false" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/utils/common.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="26" column="23" lean-forward="false" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/templates/top.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="12" column="36" lean-forward="false" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/channel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1839">
+          <caret line="152" column="41" lean-forward="false" selection-start-line="152" selection-start-column="41" selection-end-line="152" selection-end-column="41" />
+          <folding>
+            <element signature="e#23#49#0" expanded="true" />
+            <marker date="1528704710973" expanded="true" signature="395:435" ph="SELECT name,... user" />
+            <marker date="1528704710973" expanded="true" signature="720:768" ph="SELECT * FRO... channel" />
+            <marker date="1528704710973" expanded="true" signature="2161:2213" ph="INSERT INTO channel... " />
+            <marker date="1528704710973" expanded="true" signature="2948:3037" ph="UPDATE chann... " />
+            <marker date="1528704710973" expanded="true" signature="3524:3553" ph="DELETE FROM " />
+            <marker date="1528704710973" expanded="true" signature="4179:4237" ph="SELECT name,... channel" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/admin_user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1474">
+          <caret line="195" column="24" lean-forward="false" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="24" />
+          <folding>
+            <marker date="1528704710965" expanded="true" signature="778:813" ph="SELECT id FR... user" />
+            <marker date="1528704710965" expanded="true" signature="856:897" ph="SELECT passw... user" />
+            <marker date="1528704710965" expanded="true" signature="2058:2147" ph="INSERT INTO user... " />
+            <marker date="1528704710965" expanded="true" signature="2559:2599" ph="SELECT name,... user" />
+            <marker date="1528704710965" expanded="true" signature="2635:2653" ph="SELECT * FRO... user" />
+            <marker date="1528704710965" expanded="true" signature="4054:4129" ph="UPDATE user " />
+            <marker date="1528704710965" expanded="true" signature="4731:4757" ph="DELETE FROM " />
+            <marker date="1528704710965" expanded="true" signature="5387:5436" ph="SELECT name,... user" />
+            <marker date="1528704710965" expanded="true" signature="6142:6182" ph="SELECT name,... user" />
+            <marker date="1528704710965" expanded="true" signature="6217:6235" ph="SELECT * FRO... user" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/menu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="164" column="53" lean-forward="false" selection-start-line="164" selection-start-column="53" selection-end-line="164" selection-end-column="53" />
+          <folding>
+            <marker date="1528704808368" expanded="true" signature="393:428" ph="SELECT role_... user" />
+            <marker date="1528704808368" expanded="true" signature="707:755" ph="SELECT name menu" />
+            <marker date="1528704808368" expanded="true" signature="1388:1428" ph="SELECT name,... user" />
+            <marker date="1528704808368" expanded="true" signature="1464:1497" ph="SELECT id,na... menu" />
+            <marker date="1528704808368" expanded="true" signature="2514:2552" ph="INSERT INTO menu... " />
+            <marker date="1528704808368" expanded="true" signature="3138:3187" ph="UPDATE menu " />
+            <marker date="1528704808368" expanded="true" signature="3610:3636" ph="DELETE FROM " />
+            <marker date="1528704808368" expanded="true" signature="4265:4296" ph="SELECT name menu" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/zs_backend/api_1_0/auth.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="112" column="0" lean-forward="true" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
+          <folding>
+            <element signature="e#23#49#0" expanded="true" />
+            <marker date="1528704927698" expanded="true" signature="390:430" ph="SELECT name,... user" />
+            <marker date="1528704927698" expanded="true" signature="466:490" ph="SELECT id,na... role" />
+            <marker date="1528704927698" expanded="true" signature="1268:1300" ph="INSERT INTO role... " />
+            <marker date="1528704927698" expanded="true" signature="1769:1804" ph="UPDATE role " />
+            <marker date="1528704927698" expanded="true" signature="2217:2243" ph="DELETE FROM " />
+            <marker date="1528704927698" expanded="true" signature="2623:2654" ph="SELECT name role" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

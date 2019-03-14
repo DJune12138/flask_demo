@@ -1,0 +1,19 @@
+# -*- coding:utf-8 -*-
+"""
+此模块专门用于返回查询时间
+开始时间：当天0点
+结束时间：下一天0点
+"""
+from zs_backend.utils import time_util
+
+
+def start(time):
+    """开始时间"""
+
+    return time_util.formatDatestamp(time)
+
+
+def end(time):
+    """结束时间"""
+
+    return time_util.formatDatestamp(time) + 86400

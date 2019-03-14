@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>赠送统计报表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_daily_presentation"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate,
+    Channels=True, PT = True, SelectChannel = status_msg.channel, PlayerID = False,QueryType = 3, OThers =
+    status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<table id="table"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    // {% if status_msg.present_type == 0 %}
+    //     $('#present_type').find('option').eq(0).attr("selected", true)
+    // {% elif status_msg.present_type == 1 %}
+    //     $('#present_type').find('option').eq(1).attr("selected", true)
+    // {% elif status_msg.present_type == 2 %}
+    //     $('#present_type').find('option').eq(2).attr("selected", true)
+    // {% elif status_msg.present_type == 3 %}
+    //     $('#present_type').find('option').eq(3).attr("selected", true)
+    // {% elif status_msg.present_type == 4 %}
+    //     $('#present_type').find('option').eq(4).attr("selected", true)
+    // {% endif %}
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    window.operateEvents = {
+        'click #go_detail': function (e, value, item) {
+            new_iframe('赠送订单详情', '/games/presentation/detail?date=' + item.date_text + '&present_type=' + $('#present_type').val())
+        },
+    }
+
+    $('#table').bootstrapTable({
+        url: '/search/games/presentation/datas',
+        pagination: true,
+        pageSize: 100,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('present_type', 'beginDate', 'endDate')
+        },
+        columns:
+            [
+                {field: "date_text", title: "日期", sortable: true},
+                {field: "reg_count", title: "注册人数", sortable: true},
+                {field: "active_count", title: "活跃人数", sortable: true},
+                {field: "money", title: "日全部赠送总额", sortable: true},
+                {field: "pump", title: "日全部赠送总税收", sortable: true},
+                {field: "give_count", title: "赠送人数", sortable: true},
+                {field: "recv_count", title: "被赠送人数", sortable: true},
+                {field: "present_count", title: "赠送次数", sortable: true},
+                {field: "averge_presentation", title: "平均赠送金额", sortable: true, formatter: numFormat},
+                {field: '', title: '操作', events: operateEvents, formatter: '<a id="go_detail">查看详情</a>'}
+            ],
+    });
+
+    function numFormat(value) {
+        return value.toFixed(1)
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total: 0,
+                data: []
+            };
+        } else {
+            return {
+                total: res.data.length,
+                data: res.data
+            };
+        }
+    };
+</script>
+</body>
+</html>

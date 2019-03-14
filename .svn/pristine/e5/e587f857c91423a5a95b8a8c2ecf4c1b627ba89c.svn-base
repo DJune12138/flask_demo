@@ -1,0 +1,20 @@
+# -*- coding:utf-8 -*-
+
+game_name_dict = {1: u'百人牛', 2: u'红黑大战', 3: u'二人牛', 4: u'五人牛', 5: u'水浒传', 6: u'炸金花', 7: u'百人德州',
+                  8: u'森林舞会'}
+
+
+def generate_game_dict(search_data):
+    game_dict = dict()
+    game_dict['game_name'] = game_name_dict[search_data[2]]
+    game_dict['active_count'] = search_data[3]
+    game_dict['total_game_times'] = search_data[4]
+    game_dict['total_stake_coin'] = search_data[5]
+    game_dict['total_get_coin'] = search_data[6]
+    game_dict['win_player_num'] = search_data[7]
+    game_dict['lose_player_num'] = search_data[8]
+    game_dict['total_win'] = search_data[9]
+    game_dict['total_lose'] = search_data[10]
+    game_dict['pump'] = search_data[11]
+    game_dict['ai_win'] = search_data[12]
+    return game_dict

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>道具变更详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .pagination-coin {
+        margin: 30px auto 50px auto;
+        width: 800px;
+        height: 50px;
+    }
+
+    .pagination-coin a, .pagination-coin p {
+        padding-top: 1px;
+        display: inline-block;
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+        color: black;
+        border: 1px solid black;
+    }
+</style>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_item_change_data"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, QueryType = 3,
+    Channels=True, SelectChannel = status_msg.channel, PlayerID = status_msg.player_id, NickName = False,
+    OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<table id="table"></table>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/my97date/WdatePicker.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script type="text/javascript">
+    query_btn = $('#query_btn');
+
+    query_btn.click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refreshOptions', {queryParams: getParams});
+    })
+
+    $('#table').bootstrapTable({
+        url: '/search/game/item_change/datas',
+        queryParams: getParams,
+        striped: true,
+        pagination: true,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        silentSort: false,
+        queryParamsType: 'limit',
+        responseHandler: function (res) {
+            loadingShow(false);
+            if (res.result == 'ok') {
+                return {
+                    total: res.data.page_count,
+                    data: res.data.page_datas
+                };
+            } else {
+                return {
+                    total: 0,
+                    data: []
+                };
+            }
+        },
+        columns:
+            [
+                {field: "timeStamp", title: "时间", formatter: getLocalTime},
+                {field: "pid", title: "玩家ID", formatter: pid_format},
+                {field: "nick", title: "昵称"},
+                {field: "log_type", title: "日志类型"},
+                {field: "itemid", title: "道具ID"},
+                {field: "rest", title: "剩余"},
+            ],
+    });
+
+    function getParams(res) {
+        return {
+            size: res.limit,
+            offset: res.offset,
+            PlayerID: $('#PlayerID').val(),
+            beginDate: $('#beginDate').val(),
+            endDate: $('#endDate').val(),
+        };
+    };
+</script>
+</body>
+</html>

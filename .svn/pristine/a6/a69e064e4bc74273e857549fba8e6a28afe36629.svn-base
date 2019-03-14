@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工编辑</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .content_top{
+        text-align: right;
+        padding-right: 10px !important;
+    }
+    .update_user {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 90px;
+        float: left;
+        text-align: right;
+    }
+    input[type='checkbox'], input[type='radio'] {
+        left: -1px;
+        top: 11px;
+    }
+    h2{
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        width: 68px;
+        margin: 23px 0;
+    }
+
+    .content{
+        border:solid 1px #e6e6e6;
+    }
+    .content .content_top{
+        background: #f2f2f2;
+         padding: 5px 2px;
+        border-radius: 0px;
+    }
+    .content .content_item{
+        margin: 10px 10px;
+        border: 1px solid #e6e6e6;
+        padding: 0;
+    }
+    .content .content_item label{
+        margin: 0;
+        background: #FBFBFB;
+        width: 110px;
+        height: 38px;
+        border-right: 1px solid #e6e6e6;
+        font-size: 13px;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 38px;
+    }
+    .content .content_item input{
+        width: 90%;
+        border: none !important;
+        height: 100% !important;
+    }
+
+    .content .content_title {
+        font-size: 13px;
+        color: #666;
+        margin: 8px 0 0 20px;
+        display: inline-block;
+    }
+
+    .content .content_item input.radio {
+        cursor: pointer;
+        width: 13px;
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        margin-left: 10px !important;
+    }
+
+    .content .content_item .radio:last-child {
+        margin-left: 100px !important;
+    }
+
+    .content .content_item:last-child label {
+        height: auto;
+    }
+    .content .content_item input[type='checkbox']{
+        width: 13px !important;
+        height: 13px !important;
+        border: solid 1px #000 !important;
+        top: 0;
+    }
+    .content .content_item_last{
+        position: relative;
+    }
+    .content .content_item_last .span{
+        display: inline-block;
+        padding: 5px 0 5px 120px;
+    }
+    .content .content_item_last span{
+        display: block;
+        font-size: 13px;
+        margin: 3px 0;
+    }
+    .content .content_item_last label{
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+    .content .content_item_last label span{
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+    .btn-primary{
+        margin-bottom: 10px !important;
+    }
+</style>
+<body>
+<form action="{{ url_for('busi.set_user') }}" , method="post">
+    <input type="hidden" name="user_id" value="{{ user.user_id }}">
+    <div class="content">
+        <div class="content_top">
+            <input class="btn btn-primary btn-sm" type="button" id="cancel" value="返回员工列表">
+        </div>
+        <span class="content_title">编辑员工账号</span>
+        <p class="content_item">
+            <label>员工名</label>
+            <input type="text" placeholder="请输入员工名称" name="username" value="{{ user.name }}"/>
+            <!--<input type="text" placeholder="请输入员工名称" name="username" value="{{ user.name }}" hidden/>-->
+        </p>
+        <p class="content_item">
+            <label>员工昵称</label>
+            <input type="text" placeholder="请输入员工昵称" name="nick" value="{{ user.nick }}" required/>
+        </p>
+        <p class="content_item">
+            <label>登录密码</label>
+            <input type="password" placeholder="请输入登录密码(空为不修改)" name="password" value=""/>
+        </p>
+        <p class="content_item">
+            <label>游戏ID</label>
+            <input type="text" placeholder="游戏玩家ID" name="game_player_id" value="{{ user.game_player_id }}" required/>
+        </p>
+        <p class="content_item">
+            <label>账号等级</label>
+            <input class="radio" id="high" type="radio" name="access_level" value="1"/>高级
+            <input class="radio" id="low" type="radio" name="access_level" value="0"/>普通
+        </p>
+        <p class="content_item content_item_last">
+            <label><span>所需权限</span></label>
+            <span class="span">
+            {% for role in roles %}
+            {% if role.id|string in eroles %}
+            <span>
+                <input type="checkbox" name="role" value="{{ role.id }}" checked/>
+                {{ role.name }}
+            </span>
+            {% else %}
+            <span>
+                <input type="checkbox" name="role" value="{{ role.id }}"/>
+                {{ role.name }}
+            </span>
+            {% endif %}
+            {% endfor %}
+            </span>
+        </p>
+        <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+        <input class="btn btn-primary btn-sm" type="submit" name="" value="修改">
+    </div>
+    <!--<div class="update_user">-->
+        <!--<h2>编辑员工</h2>-->
+        <!--<div class="input_box">-->
+            <!--<input type="text" name="name_is_edit" value="{{ user.name_is_edit }}" hidden/>-->
+            <!--<div><span>员工名：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="text" placeholder="请输入员工名称" name="username" value="{{ user.name }}"/>-->
+            <!--<input type="text" placeholder="请输入员工名称" name="username" value="{{ user.name }}" hidden/>-->
+        <!--</div>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>员工昵称：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="text" placeholder="请输入员工昵称" name="nick" value="{{ user.nick }}" required/>-->
+        <!--</div>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>登录密码：&nbsp;&nbsp;</span></div>-->
+            <!--<input type="password" placeholder="请输入登录密码(空为不修改)" name="password" value=""/>-->
+        <!--</div>-->
+
+        <!--<div class="input_box">-->
+            <!--<div><span>账号等级：&nbsp;&nbsp;</span></div>-->
+            <!--&lt;!&ndash;<input id="high" type="radio" name="access_level" value="1"&ndash;&gt;-->
+                   <!--&lt;!&ndash;style="display: inline-block;"/>高级&ndash;&gt;-->
+            <!--&lt;!&ndash;<input id="low" type="radio" name="access_level" value="0"&ndash;&gt;-->
+                   <!--&lt;!&ndash;style="display: inline-block;"/>普通&ndash;&gt;-->
+        <!--</div>-->
+
+        <!--<div class="parent_check">-->
+            <!--<div class="auth_logo"><span>所属权限：&nbsp;&nbsp;</span></div>-->
+            <!--<div class="check_box">-->
+                <!--{% for role in roles %}-->
+                <!--{% if role.id|string in eroles %}-->
+                <!--<div>-->
+                    <!--<input type="checkbox" name="role" value="{{ role.id }}" checked/>-->
+                    <!--{{ role.name }}-->
+                <!--</div>-->
+                <!--{% else %}-->
+                <!--<div>-->
+                    <!--<input type="checkbox" name="role" value="{{ role.id }}"/>-->
+                    <!--{{ role.name }}-->
+                <!--</div>-->
+                <!--{% endif %}-->
+                <!--{% endfor %}-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<p style="text-indent: 150px;color: red">{{ errmsg }}</p>-->
+        <!--<input class="btn btn-primary btn-sm" type="submit" name="" value="修改">-->
+        <!--&lt;!&ndash;<input class="btn btn-primary btn-sm cancel" type="button" id="cancel" value="取消">&ndash;&gt;-->
+    </div>
+</form>
+</body>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.get_user") }}'
+    });
+
+    {% if user.access_level == 1 %}
+    $('#high').attr("checked", true)
+    {% else %}
+    $('#low').attr("checked", true)
+    {% endif %}
+
+</script>
+</html>

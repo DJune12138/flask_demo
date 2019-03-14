@@ -1,0 +1,5 @@
+#! /bin/bash
+
+touch ./logs/reload
+touch ./logs/touchforlogrotat
+uwsgi --ini uwsgi.ini

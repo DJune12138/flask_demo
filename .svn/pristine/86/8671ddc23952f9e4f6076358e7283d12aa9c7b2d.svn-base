@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏数据对比</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <style>
+        td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_game_data_compare"),
+    beginDate = status_msg.beginDate,
+    endDate = status_msg.endDate,
+    Channels=True,
+    SelectChannel = status_msg.channel, QueryType = 3,
+    OThers = status_msg.OThers,
+    Method='get') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<div id="container1" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container2" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container3" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container4" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container5" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container6" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+<div id="container7" style="max-width:600px;height:400px;float:left;margin-bottom: 40px"></div>
+
+<script src="/static/js/highcharts.js"></script>
+<script src="/static/js/exporting.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    $('#query_btn').click(function () {
+    loadingShow(true);
+        queryData();
+})
+
+    queryData();
+
+    function queryData() {
+        $.ajax({
+            url:'/search/game/data/compare',
+            type:'get',
+            data:{
+                beginDate1:$("#beginDate1").val(),
+                endDate1:$("#endDate1").val(),
+                beginDate2:$("#beginDate2").val(),
+                endDate2:$("#endDate2").val(),
+            },
+            success:function (res) {
+
+            }
+        })
+    }
+
+// function render(To, Title, Data) {
+//     new Highcharts.Chart({
+//         chart: {
+//             renderTo: To,//设置显示图表的容器
+//             type: "pie",//设置图表样式，可以为line,spline, scatter, splinearea bar,pie,area,column
+//             marginRight: 20,//右边间距
+//             marginBottom: 25//底部间距/空隙
+//         },
+//
+//         title: {
+//             text: Title
+//         },
+//         subtitle: {
+//             text: ''
+//         },
+//         colors: ['#F5DA81', '#81F7F3'],
+//         legend: {
+//             layout: 'vertical',
+//             align: 'right',
+//             verticalAlign: 'middle'
+//         },
+//         credits: {
+//             enabled: false
+//         },
+//         plotOptions: {
+//             pie: {
+//                 allowPointSelect: true,
+//                 cursor: 'pointer',
+//                 dataLabels: {
+//                     enabled: true,
+//                     inside: true,
+//                     format: '<b>{point.name}</b>: {point.y} <i>({point.percentage:.1f}%)</i>',
+//                     style: {
+//                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+//                     }
+//                 },
+//                 states: {
+//                     hover: {
+//                         enabled: false
+//                     }
+//                 },
+//                 slicedOffset: 20,         // 突出间距
+//                 point: {                  // 每个扇区是数据点对象，所以事件应该写在 point 下面
+//                     events: {
+//                         // 鼠标滑过是，突出当前扇区
+//                         mouseOver: function() {
+//                             this.slice();
+//                         },
+//                         // 鼠标移出时，收回突出显示
+//                         mouseOut: function() {
+//                             this.slice();
+//                         },
+//                         // 默认是点击突出，这里屏蔽掉
+//                         click: function() {
+//                             return false;
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         series: Data
+//     });
+// }
+
+// function render_column(To, Title, Data) {
+//     new Highcharts.Chart({
+//         chart: {
+//             renderTo: To,//设置显示图表的容器
+//             type: "column",//设置图表样式，可以为line,spline, scatter, splinearea bar,pie,area,column
+//             marginRight: 20,//右边间距
+//             marginBottom: 25//底部间距/空隙
+//         },
+//
+//         title: {
+//             text: Title
+//         },
+//         subtitle: {
+//             text: ''
+//         },
+//         colors: ['#81F7F3', '#F5DA81'],
+//         legend: {
+//             layout: 'vertical',
+//             align: 'right',
+//             verticalAlign: 'middle'
+//         },
+//         credits: {
+//             enabled: false
+//         },
+//         xAisx:{
+//             categories:["游戏总盈亏"]
+//         },
+//         plotOptions: {
+//             column: {
+//                 allowPointSelect: true,
+//                 cursor: 'pointer',
+//                 dataLabels: {
+//                     enabled: true,
+//                     inside: true,
+//                     format: '<b>{point.y}</b>',
+//                     style: {
+//                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+//                     }
+//                 },
+//                 states: {
+//                     hover: {
+//                         enabled: false
+//                     }
+//                 }
+//             }
+//         },
+//         series: Data
+//     });
+// }
+//
+// $(render("container1", "注册人数",
+//     [{
+//         type: 'pie',
+//         name: '注册人数',
+//         data: [
+//             ['日期2', {{ cur.reg_count }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.reg_count }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+//
+// $(render("container2", "活跃人数",
+//     [{
+//         type: 'pie',
+//         name: '活跃人数',
+//         data: [
+//             ['日期2', {{ cur.active_count }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.active_count }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+//
+// $(render_column("container3", "游戏盈亏",
+//     [
+//         {
+//             name: '日期1',
+//             data: [{{ pre.game_win }}]
+//         }, {
+//             name: '日期2',
+//             data: [{{ cur.game_win }}]
+//         }
+//         ]
+// ));
+//
+// $(render("container4", "上分",
+//     [{
+//         type: 'pie',
+//         name: '上分',
+//         data: [
+//             ['日期2', {{ cur.up_coin }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.up_coin }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+//
+// $(render("container5", "下分",
+//     [{
+//         type: 'pie',
+//         name: '下分',
+//         data: [
+//             ['日期2', {{ cur.down_coin }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.down_coin }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+//
+// $(render("container6", "充值",
+//     [{
+//         type: 'pie',
+//         name: '充值',
+//         data: [
+//             ['日期2', {{ cur.recharge }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.recharge }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+//
+// $(render("container7", "提现",
+//     [{
+//         type: 'pie',
+//         name: '提现',
+//         data: [
+//             ['日期2', {{ cur.withdraw }}],
+//             {
+//                 name: '日期1',
+//                 y: {{ pre.withdraw }},
+//                 sliced: true, // 突出显示这个点（扇区），用于强调。
+//             }
+//         ]
+//     }]
+//     )
+// );
+</script>
+</body>
+</html>

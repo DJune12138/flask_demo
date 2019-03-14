@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏盈利报表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_subgame_data"), beginDate = status_msg.beginDate, endDate =status_msg.endDate, QueryType = 3,
+    Channels=True, PT = False, SelectChannel = status_msg.channel, PlayerID = False,  Method='get') }}
+    {% endautoescape %}
+</div>
+<table id="table"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    $('#table').bootstrapTable({
+        url: '/search/subgame/datas',
+        pagination: true,
+        paginationPreText:'上一页',
+        paginationNextText:'下一页',
+        pageSize: 100,
+        showFooter:true,
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('beginDate','endDate')
+        },
+        columns:
+        [
+            {field:"game_name",title:"游戏名称",sortable:true,footerFormatter:'合计'},
+            {field:"roomid",title:"房间号",sortable:true,footerFormatter:''},
+            {field:"active_count",title:"活跃人数",footerFormatter:get_total,sortable:true},
+            {field:"total_game_times",title:"总局数",sortable:true,footerFormatter:get_total},
+            {field:"total_stake_coin",title:"投注总额",formatter:coin_format_no_color,footerFormatter:get_total_coin_rate,sortable:true},
+            {field:"total_get_coin",title:"产出总额",formatter:coin_format_no_color,footerFormatter:get_total_coin_rate,sortable:true},
+            {field:"win_player_num",title:"盈利人数",footerFormatter:get_total,sortable:true},
+            {field:"lose_player_num",title:"亏损人数",footerFormatter:get_total,sortable:true},
+            {field:"total_win",title:"玩家盈利金额",formatter:coin_format_no_color,footerFormatter:get_total_coin_rate,sortable:true},
+            {field:"total_lose",title:"玩家亏损金额",formatter:coin_format_no_color,footerFormatter:get_total_coin_rate,sortable:true},
+            {field:"pump",title:"游戏抽水额",sortable:true,formatter:coin_format_no_color,footerFormatter:get_total_coin_rate},
+            {field:"ai_win",title:"游戏盈利",sortable:true,formatter:coin_format,footerFormatter:get_total_coin_rate},
+            {field:"average_game_count",title:"平均游戏局数",sortable:true},
+        ],
+    });
+
+    function getHandler(res) {
+        if(res.data.length == 0){
+            setTimeout(function () {
+                $('.fixed-table-footer').hide()
+            },1)
+        }
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                data: []
+            };
+        } else {
+            return {
+                data: res.data
+            };
+        }
+    };
+</script>
+</body>
+</html>

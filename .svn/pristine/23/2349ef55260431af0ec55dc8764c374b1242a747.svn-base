@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收款通道统计</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+</head>
+<body>
+<main>
+    <div>
+        {% autoescape false %}
+        {{ search_bar(url_for("busi.distribution_commission_show"), beginDate = true, endDate = true, Channels =
+        False, QueryType = 3, Method='get') }}
+        {% endautoescape %}
+    </div>
+    <table class="table"></table>
+</main>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script>
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('.table').bootstrapTable('refresh');
+    })
+
+    $('table').bootstrapTable({
+        url: '/pay_channel_tj/show',
+        pagination: true,
+        pageSize: 100,
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('beginDate','endDate')
+        },
+        columns: [
+            {field: 'date',title: '日期'},
+            {field: 'pay_channel',title: '通道ID'},
+            {field: 'name',title: '通道名'},
+            {field: 'money',title: '金额',formatter:getMoney},
+            ]
+    });
+
+    function getMoney(value) {
+        return value / 100
+    }
+
+
+    function getHandler(res) {
+        loadingShow(false);
+        $.each(res.datas,function (index,item) {
+            item.name = res.pay_channel[item.pay_channel]
+        })
+        if (res.error == 'system_err') {
+            return {
+                data: []
+            };
+        } else {
+            return {
+                data: res.datas
+            };
+        }
+    };
+</script>
+</body>
+</html>

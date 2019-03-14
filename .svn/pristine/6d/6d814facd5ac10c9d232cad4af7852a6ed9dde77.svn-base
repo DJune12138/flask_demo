@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>渠道修改</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .update_channel {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 1000px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 300px;
+        float: left;
+        text-align: right;
+    }
+
+    .input_box input {
+        width: 200px;
+    }
+
+    textarea {
+        display: block;text-indent: 5px;
+        padding: 1px 0;
+        height:50px;
+        width:200px;
+    }.update_user {
+         margin: 50px 100px;
+         padding: 0;
+         width: 600px;
+         height: 300px;
+     }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 90px;
+        float: left;
+        text-align: right;
+    }
+    input[type='checkbox'], input[type='radio'] {
+        left: -1px;
+        top: 11px;
+    }
+    h2{
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        width: 68px;
+        margin: 23px 0;
+    }
+
+    .content{
+        border:solid 1px #e6e6e6;
+    }
+    .content .content_top{
+        background: #f2f2f2;
+        padding: 5px 2px;
+        border-radius: 0px;
+    }
+    .content .content_item{
+        margin: 10px 10px;
+        border: 1px solid #e6e6e6;
+        padding: 0;
+    }
+    .content .content_item label{
+        margin: 0;
+        background: #FBFBFB;
+        width: 110px;
+        height: 38px;
+        border-right: 1px solid #e6e6e6;
+        font-size: 13px;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 38px;
+    }
+    .content .content_item input{
+        width: 85%;
+        border: none !important;
+        height: 100% !important;
+    }
+
+    .content .content_title {
+        font-size: 13px;
+        color: #666;
+        margin: 8px 0 0 20px;
+        display: inline-block;
+    }
+
+    .content .content_item input.radio {
+        cursor: pointer;
+        width: 13px;
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        margin-left: 10px !important;
+    }
+
+    .content .content_item .radio:last-child {
+        margin-left: 100px !important;
+    }
+
+    .content .content_item:last-child label {
+        height: auto;
+    }
+    .content .content_item input[type='checkbox']{
+        width: 13px !important;
+        height: 13px !important;
+        border: solid 1px #000 !important;
+        top: 0;
+    }
+    .content .content_item_last{
+        position: relative;
+    }
+    .content .content_item_last .span{
+        display: inline-block;
+        padding: 5px 0 5px 120px;
+    }
+    .content .content_item_last span{
+        display: block;
+        font-size: 13px;
+        margin: 3px 0;
+    }
+    .content .content_item_last label{
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+    .content .content_item_last label span{
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+    .btn-primary{
+        margin-bottom: 10px !important;
+    }
+
+</style>
+<body>
+<form action="{{ url_for('busi.set_channel') }}" , method="post">
+    <input type="hidden" name="channel_id" value="{{ channel.id }}">
+    <div class="content">
+        <div class="content_top">
+            <input class="btn btn-primary btn-sm" type="button" id="cancel" value="返回渠道列表">
+        </div>
+        <span class="content_title">编辑渠道</span>
+        <p class="content_item">
+            <label>渠道英文名</label>
+            <input type="text" placeholder="请输入渠道英文名" name="name" value="{{ channel.name }}"/>
+        </p>
+        <p class="content_item">
+            <label>渠道web地址</label>
+            <input type="text" placeholder="请输入渠道web地址" name="web_url" value="{{ channel.web_url }}"/>
+        </p>
+        <p class="content_item">
+            <label>日志数据库地址</label>
+            <input type="text" placeholder="" name="game_log_db" value="{{ channel.game_log_db }}" required/>
+        </p>
+        <p class="content_item">
+            <label>h5地址跳转地址</label>
+            <input type="text" placeholder="请输入h5地址" name="h5_link" value="{{ channel.other_msg.h5_link }}"/>
+        </p>
+        <p class="content_item">
+            <label>金币转换比例</label>
+            <input type="text" placeholder="请输入金币转换比例（例: 100）" name="coin_rate" value="{{ channel.other_msg.coin_rate }}" required/>
+        </p>
+        <p class="content_item">
+            <label>API网关地址</label>
+            <input type="text" placeholder="" name="api" value="{{ channel.other_msg.api }}" required/>
+        </p>
+        <p class="content_item">
+            <label>APP热更地址</label>
+            <input type="text" placeholder="" name="hotup_url" value="{{ channel.other_msg.hotup_url }}" required/>
+        </p>
+        <p class="content_item">
+            <label>H5 API秘钥</label>
+            <input type="text" placeholder="" name="h5_api_key" value="{{ channel.other_msg.h5_api_key }}" />
+        </p>
+        <p class="content_item">
+            <label>微信appid</label>
+            <input type="text" placeholder="" name="wx_appid" value="{{ channel.other_msg.wx_appid }}" />
+        </p>
+        <p class="content_item">
+            <label>微信token</label>
+            <input type="text" placeholder="" name="wx_token" value="{{ channel.other_msg.wx_token }}" />
+        </p>
+        <p class="content_item">
+            <label>H5微信appid</label>
+            <input type="text" placeholder="" name="h5_wx_appid" value="{{ channel.other_msg.h5_wx_appid }}" />
+        </p>
+        <p class="content_item">
+            <label>H5微信token</label>
+            <input type="text" placeholder="" name="h5_wx_token" value="{{ channel.other_msg.h5_wx_token }}" />
+        </p>
+        <p class="content_item">
+            <label>短信验证</label>
+            <select name="sms_type">
+            {% if channel.other_msg.sms_type == "1" %}
+                <option value="1" selected = "selected">梦网云</option>
+                <option value="2">腾讯云</option>
+                <option value="3">阿里云</option>
+            {% elif channel.other_msg.sms_type == "2" %}
+                <option value="1">梦网云</option>
+                <option value="2" selected = "selected">腾讯云</option>
+                <option value="3">阿里云</option>
+            {% elif channel.other_msg.sms_type == "3" %}
+                <option value="1">梦网云</option>
+                <option value="2">腾讯云</option>
+                <option value="3" selected = "selected">阿里云</option>
+            {% else %}
+                <option value="1">梦网云</option>
+                <option value="2">腾讯云</option>
+                <option value="3">阿里云</option>
+            {% endif %}
+            </select>
+            <input type="text" placeholder="梦网云(USERID,PWD,KEY) 腾讯云(APPID,KEY,TEMPLATEID) 阿里云(APPID,KEY,TEMPLATEID,签名)" name="sms_config" value="{{ channel.other_msg.sms_config }}" />
+        </p>
+        <p class="content_item content_item_last">
+            <label><span>所需权限</span></label>
+            <span class="span">
+                <input type="checkbox" name="role" value="1" checked hidden/>
+                {% for role in roles %}
+                {% if role.id != 1 %}
+                    {% if role.id|string in eroles %}
+                        <span><input type="checkbox" name="role" value="{{ role.id }}" checked/>{{ role.name }}</span>
+                    {% else %}
+                        <span><input type="checkbox" name="role" value="{{ role.id }}"/> {{ role.name }}</span>
+                    {% endif %}
+                {% endif %}
+                {% endfor %}
+            </span>
+        </p>
+        <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+        <input class="btn btn-primary btn-sm" type="submit" name="" value="修改">
+    </div>
+</form>
+</body>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.get_channel") }}'
+    });
+
+</script>
+</html>

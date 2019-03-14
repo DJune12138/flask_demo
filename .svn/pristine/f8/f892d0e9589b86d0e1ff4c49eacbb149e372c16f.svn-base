@@ -1,0 +1,736 @@
+# -*- coding:utf-8 -*-
+
+from __future__ import division
+import time
+import json
+from flask import render_template, jsonify
+from flask.globals import session, request, current_app
+from zs_backend import SqlOperate
+from zs_backend.busi import busi
+from zs_backend.utils.channel_qry import LogQry
+from zs_backend.utils.common import login_require
+from zs_backend.utils import time_util, html_translate
+from zs_backend.utils import time_util
+
+BIGGER_RECHARGE = 500
+
+
+def init_status_msg(begin=True, end=True, player_id='',
+                    nick='', topup_type='', present_type='', channel=None, OThers_list=[]):
+    status_msg = dict()
+
+    if begin:
+        status_msg['beginDate'] = begin
+    else:
+        status_msg['beginDate'] = False
+
+    if end:
+        status_msg['endDate'] = end
+    else:
+        status_msg['endDate'] = False
+
+    if channel != None:
+        status_msg['channel'] = int(channel)
+
+    if topup_type != '':
+        status_msg['topup_type'] = int(topup_type)
+
+    if player_id != '':
+        status_msg['player_id'] = player_id
+    else:
+        status_msg['player_id'] = ''
+    if nick != '':
+        status_msg['nick'] = nick
+    else:
+        status_msg['nick'] = ''
+
+    if present_type != '':
+        status_msg['present_type'] = present_type
+    else:
+        status_msg['present_type'] = ''
+
+    OThers = []
+    for value_dict in OThers_list:
+        for key, value in value_dict.items():
+            if key == "agent_id":
+                agent_id_input = u'''
+                    <span>
+                        代理游戏ID：<input type="text" id="agent_id" name="agent_id" value="%s"> 
+                    </span> ''' % value
+                OThers.append(agent_id_input)
+
+            if key == "topup_type":
+                topup_type_select = u'''
+                <span colspan=1>
+                    充值类型：<select id="topup_type" name="topup_type">
+                            <option value="0">全部</option>
+                            <option value="1">网银</option>
+                            <option value="2">支付宝</option>
+                            <option value="3">微信</option>
+                            <option value="4">其他</option>
+                        </select>
+                </span>'''
+                OThers.append(topup_type_select)
+
+            if key == "topup_amount":
+                topup_amount_input = u'''<span> 充值金额：<input type="text" id="topup_amount"
+                                       name="topup_amount" value="%s"> </span>''' % value
+                OThers.append(topup_amount_input)
+
+            if key == "currency":
+                pass
+                # currency_input = u'''<td> 货币种类：<input type="text" id="currency" 
+                #                        name="currency" value="%s"> </td>''' % value
+                # OThers.append(currency_input)
+
+            if key == "present_type":
+                present_type_select = u'''
+                <span colspan=1>
+                    赠送类型：<select id="present_type" name="present_type">
+                            <option value="0">全部</option>
+                            <option value="1">玩家与玩家</option>
+                            <option value="2">玩家与代理（代理买分）</option>
+                            <option value="3">代理与代理</option>
+                            <option value="4">代理与玩家（代理卖分）</option>
+                        </select>
+                </span>'''
+                OThers.append(present_type_select)
+
+            if key == "present_amount":
+                present_amount_input = u'''<span> 赠送金额：<input type="text" id="present_amount" 
+                                       name="present_amount" value="%s"> </span>''' % value
+                OThers.append(present_amount_input)
+
+            OThers.reverse()  # 把赠送金额与赠送类型对换位置
+
+    status_msg['OThers'] = OThers
+    return status_msg
+
+
+@busi.route('/games/topup/datas', methods=['GET'])
+@login_require
+def get_daily_topup():
+    status_msg = init_status_msg(begin=11, end=11)
+
+    return render_template('topup_daily.html', status_msg=status_msg)
+
+
+## 查询当日充值数据统计
+def get_today_topup():
+    channel_id = session['select_channel']
+    today0 = time_util.today0()
+
+    pre_line = {}
+    pre_line['date_text'] = time_util.formatDate(today0)
+
+    # 注册人数
+    sql = '''
+        select count(1)
+        from log_role_reg
+        where time >= %d
+    ''' % (today0)
+    pre_line['reg_count'] = LogQry(channel_id).qry(sql)[0][0]
+
+    # 活跃人数
+    sql = '''
+        select count(distinct pid)
+        from log_account_login
+        where time >= %d
+    ''' % (today0)
+    pre_line['active_count'] = LogQry(channel_id).qry(sql)[0][0]
+
+    # 大额充值金额
+    sql = '''
+        select count(1), ifnull(sum(cost), 0), ifnull(sum(coin), 0), count(distinct pid), sum(if(cost > %d, 1, 0)), 
+            sum(if(cost > %d, cost, 0))
+        from admin_recharge
+        where time >= %d
+        and state = 1
+    ''' % (BIGGER_RECHARGE, BIGGER_RECHARGE, today0)
+    Result = LogQry(channel_id).qry(sql)[0]
+    pre_line['recharge_player_num'] = Result[3]
+    pre_line['recharge_count'] = Result[0]
+    pre_line['total_recharge'] = Result[1]
+    pre_line['recharge_coin'] = Result[2]
+    pre_line['bigger_recharge_count'] = Result[4]
+    pre_line['bigger_total_recharge'] = Result[5]
+
+    pre_line['bankrupt_player_count'] = 0
+    pre_line['bankrupt_count'] = 0
+
+    pre_line["arpu"] = 0
+    pre_line["arppu"] = 0
+    pre_line["bigger_recharge_rate"] = 0
+    pre_line["bigger_times_rate"] = 0
+    if pre_line['active_count'] > 0:
+        pre_line["arpu"] = pre_line["total_recharge"] / pre_line['active_count']
+    if pre_line["recharge_player_num"] > 0:
+        pre_line["arppu"] = pre_line["total_recharge"] / pre_line['recharge_player_num']
+    if pre_line["recharge_count"] > 0:
+        pre_line["bigger_recharge_rate"] = pre_line["bigger_total_recharge"] / pre_line['total_recharge']
+        pre_line["bigger_times_rate"] = pre_line["bigger_recharge_count"] / pre_line['recharge_count']
+
+    return jsonify(result='ok', data=[pre_line])
+
+
+@busi.route('/search/topup/datas', methods=['GET'])
+@login_require
+def search_daily_topup():
+    start = request.args.get('beginDate', '')
+    end = request.args.get('endDate', '')
+
+    start_date = time_util.formatDatestamp(start)
+    end_date = time_util.formatDatestamp(end)
+
+    today0 = time_util.today0()
+    if start_date == today0:
+        return get_today_topup()
+
+    channel_id = session['select_channel']
+
+    if start_date > end_date:
+        return jsonify(result='fail', msg=u'结束日期不能小于开始日期！')
+
+    start_date = int(time_util.formatTimeWithDesc(start_date, "%Y%m%d"))
+    end_date = int(time_util.formatTimeWithDesc(end_date, "%Y%m%d"))
+    search_sql = '''
+        SELECT time, ifnull(sum(reg_count), 0), ifnull(sum(active_count), 0), 
+                ifnull(sum(recharge_player_count), 0), ifnull(sum(recharge_count), 0),
+            ifnull(sum(bankrupt_player_count), 0), ifnull(sum(bankrupt_count), 0), ifnull(sum(total_recharge), 0),
+                ifnull(sum(recharge_coin), 0), ifnull(sum(bigger_recharge_count), 0),
+            ifnull(sum(bigger_recharge), 0), ifnull(sum(withdraw), 0), ifnull(sum(withdraw_count), 0)
+        FROM t_system 
+        WHERE time>=%d 
+        AND time<=%d
+        group by time
+        ORDER BY time;
+        ''' % (start_date, end_date)
+
+    game_db_qrl = LogQry(int(channel_id))
+    print search_sql
+    alltime_search_datas = game_db_qrl.qry(search_sql)
+
+    # 最终展示的数据列表
+    allday_datas = []
+
+    for line in alltime_search_datas:
+        if not line[0]:
+            continue
+        pre_line = {}
+        pre_line['date_text'] = time_util.date_str(line[0])
+        pre_line['reg_count'] = int(line[1])
+        pre_line['active_count'] = int(line[2])
+        pre_line['recharge_player_num'] = int(line[3])
+        pre_line['recharge_count'] = int(line[4])
+        pre_line['bankrupt_player_count'] = int(line[5])
+        pre_line['bankrupt_count'] = int(line[6])
+        pre_line['total_recharge'] = int(line[7])
+        pre_line['recharge_coin'] = int(line[8])
+        pre_line['bigger_recharge_count'] = int(line[9])
+        pre_line['bigger_total_recharge'] = int(line[10])
+        pre_line["arpu"] = 0
+        pre_line["arppu"] = 0
+        pre_line["bigger_recharge_rate"] = 0
+        pre_line["bigger_times_rate"] = 0
+        if pre_line['active_count'] > 0:
+            pre_line["arpu"] = pre_line["total_recharge"] / pre_line['active_count']
+        if pre_line["recharge_player_num"] > 0:
+            pre_line["arppu"] = pre_line["total_recharge"] / pre_line['recharge_player_num']
+        if pre_line["total_recharge"] > 0:
+            pre_line["bigger_recharge_rate"] = pre_line["bigger_total_recharge"] / pre_line['total_recharge']
+            pre_line["bigger_times_rate"] = pre_line["bigger_recharge_count"] / pre_line['recharge_count']
+        pre_line['withdraw'] = int(line[11])
+        pre_line['withdraw_count'] = int(line[12])
+        allday_datas.append(pre_line)
+
+    return jsonify(result='ok', data=allday_datas)
+
+
+@busi.route('/games/presentation/datas', methods=['GET'])
+@login_require
+def get_daily_presentation():
+    status_msg = init_status_msg(OThers_list=[{'present_type': ''}], begin=11, end=11)
+
+    return render_template('presentation_daily.html', status_msg=status_msg)
+
+
+## 查询当日赠送数据
+def search_daily_presentation_today():
+    present_type = int(request.args.get('present_type'))
+    channel = session['select_channel']
+    start = request.args.get('beginDate')
+    today0 = time_util.today0()
+
+    status_msg = init_status_msg(
+        begin=today0,
+        end=today0,
+        present_type=present_type,
+        channel=channel,
+        OThers_list=[{'present_type': ''}])
+
+    pre_line = {}
+    pre_line['date_text'] = time_util.formatDate(today0)
+
+    # 注册人数
+    sql = '''
+        select count(1)
+        from log_role_reg
+        where time >= %d
+    ''' % (today0)
+    pre_line['reg_count'] = LogQry(channel).qry(sql)[0][0]
+
+    # 活跃人数
+    sql = '''
+        select count(distinct pid)
+        from log_account_login
+        where time >= %d
+    ''' % (today0)
+    pre_line['active_count'] = LogQry(channel).qry(sql)[0][0]
+
+    pre_line['bankrupt_player_count'] = 0
+    pre_line['bankrupt_count'] = 0
+
+    ## 查询赠送情况
+    sql0 = '''
+        select count(1), ifnull(sum(money), 0), ifnull(sum(pump), 0), count(distinct give_id), count(distinct recv_id)
+        from log_bank_give
+        where time >= %d
+        %s
+    '''
+    if present_type == 0:
+        sql = sql0 % (today0, "")
+    elif present_type == 1:
+        sql = sql0 % (today0, "and give_agent = 0 and recv_agent = 0")
+    elif present_type == 2:
+        sql = sql0 % (today0, "and give_agent = 0 and recv_agent = 1")
+    elif present_type == 3:
+        sql = sql0 % (today0, "and give_agent = 1 and recv_agent = 1")
+    elif present_type == 4:
+        sql = sql0 % (today0, "and give_agent = 1 and recv_agent = 0")
+
+    [total_give_times, total_give_coin, total_give_pump, total_give_player_num, total_recv_player_num] = \
+        LogQry(channel).qry(sql)[0]
+
+    pre_line['money'] = total_give_coin
+    pre_line['pump'] = total_give_pump
+    pre_line['give_count'] = total_give_player_num
+    pre_line['recv_count'] = total_recv_player_num
+    pre_line['present_count'] = total_give_times
+    pre_line['averge_presentation'] = 0
+    if total_give_times > 0:
+        pre_line['averge_presentation'] = total_give_coin / total_give_times
+
+    return render_template('presentation_daily.html', status_msg=status_msg, datas=[pre_line])
+
+
+## 每日赠送数据详情
+@busi.route('/search/games/presentation/datas', methods=['GET'])
+@login_require
+def search_daily_presentation():
+    start = request.args.get('beginDate', '')
+    end = request.args.get('endDate', '')
+    present_type = int(request.args.get('present_type'))
+    channel = session['select_channel']
+
+    start_date = time_util.formatDatestamp(start)
+    end_date = time_util.formatDatestamp(end)
+    today0 = time_util.today0()
+    if start_date == today0:
+        return search_daily_presentation_today()
+
+    status_msg = init_status_msg(begin=start_date, end=end_date, present_type=present_type, channel=channel,
+                                 OThers_list=[{'present_type': ''}])
+
+    if start_date > end_date:
+        status_msg['errmsg'] = u"终止日期不能小于起始日期"
+        return render_template('presentation_daily.html', status_msg=status_msg)
+
+    start_date = int(time_util.formatTimeWithDesc(start_date, "%Y%m%d"))
+    end_date = int(time_util.formatTimeWithDesc(end_date, "%Y%m%d"))
+    search_t_sql = """
+        SELECT time, sum(reg_count), sum(active_count), sum(recharge_player_count), sum(bankrupt_player_count),
+            sum(bankrupt_count), give_coin_a2a, give_coin_a2p, give_coin_p2a, give_coin_p2p
+        FROM t_system 
+        WHERE time>=%d 
+        AND time<=%d 
+        group by time
+        """ % (start_date, end_date)
+
+    ## 最终数据
+    allday_datas = []
+    print search_t_sql
+    for line in LogQry(channel).qry(search_t_sql):
+        if not line[0]:
+            ## 防止没有数据时报错
+            continue
+        pre_line = {}
+        pre_line['date_text'] = time_util.date_str(line[0])
+        pre_line['reg_count'] = line[1]
+        pre_line['active_count'] = line[2]
+        pre_line['recharge_player_num'] = line[3]
+        pre_line['bankrupt_player_count'] = line[4]
+        pre_line['bankrupt_count'] = line[5]
+
+        if present_type == 0:  ## 查询全部赠送情况
+            D0 = json.loads(line[6])
+            D1 = json.loads(line[7])
+            D2 = json.loads(line[8])
+            D3 = json.loads(line[9])
+            total_give_times = D0["give_times"] + D1["give_times"] + D2["give_times"] + D3["give_times"]
+            total_give_coin = D0["give_coin"] + D1["give_coin"] + D2["give_coin"] + D3["give_coin"]
+            total_give_pump = D0["give_pump"] + D1["give_pump"] + D2["give_pump"] + D3["give_pump"]
+            total_give_player_num = D0["give_player_num"] + D1["give_player_num"] + D2["give_player_num"] \
+                                    + D3["give_player_num"]
+            total_recv_player_num = D0["recv_coin_player_num"] + D1["recv_coin_player_num"] + \
+                                    D2["recv_coin_player_num"] + D3["recv_coin_player_num"]
+        elif present_type == 1:
+            D0 = json.loads(line[9])
+            total_give_times = D0["give_times"]
+            total_give_coin = D0["give_coin"]
+            total_give_pump = D0["give_pump"]
+            total_give_player_num = D0["give_player_num"]
+            total_recv_player_num = D0["recv_coin_player_num"]
+        elif present_type == 2:
+            D0 = json.loads(line[8])
+            total_give_times = D0["give_times"]
+            total_give_coin = D0["give_coin"]
+            total_give_pump = D0["give_pump"]
+            total_give_player_num = D0["give_player_num"]
+            total_recv_player_num = D0["recv_coin_player_num"]
+        elif present_type == 3:
+            D0 = json.loads(line[6])
+            total_give_times = D0["give_times"]
+            total_give_coin = D0["give_coin"]
+            total_give_pump = D0["give_pump"]
+            total_give_player_num = D0["give_player_num"]
+            total_recv_player_num = D0["recv_coin_player_num"]
+        elif present_type == 4:
+            D0 = json.loads(line[7])
+            total_give_times = D0["give_times"]
+            total_give_coin = D0["give_coin"]
+            total_give_pump = D0["give_pump"]
+            total_give_player_num = D0["give_player_num"]
+            total_recv_player_num = D0["recv_coin_player_num"]
+
+        pre_line['money'] = total_give_coin
+        pre_line['pump'] = total_give_pump
+        pre_line['give_count'] = total_give_player_num
+        pre_line['recv_count'] = total_recv_player_num
+        pre_line['present_count'] = total_give_times
+        pre_line['averge_presentation'] = 0
+        if total_give_times > 0:
+            pre_line['averge_presentation'] = total_give_coin / total_give_times
+
+        allday_datas.append(pre_line)
+
+    return render_template('presentation_daily.html', status_msg=status_msg, datas=allday_datas)
+
+
+@busi.route('/games/presentation/detail', methods=['GET'])
+@login_require
+def get_detail_presentation():
+    status_msg = init_status_msg(OThers_list=[{'player_id': ''}, {'nick': ''},
+                                              {'present_amount': ''}, {'present_type': ''}])
+
+    return render_template('presentation_detail.html', status_msg=status_msg)
+
+
+@busi.route('/search/games/presentation/details', methods=['GET'])
+@login_require
+def search_presentation_detail():
+    """赠送订单详情查询"""
+
+    date = request.args.get('date')
+    start = request.args.get('beginDate', '')
+    end = request.args.get('endDate', '')
+    player_id = request.args.get('PlayerID', '')
+    nick = request.args.get('NickName', '')
+    money = request.args.get('present_amount', '')
+    present_type = request.args.get('present_type', '')
+    channel = session['select_channel']
+    size = request.args.get('size')
+    offset = request.args.get('offset')
+
+    start_date = time_util.formatDatestamp(start)
+    end_date = time_util.formatDatestamp(end)
+    if date:
+        start_date = time_util.formatDatestamp(date)
+        end_date = time_util.formatDatestamp(date)
+
+    if start_date > end_date:
+        return jsonify(result=0, msg=u'开始时间不能大于结束时间！')
+    if nick and player_id:
+        return jsonify(result=0, msg=u'玩家昵称与玩家ID只能输入其一！')
+
+    game_log_db = LogQry(channel)
+
+    if nick:
+        nick_sql = "SELECT id FROM player WHERE nick='%s'" % nick
+        if len(game_log_db.qry(nick_sql)) != 0:
+            player_id = game_log_db.qry(nick_sql)[0][0]
+        else:
+            player_id = -1
+    if player_id:
+        play_id_str = " AND (give_id=%s or recv_id=%s)" % (player_id, player_id)
+    else:
+        play_id_str = ''
+
+    if money:
+        try:
+            money = int(money)
+            money_str = " AND money>=%s" % money
+        except Exception as e:
+            money_str = ''
+    else:
+        money_str = ''
+
+    present_type_str = ''
+    if present_type == '0':
+        present_type_str = ''
+    elif present_type == '1':
+        present_type_str = ' AND (give_agent=0 AND recv_agent=0)'
+    elif present_type == '2':
+        present_type_str = ' AND (give_agent=0 AND recv_agent=1)'
+    elif present_type == '3':
+        present_type_str = ' AND (give_agent=1 AND recv_agent=1)'
+    elif present_type == '4':
+        present_type_str = ' AND (give_agent=1 AND recv_agent=0)'
+
+    # 总数据条数、总赠送金币、总缴纳税收
+    retrieve_sql = """SELECT count(*),sum(money),sum(pump)
+                      FROM log_bank_give
+                      WHERE time>=%s AND time<%s
+                      AND 1=1 %s%s%s;""" \
+                   % (start_date, end_date + 86399, play_id_str, money_str, present_type_str)
+    total_data = LogQry(channel).qry(retrieve_sql)[0]
+    total_dict = dict()
+    total_dict['total_data'] = total_data[0]
+    try:
+        total_dict['total_money'] = float(total_data[1])
+    except TypeError:
+        total_dict['total_money'] = 0
+    try:
+        total_dict['total_pump'] = float(total_data[2])
+    except TypeError:
+        total_dict['total_pump'] = 0
+
+    give_sql = '''
+        SELECT time, give_id, give_agent, 
+                (select nick from player where id = give_id), 
+                (select last_login_ip from player where id=give_id),
+            recv_id, recv_agent, (select nick from player where id = recv_id), 
+                 (select last_login_ip from player where id=recv_id), money, 
+            pump
+        FROM log_bank_give 
+        WHERE time>=%d AND time<%d 
+        AND 1=1 %s%s%s 
+        ORDER BY time DESC
+        LIMIT %s,%s;
+    ''' % (start_date, end_date + 86399, play_id_str, money_str, present_type_str, offset, size)
+
+    alltime_datas = LogQry(channel).qry(give_sql)
+
+    time_search_data = []
+    recvid_list = []
+    for time_stamp, give_id, give_agent, give_nick, give_last_login_ip, \
+        recv_id, recv_agent, recv_nick, recv_last_login_ip, money, \
+        pump in alltime_datas:
+        recvid_list.append(recv_id)
+        present_dict = dict()
+        present_dict['time'] = time_util.formatDateTime(time_stamp)
+        present_dict['give_id'] = give_id
+        present_dict['give_nick'] = give_nick
+        present_dict['give_last_login_ip'] = give_last_login_ip
+        present_dict['recv_id'] = recv_id
+        present_dict['recv_nick'] = recv_nick
+        present_dict['recv_last_login_ip'] = recv_last_login_ip
+        present_dict['money'] = money
+        present_dict['pump'] = pump
+        if give_agent == 0:
+            if recv_agent == 0:
+                present_dict['present_type'] = u"玩家与玩家"
+            elif recv_agent == 1:
+                present_dict['present_type'] = u"玩家与代理"
+        elif give_agent == 1:
+            if recv_agent == 0:
+                present_dict['present_type'] = u"代理与玩家"
+            elif recv_agent == 1:
+                present_dict['present_type'] = u"代理与代理"
+        time_search_data.append(present_dict)
+
+    return jsonify(result=1, data=time_search_data, total=total_dict)
+
+
+@busi.route('/games/distribution/datas', methods=['GET'])
+@login_require
+def get_distribution_daily():
+    status_msg = init_status_msg(OThers_list=[{'agent_id': ''}])
+
+    return render_template('distribution_daily.html', status_msg=status_msg)
+
+
+@busi.route('/search/games/distribution/datas', methods=['GET'])
+@login_require
+def search_distribution_daily():
+    start = request.args.get('beginDate')
+    end = request.args.get('endDate')
+    agent_id = request.args.get('agent_id', '')
+    channel_id = session['select_channel']
+
+    if agent_id:
+        agent_str = ' AND pid=%s' % agent_id
+    else:
+        agent_str = ''
+
+    start_date = time_util.formatDatestamp(start)
+    end_date = time_util.formatDatestamp(end)
+
+    status_msg = init_status_msg(begin=start_date, end=end_date, channel=channel_id,
+                                 OThers_list=[{'agent_id': agent_id}])
+
+    if start_date > end_date:
+        status_msg['errmsg'] = u"终止日期不能小于起始日期"
+        return render_template('distribution_daily.html', status_msg=status_msg)
+
+    search_t_sql = """SELECT time, pid, pump, pump1, pump2, pump3, nick
+                    FROM t_distribution_day 
+                    LEFT JOIN player 
+                    ON pid=id 
+                    WHERE time>=%d 
+                    AND time<%d 
+                    %s ORDER BY time;""" \
+                   % (start_date, end_date + 86400, agent_str)
+
+    game_db_qrl = LogQry(int(channel_id))
+    t_pump_datas = game_db_qrl.qry(search_t_sql)
+
+    allday_datas = []
+    day_dict = dict()
+    for day_stamp, pid, pump, pump1, pump2, pump3, nick in t_pump_datas:
+        day_dict['date'] = time_util.formatDate(day_stamp)
+        day_dict['channel_id'] = channel_id
+        day_dict['pid'] = pid
+        day_dict['nick'] = nick
+        day_dict['pump'] = pump
+        day_dict['pump1'] = 0
+        day_dict['pump2'] = 0
+        day_dict['pump3'] = 0
+        for pid_1, pump11 in json.loads(pump1).items():
+            day_dict['pump1'] += pump11
+        for pid_2, pump22 in json.loads(pump2).items():
+            day_dict['pump2'] += pump22
+        for pid_3, pump33 in json.loads(pump3).items():
+            day_dict['pump3'] += pump33
+        allday_datas.append(day_dict)
+        day_dict = {}
+
+    return render_template('distribution_daily.html', status_msg=status_msg, datas=allday_datas)
+
+
+@busi.route('/games/distribution/detail', methods=['GET'])
+@login_require
+def get_distribution_detail():
+    status_msg = init_status_msg(OThers_list=[{'agent_id': ''}])
+
+    return render_template('distribution_detail.html', status_msg=status_msg)
+
+
+@busi.route('/search/games/distribution/detail', methods=['GET'])
+@login_require
+def search_distribution_detail():
+    date = request.args.get('date')
+    start = request.args.get('beginDate')
+    end = request.args.get('endDate')
+    agent_id = request.args.get('agent_id', '')
+    channel_id = session['select_channel']
+
+    if date:
+        start_date = time_util.formatDatestamp(date)
+        end_date = time_util.formatDatestamp(date)
+    elif start and end:
+        start_date = time_util.formatDatestamp(start)
+        end_date = time_util.formatDatestamp(end)
+
+    status_msg = init_status_msg(begin=start_date, end=end_date, channel=channel_id,
+                                 OThers_list=[{'agent_id': agent_id}])
+
+    if start_date > end_date:
+        status_msg['errmsg'] = u"终止日期不能小于起始日期"
+        return render_template('distribution_detail.html', status_msg=status_msg)
+
+    if agent_id:
+        agent_str = ' AND pid=%s' % agent_id
+    else:
+        status_msg['errmsg'] = u"请输入代理游戏ID查询"
+        return render_template('distribution_detail.html', status_msg=status_msg)
+
+    search_t_sql = """SELECT time, pid, pump, pump1, pump2, pump3, nick
+                    FROM t_distribution_day 
+                    LEFT JOIN 
+                    player ON pid=id 
+                    WHERE time>=%d 
+                    AND time<%d 
+                    %s;""" \
+                   % (start_date, end_date + 86400, agent_str)
+    print search_t_sql
+
+    game_db_qrl = LogQry(int(channel_id))
+    t_pump_datas = game_db_qrl.qry(search_t_sql)
+    print t_pump_datas
+
+    allday_datas = []
+    for day_stamp, pid, pump, pump1, pump2, pump3, nick in t_pump_datas:
+        day_dict = dict()
+        day_dict['date'] = time_util.formatDate(day_stamp)
+        day_dict['channel_id'] = channel_id
+        day_dict['pid'] = pid
+        day_dict['nick'] = nick
+        day_dict['pump'] = pump
+        day_dict['pump1'] = 0
+        day_dict['pump2'] = 0
+        day_dict['pump3'] = 0
+        day_dict['pump1_list'] = []
+        day_dict['pump2_list'] = []
+        day_dict['pump3_list'] = []
+        for pid_1, pump11 in json.loads(pump1).items():
+            pump1_dict = dict()
+            day_dict['pump1'] += pump11
+
+            select_sql = """SELECT nick from player WHERE id=%s""" % pid_1
+            player_nick = game_db_qrl.qry(select_sql)[0][0]
+            pump1_dict['pid'] = pid_1
+            pump1_dict['nick'] = player_nick
+            pump1_dict['pump'] = pump11
+            day_dict['pump1_list'].append(pump1_dict)
+
+        for pid_2, pump22 in json.loads(pump2).items():
+            pump2_dict = dict()
+            day_dict['pump2'] += pump22
+
+            select_sql = """SELECT nick from player WHERE id=%s""" % pid_2
+            player_nick = game_db_qrl.qry(select_sql)[0][0]
+            pump2_dict['pid'] = pid_2
+            pump2_dict['nick'] = player_nick
+            pump2_dict['pump'] = pump22
+            day_dict['pump2_list'].append(pump2_dict)
+
+        for pid_3, pump33 in json.loads(pump3).items():
+            pump3_dict = dict()
+            day_dict['pump3'] += pump33
+
+            select_sql = """SELECT nick from player WHERE id=%s""" % pid_3
+            player_nick = game_db_qrl.qry(select_sql)[0][0]
+            pump3_dict['pid'] = pid_3
+            pump3_dict['nick'] = player_nick
+            pump3_dict['pump'] = pump33
+            day_dict['pump3_list'].append(pump3_dict)
+        allday_datas.append(day_dict)
+
+    return render_template('distribution_detail.html', status_msg=status_msg, datas=allday_datas)
+
+
+# todo :每天赠送数据详情
+@busi.route('/games/presentation/details', methods=['GET'])
+@login_require
+def get_presentation_detail():
+    return render_template('presentation_detail.html', datas=[1, 2])

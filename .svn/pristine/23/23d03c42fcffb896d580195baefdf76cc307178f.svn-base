@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>访客权限管理</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+        table tr:first-child th {
+            background: #fff;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        table tr:first-child th:hover {
+            background: #fff !important;
+        }
+
+        .black_confrm {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+        }
+
+        .black_confrm div {
+            width: 600px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 30px 10px 20px 10px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 3px;
+            transform: translate(-50%, -50%);
+        }
+
+        .white_confrm {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+        }
+
+        .white_confrm div {
+            width: 240px;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 30px 10px 20px 10px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 3px;
+            transform: translate(-50%, -50%);
+        }
+
+        .black_confrm_ip {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+        }
+
+        .black_confrm_ip div {
+            width: 240px;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 30px 10px 20px 10px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 3px;
+            transform: translate(-50%, -50%);
+        }
+
+        .white_confrm_ip {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+        }
+
+        .white_confrm_ip div {
+            width: 240px;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 30px 10px 20px 10px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 3px;
+            transform: translate(-50%, -50%);
+        }
+        .black_confrm input,.black_confrm select,.black_confrm textarea{
+            width: 400px;
+            border: solid 1px #ededed;
+        }
+        .black_confrm textarea{
+            height: 60px;
+            min-height: 60px;
+            max-height: 200px;
+            min-width: 400px;
+            max-width: 400px;
+            border-radius: 3px;
+            padding: 5px;
+        }
+        .black_confrm input.btn-sm{
+            width: 80px;
+        }
+        .black_confrm span{
+            width: 50px;
+            display: inline-block;
+            text-align: left;
+        }
+        input[name=pid]{
+            width: 150px !important;
+        }
+        input[name=ip]{
+            width: 500px !important;
+        }
+    </style>
+</head>
+<body onload="load()">
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<span id="user_or_ip" hidden>{{ status_msg.user_or_ip }}</span>
+<!--<input type="button" value="游戏账号黑白名单设置" id="button_user" class="btn btn-primary btn-sm">-->
+<!--<input type="button" value="IP地址黑白名单设置" id="button_ip" class="btn btn-primary btn-sm">-->
+<div id="user_black_white" hidden>
+    <div>
+        <form action="/games/users/list" method="post">
+            <div class="search">
+            <span>
+                <label>玩家ID: </label>
+                    <input type="text" name="pid" value="{{ status_msg.pid }}" id="input-pid"
+                           placeholder="请输入玩家ID">
+            </span>
+                <input type="submit" id="query_btn" class="btn btn-primary btn-sm"
+                       value="查询">
+                <input type="button" id="add_black_btn" class="btn btn-primary btn-sm"
+                       value="加黑名单">
+                <input type="button" id="add_white_btn" class="btn btn-primary btn-sm"
+                       value="加白名单">
+            </div>
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th colspan=7>黑名单</th>
+        </tr>
+        <tr>
+            <th>玩家ID</th>
+            <th>参与局数</th>
+            <th>充值金额</th>
+            <th>提现金额</th>
+            <th>金币数量</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        {% for data in datas.black_list %}
+        <tr>
+            <th>{{ data.pid }}</th>
+            <th>{{ data.game_count }}</th>
+            <th>{{ data.total_recharge }}</th>
+            <th>{{ data.total_withdraw }}</th>
+            <th>{{ data.coin }}/{{ data.counter }}</th>
+            <th>{{ data.remark }}</th>
+            <th><a class='delete_black' pid="{{ data.pid }}" href="">删除</a></th>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table>
+        <tr>
+            <th colspan=7>白名单</th>
+        </tr>
+        <tr>
+            <th>玩家ID</th>
+            <th>参与局数</th>
+            <th>充值金额</th>
+            <th>提现金额</th>
+            <th>金币数量</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        {% for data in datas.white_list %}
+        <tr>
+            <th>{{ data.pid }}</th>
+            <th>{{ data.game_count }}</th>
+            <th>{{ data.total_recharge }}</th>
+            <th>{{ data.total_withdraw }}</th>
+            <th>{{ data.coin }}/{{ data.counter }}</th>
+            <th>{{ data.remark }}</th>
+            <th><a class='delete_white' pid="{{ data.pid }}" href="">删除</a></th>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <section class="black_confrm">
+        <div>
+            <p><span>玩家ID:</span><input class="pid" type="text"></p>
+            <p><span>原因:</span> <textarea class="remark" cols="30" rows="10" placeholder="请输入原因"></textarea></p>
+            <p>
+                <input class="btn btn-primary btn-sm submit" type="submit" name="" value="加黑名单">
+                <input class="btn-sm cancel" type="submit" name="" value="取消">
+            </p>
+        </div>
+    </section>
+    <!--<section class="white_confrm">-->
+        <!--<div>-->
+            <!--<p></p>-->
+            <!--<textarea id="white_remark" cols="30" rows="10" placeholder="请输入将玩家加入白名单的原因"></textarea>-->
+            <!--<p>-->
+                <!--<input class="btn btn-primary btn-sm submit" type="submit" name="" value="发布">-->
+                <!--<input class="btn-sm cancel" type="submit" name="" value="取消">-->
+            <!--</p>-->
+        <!--</div>-->
+    <!--</section>-->
+</div>
+
+<div id="ip_black_white">
+    <div>
+        <form action="/games/ip/retrieve" method="get">
+            <div class="search">
+            <span>
+                    <input type="text" name="ip" value="{{ status_msg.ip }}" id="input-ip"
+                           placeholder="请输入国家、地区、IP，多个信息请用空格隔开，如：菲律宾 澳门 8.8.8.8" style="width:500px">
+            </span>
+                <input type="submit" id="query_btn_ip" class="btn btn-primary btn-sm"
+                       value="查询">
+                <input type="button" id="add_black_btn_ip" class="btn btn-primary btn-sm"
+                       value="加黑名单">
+                <input type="button" id="add_white_btn_ip" class="btn btn-primary btn-sm"
+                       value="加白名单">
+            </div>
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th colspan=7>黑名单</th>
+        </tr>
+        <tr>
+            <th>国家/地区/IP</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        {% for data in black %}
+        <tr>
+            <td>{{ data.ip }}</td>
+            <td>{{ data.remark }}</td>
+            <td><a class='delete_ip' pid="{{ data.id }}" href="">删除</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table style="margin-top: 30px;">
+        <tr>
+            <th colspan=7>白名单</th>
+        </tr>
+        <tr>
+            <th>国家/地区/IP</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        {% for data in white %}
+        <tr>
+            <td>{{ data.ip }}</td>
+            <td>{{ data.remark }}</td>
+            <td><a class='delete_ip' pid="{{ data.id }}" href="">删除</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <section class="black_confrm_ip">
+        <div>
+            <p></p>
+            <textarea id="black_remark_ip" cols="30" rows="10" placeholder="请输入将国家/地区/IP加入黑名单的原因"></textarea>
+            <p>
+                <input class="btn btn-primary btn-sm submit" type="submit" name="" value="发布">
+                <input class="btn-sm cancel" type="submit" name="" value="取消">
+            </p>
+        </div>
+    </section>
+    <section class="white_confrm_ip">
+        <div>
+            <p></p>
+            <textarea id="white_remark_ip" cols="30" rows="10" placeholder="请输入将国家/地区/IP加入白名单的原因"></textarea>
+            <p>
+                <input class="btn btn-primary btn-sm submit" type="submit" name="" value="发布">
+                <input class="btn-sm cancel" type="submit" name="" value="取消">
+            </p>
+        </div>
+    </section>
+</div>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+</body>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    function load(){
+        // $('#query_btn_ip').click();
+    }
+    $('#black_channel').html($('#channel').html())
+    // 切换IP地址黑白名单设置
+    $('#button_ip').click(function () {
+        $('#user_black_white').hide();
+        $('#ip_black_white').show()
+    });
+
+    // 切换游戏账号黑白名单设置
+    $('#button_user').click(function () {
+        $('#ip_black_white').hide();
+        $('#user_black_white').show()
+    });
+
+    // 判断显示游戏账号黑白名单设置或者IP地址黑白名单设置
+    function user_or_ip() {
+        if ($('#user_or_ip').html() == 2) {
+            $('#button_ip').click()
+        }
+    }
+
+    // 加载页面马上执行
+    // user_or_ip();
+    black_confrm = $('.black_confrm');
+    black_channel = black_confrm.find('#black_channel');
+    pid = black_confrm.find('.pid');
+    remark = black_confrm.find('.remark');
+
+    $('#add_black_btn').click(function () {
+        detailShow(true);
+    });
+    $('#add_white_btn').click(function () {
+        detailShow(false);
+    });
+
+    function detailShow(isBlack){
+        if(isBlack){
+            black_confrm.find('.submit').val('加黑名单');
+        }else{
+            black_confrm.find('.submit').val('加白名单');
+        };
+        pid.val('');
+        remark.val('');
+        black_confrm.fadeIn();
+    }
+
+    function submit(url){
+        var params = {
+            pid: pid.val(),
+            channel: black_channel.val(),
+            remark: remark.val(),
+        };
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (items) {
+                if(items.error == 'system_err'){
+                    showAlert('服务器忙，请稍后再试')
+                }else{
+                    showAlert(items.errmsg,'success');
+                    black_confrm.fadeOut();
+                }
+            }
+        });
+    }
+
+    var url;
+    $('.black_confrm .submit').click(function () {
+        if($(this).val() == '加黑名单'){
+            url = '{{ url_for("busi.add_user_to_black") }}';
+        }else{
+            url = '{{ url_for("busi.add_user_to_white") }}';
+        }
+        submit(url);
+    });
+    $('.black_confrm .cancel').click(function () {
+        $('.black_confrm').fadeOut();
+    });
+
+    // 玩家删除黑名单
+    $('.delete_black').click(function () {
+        var pid = $(this).attr('pid');
+        var params = {
+            'pid': pid,
+        };
+        $.ajax({
+            url: '{{ url_for("busi.delete_black_player") }}',
+            type: 'DELETE',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (response) {
+                alert(response.errmsg);
+                $('#query_btn').click();
+            }
+        });
+    });
+
+    // 玩家删除白名单
+    $('.delete_white').click(function () {
+        var pid = $(this).attr('pid');
+        var params = {
+            'pid': pid,
+        };
+        $.ajax({
+            url: '{{ url_for("busi.delete_white_player") }}',
+            type: 'DELETE',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (response) {
+                alert(response.errmsg);
+                $('#query_btn').click();
+            }
+        });
+    });
+
+    // 国家/地区/IP添加黑名单
+    $('#add_black_btn_ip').click(function () {
+        $('.black_confrm_ip').fadeIn()
+    });
+    $('.black_confrm_ip .submit').click(function () {
+        var channel_id = $('#channel_ip').find("option:selected").val();
+        var ip = $('#input-ip').val();
+        var black_remark = $('#black_remark_ip').val();
+        var params = {
+            'ip': ip,
+            'channel': channel_id,
+            'remark': black_remark
+        };
+        $.ajax({
+            url: '{{ url_for("busi.add_ip_to_black") }}',
+            type: 'POST',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (response) {
+                if (response.result == 0) {
+                    parent.window.showAlert(response.msg);
+                    return;
+                }
+                parent.window.showAlert('添加成功', 'success');
+                $('#input-ip').val('');
+                $('#query_btn_ip').click();
+            }
+        });
+    });
+    $('.black_confrm_ip .cancel').click(function () {
+        $('.black_confrm_ip').fadeOut();
+        $('#black_remark_ip').val('')
+    });
+
+    // 国家/地区/IP添加白名单
+    $('#add_white_btn_ip').click(function () {
+        $('.white_confrm_ip').fadeIn()
+    });
+    $('.white_confrm_ip .submit').click(function () {
+        var channel_id = $('#channel_ip').find("option:selected").val();
+        var ip = $('#input-ip').val();
+        var white_remark = $('#white_remark_ip').val();
+        var params = {
+            'ip': ip,
+            'channel': channel_id,
+            'remark': white_remark
+        };
+        $.ajax({
+            url: '{{ url_for("busi.add_ip_to_white") }}',
+            type: 'POST',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (response) {
+                if (response.result == 0) {
+                    parent.window.showAlert(response.msg);
+                    return;
+                }
+                parent.window.showAlert('添加成功', 'success');
+                $('#input-ip').val('');
+                $('#query_btn_ip').click();
+            }
+        });
+    });
+    $('.white_confrm_ip .cancel').click(function () {
+        $('.white_confrm_ip').fadeOut();
+        $('#white_remark_ip').val('')
+    });
+
+    // 国家/地区/IP删除黑白名单
+    $('.delete_ip').click(function () {
+        var pid = $(this).attr('pid');
+        var params = {
+            'pid': pid
+        };
+        $.ajax({
+            url: '{{ url_for("busi.delete_ip") }}',
+            type: 'DELETE',
+            data: JSON.stringify(params),
+            contentType: 'application/json',
+            success: function (response) {
+                parent.window.showAlert('删除成功','success');
+                // alert(response.msg);
+                $('#input-ip').val('');
+                $('#query_btn_ip').click();
+            }
+        });
+    });
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 1000)
+    }
+</script>
+</html>

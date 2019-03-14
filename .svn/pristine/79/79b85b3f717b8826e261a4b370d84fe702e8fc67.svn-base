@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台渠道管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style type="text/css">
+        .update, .delete {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .update:hover, .delete:hover {
+            color: blue;
+        }
+
+        table tr td {
+            word-break: break-all;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        table tr td:last-child {
+            width: 180px;
+        }
+    </style>
+</head>
+<body>
+<input type="button" onclick="link_to()" id="add_channel" class="btn btn-primary btn-sm" value="添加渠道"/>
+<div class="container" style="margin:20px 0 5px;padding: 0">◆渠道信息</div>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    $('#reportTable').bootstrapTable({
+        url: '/channels/retrieve',
+        pagination: true,
+        pageSize: 100,
+        responseHandler: getHandler,
+        columns:
+            [
+                {field: "checked", checkbox: true},
+                {field: "id", title: "渠道ID", valign: "middle"},
+                {field: "name", title: "渠道名字", valign: "middle"},
+                {field: "game_log_db", title: "日志数据库", valign: "middle"},
+                {field: "web_url", title: "游戏web地址", valign: "middle"},
+                {field: "other_msg.h5_link", title: "H5跳转url", valign: "middle"},
+                {field: "other_msg.coin_rate", title: "金币转换比例", valign: "middle"},
+                {field: "other_msg.api", title: "API地址", valign: "middle"},
+                {field: "other_msg.hotup_url", title: "APP热更地址", valign: "middle"},
+                {field: "other_msg.h5_api_key", title: "H5通信KEY", valign: "middle"},
+                {field: "other_msg.wx_appid", title: "微信APPID", valign: "middle"},
+                {field: "other_msg.wx_token", title: "微信TOKEN", valign: "middle"},
+                {field: "other_msg.h5_wx_appid", title: "H5微信APPID", valign: "middle"},
+                {field: "other_msg.h5_wx_token", title: "H5微信TOKEN", valign: "middle"},
+                {field: "role_text", title: "所属权限组", valign: "middle"},
+                {field: "", title: "操作", formatter: getOperate, valign: "middle"},
+            ],
+    });
+
+    function getOperate(value, item) {
+        return '<a href="/channels/edit?channel_id=' + item.id + '&role_str=' + item.role_str + '">修改</a><a href="/channels/delete?channel_id=' + item.id + '">删除</a>';
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total: 0,
+                data: []
+            };
+        } else {
+            return {
+                total: res.data.length,
+                data: res.data
+            };
+        }
+    };
+
+    function link_to() {
+        window.location.href = '/channels/add';
+    }
+</script>
+</body>
+</html>

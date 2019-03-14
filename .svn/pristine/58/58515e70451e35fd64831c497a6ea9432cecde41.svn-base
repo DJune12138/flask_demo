@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主内容</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar("/games/maniplate/onegame", beginDate = False, 
+        SelectChannel = page.channel,
+        OThers = page.other_qry)}}
+    {% endautoescape %}
+</div>
+<div><input type="text" id="subgame_hidden" name="subgame_hidden" value="{{page.subgame}}" hidden></div>
+<table class="table table-striped table-bordered table-hover table-condensed" style="text-align: center">
+    <tr>
+        <th style="text-align:center;">操作账号</th>
+        <th style="text-align:center;">被操作用户</th>
+        <th style="text-align:center;">事件</th>
+        <th style="text-align:center;">时间</th>
+    </tr>
+</table>
+</body>
+</html>

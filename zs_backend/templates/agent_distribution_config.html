@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>分销参数设置</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .refactor_content label {
+            font-weight: normal;
+        }
+
+        .refactor_content .content_item input {
+            width: 60% !important;
+        }
+
+        .refactor_content .content_top {
+            text-align: right;
+        }
+
+        .refactor_content .content_top span {
+            float: left;
+            font-size: 14px;
+            margin: 15px;
+        }
+
+        .container {
+            padding-bottom: 30px;
+        }
+
+        .button_new {
+            margin-right: 10px;
+        }
+
+        .tax .content_item {
+            width: 420px;
+            display: inline-block;
+        }
+
+        .rebate {
+            margin-top: 20px !important;
+        }
+
+        .tax .content_item input {
+            width: 128px !important;
+        }
+
+        .tax .content_item input.samll {
+            width: 148px !important;
+        }
+
+        .tax .content_item input.samll1 {
+            /*border-right: #e6e6e6 1px solid !important;*/
+            height: 28px !important;
+            border-radius: 0 !important;
+        }
+
+        .tax_item .tax_item_span {
+            font-size: 14px;
+            width: 100%;
+            display: block;
+            background: #f2f2f2;
+            padding: 10px 15px;
+        }
+
+        .tax_item {
+            border: solid 1px #e6e6e6;
+            margin: 15px;
+            border-radius: 3px;
+        }
+
+        main {
+            padding: 5px 0px 20px 0px;
+        }
+
+        .label_ {
+            border-left: 1px solid #e6e6e6;
+        }
+
+        /*.rule .highlight {*/
+        /*color: #FFB800;*/
+        /*}*/
+    </style>
+</head>
+
+<body>
+<main>
+    <div class="rule">
+        <p>分销模式：</p>
+        <p>1、分销模式下所有玩家默认都是代理。</p>
+        <p>2、输赢梯度和返佣系数，抽水梯度和反水系数（可以无限增加）设置后，表示当输赢或抽水在指定梯度范围内，会产生对应系数的代理佣金</p>
+        <p>3、返佣层级的返佣比例（可以无限增加层级，但所有层级的返佣比例总和不能大于100%）设置后，表示只在对应的层级内按设置比例进行返佣。</p>
+        <p>4、在代理佣金结算页面看到所有代理的返佣记录（客户可以在后台看到所有玩家代理，玩家只能在游戏内看到自己的佣金结算信息）</p>
+        <p>5、为了方便根据不同游戏设置不同的代理佣金条件，每个平台分为返佣设置与反水设置2个方式，可以共用，也可以单独使用，如果不想使用某一个设置，请直接输入 0</p>
+        <br>
+        <p>例如：</p>
+        <p>您在后台设置2个梯度和返佣系数：</p>
+        <p>梯度1，100＜抽水金额≤1000，返佣系数60%；梯度2，1000＜抽水金额≤999999999，返佣系数65%</p>
+        <p>您在后台设置2个推荐层级和返佣比例：本级返佣15%，1级返佣50%。</p>
+        <p>那么当玩家A推广了玩家B，玩家B推广了玩家C，玩家C推广了玩家D，玩家D推广了玩家E；</p>
+        <p>玩家A产生抽水100，玩家B产生抽水5000，玩家C产生抽水50000，玩家D产生抽水500000；</p>
+        <p>玩家E产生抽水1000</p>
+        <p>玩家A的业绩=100×60%×15%+5000×65%×50%=1634</p>
+        <p>玩家B的业绩=5000×65%×15%+50000×70%×50%=17987.5</p>
+        <p>玩家C的业绩=50000×70%×15%+500000×75%×50%=192750</p>
+        <p>玩家D的业绩=500000×75%×15%+1000×60%×50%=56550</p>
+        <p>玩家E的业绩=1000×60%×15%=90</p>
+        <br>
+        <p>平台总共抽水=100+500+5000+500000+1000=506600</p>
+        <p>平台总共需发放代理业绩=1634+17987.5+192750+56550+90=269011.5</p>
+    </div>
+    <section class="refactor_content tax">
+        <div class="content_top">
+            <span>输赢和抽水梯度设置</span>
+            <a class="button_new del" title="默认删除最后一个等级">删除抽水梯度</a>
+            <a class="button_new add" title="默认新增最后一个等级">新增抽水梯度</a>
+        </div>
+        <div class="cont">
+
+            {% for item in pump %}
+            <div class="tax_item">
+                <span class="tax_item_span">第{{ loop.index0 +1 }}阶梯</span>
+
+                <p class="content_item">
+                    <input class="samll samll1 win_min" type="text" placeholder="最小" value="{{ item[0] }}" disabled/>
+                    <label class="label_">＜输赢范围≤</label>
+                    <input class="samll win_max" type="text" placeholder="最大" value="{{ item[1] }}"/>
+                </p>
+                <p class="content_item">
+                    <label>返佣比例</label><input type="text" placeholder="万分比" value="{{ item[2] }}"/>
+                </p>
+                <br>
+                <p class="content_item">
+                    <input class="samll samll1 water_min" type="text" placeholder="最小" value="{{ item[3] }}" disabled/>
+                    <label class="label_">＜抽水范围≤</label>
+                    <input class="samll water_max" type="text" placeholder="最大" value="{{ item[4] }}"/>
+                </p>
+                <p class="content_item">
+                    <label>反水比例</label><input type="text" placeholder="万分比" value="{{ item[5] }}"/>
+                </p><span style="font-size: 14px">【 例：想将反水或返佣比例设置为50%， 则请输入5000】</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="content_top">
+            <a class="button_new submit_">保存</a>
+        </div>
+    </section>
+
+    <section class="refactor_content rebate">
+        <div class="content_top">
+            <span>返佣层级和返佣比例设置（佣金比例：万分比）</span>
+            <a class="button_new del" title="默认删除最后一个等级">删除返佣等级</a>
+            <a class="button_new add" title="默认新增最后一个等级">新增返佣等级</a>
+        </div>
+        <div class="cont">
+            {% for item in commission %}
+            <p class="content_item">
+                <label>{{ loop.index0 }}级返佣</label>
+                <input type="text" placeholder="佣金比例(万分比)" value="{{ item }}"/>
+            </p>
+            {% endfor %}
+        </div>
+        <div class="content_top">
+            <a class="button_new submit_">保存</a>
+        </div>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<!-- JavaScript 放置在文档最后面可以使页面加载速度更快 -->
+<!-- 可选: 包含 jQuery 库 -->
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<!-- 可选: 合并了 Bootstrap JavaScript 插件 -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+
+    $('.samll1').eq(0).attr('disabled', false);
+    $('.samll1').eq(1).attr('disabled', false);
+
+    $('.win_max').change(function () {
+        $(this).closest('.tax_item').next().find('.win_min').val($(this).val());
+    })
+    $('.water_max').change(function () {
+        $(this).closest('.tax_item').next().find('.water_min').val($(this).val());
+    })
+
+    var rate;
+    comtent = $('.rebate');
+    add_ = comtent.find('.add');
+    delete_ = comtent.find('.del');
+    cont = comtent.find('.cont');
+    submit_ = comtent.find('.submit_');
+
+    add_.click(function () {
+        var index = cont.find('.content_item').length
+        cont.append('<p class="content_item"><label>' + index + '级返佣</label><input type="text" placeholder="佣金比例(万分比)"/></p>')
+    })
+    delete_.click(function () {
+        var index = cont.find('.content_item').length;
+        if (index == 1) {
+            showAlert('本级返佣不可删除!')
+        } else {
+            cont.find('.content_item').eq(index - 1).remove();
+        }
+    })
+    submit_.click(function () {
+        content_item = comtent.find('.content_item');
+        rate = '';
+        content_item.each(function (index, item) {
+            if (rate == '') {
+                rate = ($(item).find('input').val() || 0);
+            } else {
+                rate += ',' + ($(item).find('input').val() || 0);
+            }
+        })
+        $.ajax({
+            url: 'agent_distribution_save_commission',
+            type: 'post',
+            data: {
+                rate: rate,
+            },
+            success: function (res) {
+                if (res.error == 'system_err') {
+                    showAlert('服务器忙，请稍后再试');
+                } else {
+                    showAlert('保存成功', 'success')
+                }
+            }
+        })
+    })
+
+
+    comtent2 = $('.tax');
+    add_2 = comtent2.find('.add');
+    delete_2 = comtent2.find('.del');
+    cont2 = comtent2.find('.cont');
+    submit_2 = comtent2.find('.submit_');
+
+    add_2.click(function () {
+        var index = cont2.find('.tax_item').length;
+        cont2.append('\n' +
+            '            <div class="tax_item">\n' +
+            '                <span class="tax_item_span">第' + (parseInt(index) + 1) + '阶梯</span>\n' +
+            '                <p class="content_item">\n' +
+            '                    <input class="samll samll1 win_min" type="text" placeholder="最小" disabled/>\n' +
+            '                    <label class="label_">输赢范围</label>\n' +
+            '                    <input class="samll win_max" type="text" placeholder="最大"/>\n' +
+            '                </p>\n' +
+            '                <p class="content_item">\n' +
+            '                    <label>返佣比例</label><input type="text" placeholder="万分比"/>\n' +
+            '                </p>\n' +
+            '                <br><p class="content_item">\n' +
+            '                    <input class="samll samll1 water_min" type="text" placeholder="最小" disabled/>\n' +
+            '                    <label class="label_">抽水范围</label>\n' +
+            '                    <input class="samll water_max" type="text" placeholder="最大"/>\n' +
+            '                </p>\n' +
+            '                <p class="content_item">\n' +
+            '                    <label>反水比例</label><input type="text" placeholder="万分比"/>\n' +
+            '                </p><span style="font-size: 14px">【 例：想将反水或返佣比例设置为50%， 则请输入5000】</span>\n' +
+            '            </div>');
+
+
+        $('.samll1').eq(0).attr('disabled', false);
+        $('.samll1').eq(1).attr('disabled', false);
+
+
+        $('.win_max').change(function () {
+            $(this).closest('.tax_item').next().find('.win_min').val($(this).val());
+        })
+        $('.water_max').change(function () {
+            $(this).closest('.tax_item').next().find('.water_min').val($(this).val());
+        })
+
+        $('.win_max').change();
+        $('.water_max').change();
+    })
+    delete_2.click(function () {
+        var index = cont2.find('.tax_item').length;
+        if (index == 1) {
+            showAlert('默认抽水不可删除!')
+        } else {
+            cont2.find('.tax_item').eq(index - 1).remove();
+        }
+    })
+
+    submit_2.click(function () {
+        tax_item = comtent2.find('.tax_item');
+        pump = [];
+        tax_item.each(function (index, item) {
+            pump.push([
+                coin_format_back($(item).find('input').eq(0).val() || 0),
+                coin_format_back($(item).find('input').eq(1).val() || 0),
+                $(item).find('input').eq(2).val() || 0,
+                coin_format_back($(item).find('input').eq(3).val() || 0),
+                coin_format_back($(item).find('input').eq(4).val() || 0),
+                $(item).find('input').eq(5).val() || 0,
+            ])
+        })
+        $.ajax({
+            url: 'agent_distribution_save',
+            type: 'post',
+            data: {
+                pump: JSON.stringify(pump),
+            },
+            success: function (res) {
+                if (res.error == 'system_err') {
+                    showAlert('服务器忙，请稍后再试');
+                } else {
+                    showAlert('保存成功', 'success')
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

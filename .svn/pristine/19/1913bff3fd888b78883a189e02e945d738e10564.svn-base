@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>玩家金币排行</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_gold_rank"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, Channels=True, SelectChannel = status_msg.channel, PT = True, PlayerID = False, QueryType = 3,
+    OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<table id="table"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script type="text/javascript">
+    //  {% if status_msg.user_type == '0' %}
+    //      $('#user_type').find('option').eq(0).attr("selected", true)
+    //  {% elif status_msg.user_type == '1' %}
+    //      $('#user_type').find('option').eq(1).attr("selected", true)
+    // {% elif status_msg.user_type == '2' %}
+    //      $('#user_type').find('option').eq(2).attr("selected", true)
+    //  {% endif %}
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    $('#table').bootstrapTable({
+        url: '/searcj/games/rank/gold',
+        pagination: true,
+        pageSize: 100,
+        responseHandler: getHandler,
+        queryParams: getParams,
+        columns:
+            [
+                {field: "rank", title: "排名", sortable: true},
+                {field: "pid", title: "玩家ID", sortable: true, formatter: pid_format},
+                {field: "nick", title: "玩家昵称", sortable: true},
+                {field: "game_count", title: "参与局数", sortable: true},
+                {field: "coin", title: "金币", sortable: true, formatter: coin_format_no_color},
+                {field: "counter", title: "保险箱金币", sortable: true, formatter: coin_format_no_color},
+                {field: "last_login_ip", title: "IP地址", sortable: true},
+                {field: 'operate', title: '操作', formatter: goUserDetail},
+            ],
+    });
+
+    function getParams() {
+        return {
+            user_type: $('#user_type').val(),
+        }
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total: 0,
+                data: []
+            };
+        } else {
+            return {
+                total: res.data.length,
+                data: res.data
+            };
+        }
+    };
+</script>
+</body>
+</html>

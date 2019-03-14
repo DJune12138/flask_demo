@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分销代理列表</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        .down_list .alert_cont{
+            width: 95% !important;
+            height: 90% !important;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.distribution_commission_show"), beginDate = false, endDate = false, Channels =
+    False, QueryType = 3, PlayerID = '',NickName = '' , Method='get') }}
+    {% endautoescape %}
+</div>
+<main>
+    <table class="table"></table>
+    <section class="alert down_list" hidden>
+        <div class="alert_cont">
+            <p style="text-align: right"><a class="button_new return_list">返回</a></p>
+            <table class="table"></table>
+        </div>
+    </section>
+</main>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script>
+    down_list = $('.down_list');
+    alert_return_list = $('.down_list .return_list');
+    alert_return_list.click(function () {
+        down_list.hide();
+        $('#query_btn').click();
+    })
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('.table').bootstrapTable('refreshOptions',{
+            queryParams: function (params) {
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    pid: $("#PlayerID").val(),
+                    nick: $("#NickName").val(),
+                };
+            },
+        });
+    })
+    window.operateEvents = {
+        'click .down': function (e, value, row, index) {
+            down_list.show();
+            $('.table').bootstrapTable('refreshOptions',{
+                queryParams: function (params) {
+                    return {
+                        size: params.limit,
+                        offset: params.offset,
+                        pid: row.pid,
+                        nick: $("#NickName").val(),
+                    };
+                },
+            });
+        }
+    }
+    $('.table').bootstrapTable({
+        url: '/distribution_agent_list/show',
+        pagination: true,
+        pageSize: 100,
+        dataField: 'data',
+        sidePagination: 'server',
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        responseHandler: getHandler,
+        queryParams: function (params) {
+            return {
+                size: params.limit,
+                offset: params.offset,
+                pid: $("#PlayerID").val(),
+                nick: $("#NickName").val(),
+            };
+        },
+        columns:
+            [
+                {field: "nick", title: "玩家昵称"},
+                {field: "pid", title: "玩家ID", formatter: pid_format},
+                {field: "reg_time", title: "注册时间",formatter: getLocalTime},
+                {field: "count", title: "下级数量"},
+                {field: '',title: '操作',events: operateEvents,formatter: '<a class="down">下级列表</a>'}
+            ],
+    });
+
+    function getHandler(res) {
+        console.log(res.datas)
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                total:0,
+                data: []
+            };
+        } else {
+            return {
+                total:res.total_count,
+                data: res.datas
+            };
+        }
+    };
+</script>
+</body>
+</html>

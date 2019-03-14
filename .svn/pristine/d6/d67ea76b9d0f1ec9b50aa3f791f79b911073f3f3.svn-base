@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title> 后台管理系统 | 登录</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="static/css/login/reset.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="static/css/login/style.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="static/css/login/invalid.css" type="text/css" media="screen"/>
+    <style>
+        #login-content input {
+            height: 20px !important;
+            margin-bottom: 15px !important;
+        }
+
+        #login-content label {
+            position: relative;
+            top: 10px;
+            left: 10px;
+        }
+
+        #login-content input.button {
+            position: relative;
+            left: -20px;
+            padding: 5px 10px !important;
+            box-sizing: border-box;
+            height: 25px !important;
+        }
+
+        #login-content input.button:hover {
+            text-decoration: none;
+            opacity: .9;
+        }
+
+        html, body {
+            background: #fff;
+            height: 100%;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden;
+        }
+
+        .main {
+            width: 292px;
+            height: 320px;
+            position: absolute;
+            left: 75%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            border-radius: 5px;
+            /*background: url(../static/images/login/background.png) repeat;*/
+            background-size: 100% 100%;
+            background: rgba(255, 255, 255, .1);
+        }
+
+        /*.main div {*/
+        /*width: 50%;*/
+        /*!*border: solid red;*!*/
+        /*flex: 1;*/
+        /*}*/
+
+        /*.main div.cont_left img {*/
+        /*width: 100%;*/
+        /*height: 100%;*/
+        /*border-radius: 10px 0px 0px 10px;*/
+        /*}*/
+
+        .main div.cont_right {
+            text-align: center;
+            border-radius: 20px;
+        }
+
+        .main div.cont_right input {
+            width: 220px;
+            /*border: none !important;*/
+            /*border-bottom: solid 1px #ddd !important;*/
+            /*border-radius: 100px !important;*/
+            height: 28px !important;
+            position: relative;
+            left: 20px;
+            text-indent: 30px;
+            background: rgba(0, 0, 0, .5);
+            border: none !important;
+            color: #fff !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -o-appearance: none;
+            appearance: none;
+            outline: none;
+            -webkit-appearance: none;
+            border-radius: 0;
+        }
+
+        .main div.cont_right .submit {
+            margin: 0 !important;
+            right: 13px;
+            background: #ff9402;
+            width: 230px;
+            height: 30px !important;
+            display: inline-block;
+            color: #fff;
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            text-indent: 0;
+            left: 27px;
+        }
+
+        .main div.cont_right .cont_title {
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-family: "微软雅黑";
+        }
+
+        .main div.cont_right .item img {
+            float: left;
+            position: relative;
+            top: 12px;
+            left: 44px;
+            height: 15px;
+        }
+
+        .bg {
+            background: url(../static/images/login/new_bg2.png) no-repeat;
+            /*background-position:10% 10%;*/
+            background-size: 100% 100%;
+            overflow: hidden;
+            position: relative;
+            width: 120%;
+            height: 120%;
+            left: -10%;
+            bottom: 10%;
+        }
+
+        .bg .people {
+            height: 98%;
+            position: absolute;
+            left: 15%;
+            bottom: -15%;
+        }
+
+        .bg img {
+            position: absolute;
+            user-select: none;
+        }
+
+        .piece1 {
+            left: 2%;
+            top: 15%;
+        }
+
+        .piece2 {
+            left: 16%;
+            top: 52%;
+        }
+
+        .piece3 {
+            left: 13%;
+            top: 62%;
+        }
+
+        .piece4 {
+            left: 47%;
+            top: -5%;
+        }
+
+        .piece5 {
+            left: 50%;
+            top: 39%;
+        }
+
+        .piece6 {
+            left: 48%;
+            top: 55%;
+        }
+
+        .piece7 {
+            left: 47%;
+            top: 80%;
+            width: 180px;
+        }
+
+        .piece8 {
+            left: 63%;
+            top: 55%;
+        }
+
+        .piece9 {
+            left: 87%;
+            top: 35%;
+        }
+
+        .footer {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, .5);
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .footer img {
+            height: 20px;
+        }
+
+        .cont_title {
+            padding: 0;
+            text-align: center;
+        }
+
+        .cont_title .logo {
+            height: 23px;
+            display: block;
+            margin: 0 32px;
+        }
+
+        .cont_title .sign_in {
+            height: 15px;
+            margin: 15px 0 0 0;
+            position: relative;
+            left: 25px;
+        }
+    </style>
+</head>
+<body>
+<main class="bg">
+    <img class="people" src="../static/images/login/new_people.png">
+    <img class="piece1" src="../static/images/login/piece1.png">
+    <img class="piece2" src="../static/images/login/piece2.png" hidden>
+    <img class="piece3" src="../static/images/login/piece3.png">
+    <img class="piece4" src="../static/images/login/piece4.png">
+    <img class="piece5" src="../static/images/login/piece5.png" hidden>
+    <img class="piece6" src="../static/images/login/piece6.png">
+    <img class="piece7" src="../static/images/login/piece7.png">
+    <img class="piece8" src="../static/images/login/piece8.png">
+    <img class="piece9" src="../static/images/login/piece9.png">
+</main>
+<section class="main">
+    <!--<div class="cont_left"></div>-->
+    <div class="cont_right">
+        <form action="{{ url_for('busi.login') }}" method="post" autocomplete="off">
+            <p class="cont_title">
+                <img class="logo" src="../static/images/login/logo2.png">
+                <img class="sign_in" src="../static/images/login/sign_in.png">
+            </p>
+            <p class="item"><input class="username" name="username" type="text" placeholder="请输入用户名"
+                                   value="{{ user_name }}"
+                                   autocomplete="off">
+                <img src="/static/images/login/user2.png"/></p>
+            <p class="item"><input class="password" name="password" type="password" placeholder="请输入密码"
+                                   autocomplete="off"><img
+                    src="/static/images/login/password2.png"/></p>
+            <p class="item"><input type="text" name="code" placeholder="请输入安全码"><img
+                    src="/static/images/login/password2.png"/></p>
+            <font size="3" color="red">{{ errmsg }}</font>
+            <p><input class="submit" type="submit" value="登录"/></p>
+        </form>
+    </div>
+</section>
+<footer class="footer">
+    <img src="../static/images/login/logo2.png">
+</footer>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    var timer;
+    var isFirst = true;
+    var isMove = false;
+    var pageX;
+    var pageY;
+
+    bg = $('.bg');
+    people = bg.find('.people');
+    piece1 = bg.find('.piece1');
+    piece2 = bg.find('.piece2');
+    piece3 = bg.find('.piece3');
+    piece4 = bg.find('.piece4');
+    piece5 = bg.find('.piece5');
+    piece6 = bg.find('.piece6');
+    piece7 = bg.find('.piece7');
+    piece8 = bg.find('.piece8');
+    piece9 = bg.find('.piece9');
+
+    // bg.mouseenter(function () {
+    //     clearInterval(timer);
+    // })
+
+    // setInterval(function () {
+    //     if (!isMove) {
+    //         clearInterval(timer);
+    //         timer = setInterval(function () {
+    //             startAnimate(
+    //                 piece1.position().top / bg.height() * 100,
+    //                 piece2.position().top / bg.height() * 100,
+    //                 piece3.position().top / bg.height() * 100,
+    //                 piece4.position().top / bg.height() * 100,
+    //                 piece5.position().top / bg.height() * 100,
+    //                 piece6.position().top / bg.height() * 100,
+    //                 piece7.position().top / bg.height() * 100,
+    //                 piece8.position().top / bg.height() * 100,
+    //                 piece9.position().top / bg.height() * 100
+    //             )
+    //         }, 10);
+    //     }
+    //     isMove = false;
+    // }, 500)
+
+    // var speed = 500;
+    // var mul = 2;
+    // bg.mousemove(function (e) {
+    //     isMove = true;
+    //     clearInterval(timer);
+    //     if (!isFirst) {
+    //         var x = (e.pageX - pageX) / speed;
+    //         var y = (e.pageY - pageY) / speed;
+    //
+    //         $(this).stop().animate({left: -10 - x / 2 + "%", bottom: 10 + y / 2 + '%'}, 1);
+    //         people.stop().animate({left: 15 - x + "%", bottom: -15 + y + '%'}, 1);
+    //         bg.find('img').each(function (index, item) {
+    //             if (index >= 1) {
+    //                 $(item).stop().animate({
+    //                     left: window['l' + index] - x * mul + "%",
+    //                     top: window['t' + index] - y * mul + '%'
+    //                 }, 1);
+    //             }
+    //         })
+    //     } else {
+    //         pageX = e.pageX;
+    //         pageY = e.pageY;
+    //         l1 = piece1.position().left / bg.width() * 100;
+    //         l2 = piece2.position().left / bg.width() * 100;
+    //         l3 = piece3.position().left / bg.width() * 100;
+    //         l4 = piece4.position().left / bg.width() * 100;
+    //         l5 = piece5.position().left / bg.width() * 100;
+    //         l6 = piece6.position().left / bg.width() * 100;
+    //         l7 = piece7.position().left / bg.width() * 100;
+    //         l8 = piece8.position().left / bg.width() * 100;
+    //         l9 = piece9.position().left / bg.width() * 100;
+    //
+    //         t1 = piece1.position().top / bg.height() * 100;
+    //         t2 = piece2.position().top / bg.height() * 100;
+    //         t3 = piece3.position().top / bg.height() * 100;
+    //         t4 = piece4.position().top / bg.height() * 100;
+    //         t5 = piece5.position().top / bg.height() * 100;
+    //         t6 = piece6.position().top / bg.height() * 100;
+    //         t7 = piece7.position().top / bg.height() * 100;
+    //         t8 = piece8.position().top / bg.height() * 100;
+    //         t9 = piece9.position().top / bg.height() * 100;
+    //     }
+    //     isFirst = false;
+    // })
+
+    var i = 0;
+    var isAdd = true;
+
+    clearInterval(timer);
+    timer = setInterval(function () {
+        startAnimate(
+            piece1.position().top / bg.height() * 100,
+            piece2.position().top / bg.height() * 100,
+            piece3.position().top / bg.height() * 100,
+            piece4.position().top / bg.height() * 100,
+            piece5.position().top / bg.height() * 100,
+            piece6.position().top / bg.height() * 100,
+            piece7.position().top / bg.height() * 100,
+            piece8.position().top / bg.height() * 100,
+            piece9.position().top / bg.height() * 100
+        )
+    }, 10);
+
+    function startAnimate(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+        var speed = 1500;
+        var speed2 = 3500;
+        var distance = 100;
+        if (isAdd) {
+            i++;
+        } else {
+            i--;
+        }
+        if (i == distance) {
+            isAdd = false;
+        }
+        if (i == -distance) {
+            isAdd = true;
+        }
+        piece2.stop().animate({top: a2 - i / speed + '%'}, 1);
+        piece5.stop().animate({top: a5 - i / speed + '%'}, 1);
+        piece6.stop().animate({top: a6 - i / speed + '%'}, 1);
+
+        piece1.stop().animate({top: a1 - i / speed2 + '%'}, 1);
+        piece3.stop().animate({top: a3 - i / speed2 + '%'}, 1);
+        piece4.stop().animate({top: a4 - i / speed2 + '%'}, 1);
+        piece7.stop().animate({top: a7 - i / speed2 + '%'}, 1);
+        piece8.stop().animate({top: a8 - i / speed2 + '%'}, 1);
+        piece9.stop().animate({top: a9 - i / speed2 + '%'}, 1);
+    }
+</script>
+</body>
+</html>

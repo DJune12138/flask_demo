@@ -1,0 +1,152 @@
+--------------------------------------------------------------------------------------------------------
+-----------------------------------------------环境配置-------------------------------------------------
+--------------------------------------------------------------------------------------------------------
+准备工作:
+groupadd game
+groupadd www
+
+useradd -g game game
+usermod -G www game
+useradd -g www www
+
+yum install -y gcc gcc-c++ gd-devel libxml2 libxml2-devel python-devel ncurses-devel
+
+tar xvf zlib-1.2.11.tar.gz
+cd zlib-1.2.11
+./configure
+make && make install
+cd ..
+
+tar xvf pcre-8.42.tar.gz
+cd pcre-8.42
+./configure --prefix=/usr/local/pcre
+make && make install
+cd ..
+
+
+1. 安装openssl
+tar xvf openssl-1.0.2o.tar.gz 
+cd openssl-1.0.2o
+./config --prefix=/usr/local/ssl -fPIC enable-shared
+make && make install
+cd ..
+
+
+2. 安装nginx
+tar xvf nginx-1.8.1.tar.gz
+cd nginx-1.8.1
+sed -i 's#CFLAGS="$CFLAGS -g"#CFLAGS="$CFLAGS "#' auto/cc/gcc
+CHOST="x86_64-pc-linux-gnu" CFLAGS="-march=nocona -O2 -pipe" CXXFLAGS="-march=nocona -O2 -pipe" 
+./configure --user=www --group=www \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module \
+--with-http_ssl_module --with-pcre=../pcre-8.42 --with-http_realip_module --with-http_image_filter_module \
+--with-openssl=../openssl-1.0.2o
+make && make install
+
+cd /usr/local/nginx/
+mv conf conf_bak
+ln -s /data/conf/nginx/ conf
+mkdir -p /data/conf/nginx/
+cp conf_bak/* /data/conf/nginx/
+
+cd -
+cd /data/conf/nginx/
+
+cat > nginx.conf <<EOF
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /data/conf/nginx/vhost/*.conf; 
+
+}
+EOF
+
+mkdir -p vhost
+chmod 777 vhost
+echo 'ulimit -SHn 65535' >> /root/nginx_start
+echo '/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf' >> /root/nginx_start
+
+echo '/usr/local/nginx/sbin/nginx -t' > /root/nginx_reload
+echo 'kill -HUP `cat /usr/local/nginx/logs/nginx.pid`' >> /root/nginx_reload
+
+chmod 700 /root/nginx_*
+cd -
+cd ..
+
+
+3. 安装python2.7
+tar xvf Python-2.7.15.tgz
+cd Python-2.7.15 
+./configure CFLAGS=-fPIC
+make && make install
+
+
+4. 安装setuptools
+unzip setuptools-36.5.0.zip
+cd setuptools-36.5.0
+python setup.py install
+
+
+4. 安装pip
+tar xvf pip-9.0.1.tar.gz
+cd pip-9.0.1
+python setup.py install
+
+
+5. 安装其他库
+pip install redis
+pip install uwsgi
+pip install requests
+pip install flask
+pip install pymysql
+pip install flask_session
+pip install flask_wtf
+pip install flask_cors
+pip install qrcode
+pip install Image
+pip install pycrypto
+pip install pyotp
+pip install Flask-APScheduler
+
+
+6. nginx 配置
+    server {
+        listen       80;
+        server_name  192.168.1.126;
+
+        location / {
+                include uwsgi_params;
+                uwsgi_pass 127.0.0.1:8101; 
+        }
+	}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商城代理管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            display: flex;
+        }
+
+        table tr th, table tr td {
+            padding: 10px !important;
+            flex: 1;
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .audit-tip, .item-number-exceed, .item-cost-percent, .item-cost-fix {
+            display: none;
+        }
+
+        .member_new {
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 7px !important;
+            left: 11px;
+        }
+
+        .content_item {
+            user-select: none;
+        }
+
+        .content_item label {
+            user-select: none;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+        .switch_button[value="0"] {
+            background-image: url(../static/images/button-open.png);
+        }
+
+        .switch_button[value="1"] {
+            background-image: url(../static/images/button-close.png);
+        }
+        .status{
+            /*display: none;*/
+        }
+        input[type=file]{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.pay_wx_agent"), beginDate=False, OThers = page.OThers, QueryType=1, SelectChannel=page.channel, Method='get') }}
+    {% endautoescape %}
+</div>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn-sm btn-primary btn" type="button" value="添加微信代理">
+    </div>
+    <section class="member_new">
+        <p class="content_item">
+            <label>微信号</label>
+            <input class="name" type="text" placeholder="请输入微信号"/>
+        </p>
+        <p class="content_item">
+            <label>排序</label>
+            <input class=" sort" type="text" placeholder="请输入排序数值（数值越小，排序越前）"/>
+        </p>
+        <p class="content_item">
+            <label>备注</label>
+            <input class="memo" type="text" placeholder="请输入备注"/>
+        </p>
+        <p class="content_item status">
+            <label>状态</label>
+            <span class="switch_button" value="1"></span>
+        </p>
+        <!--<p class="content_item">-->
+            <!--<label>二维码</label>-->
+            <!--<input type="file" name="file" />-->
+        <!--</p>-->
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="确定">
+    </section>
+    <section class="member_list">
+        <table>
+            <thead>
+            <tr>
+                <th>编号</th>
+                <th>微信号</th>
+                <th>排序</th>
+                <th>备注</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for data in page.datas %}
+            <tr>
+                <td>{{ data[0] }}</td>
+                <td>{{ data[1] }}</td>
+                <td>{{ data[2] }}</td>
+                <td>{{ data[3] }}</td>
+                <td>{% if data[4] == 0 %}启用{% else %}停用{% endif %}</td>
+                <td>
+                    <a class="edit" item_id="{{ data[0] }}">编辑</a>
+                    <a class="delete" item_id="{{ data[0] }}">删除</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class=" btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class=" btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+    // //查询按钮事件
+    // $('#query_btn').click(function () {
+    //     local
+    //     locapTable('refresh', {url: '/search/topup/detail'});
+    // })
+
+    var url = 'add';
+    var id = '';
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+    $goEedit = $member_list.find('table tr td .edit');
+    $goDelete = $member_list.find('table tr td .delete');
+    $submit = $member_new.find('.submit');
+    $name = $member_new.find('.name');
+    $sort = $member_new.find('.sort');
+    $memo = $member_new.find('.memo');
+    $status = $member_new.find('.switch_button');
+    $status_item = $member_new.find('.status');
+
+    $goNew.click(function () {
+        // $status_item.hide();
+        url = 'add';
+        id = '';
+        $name.val('');
+        $sort.val('');
+        $memo.val('');
+            $status.attr('value', '0');
+        if ($(this).val() == '添加微信代理') {
+            $(this).val('返回微信代理');
+            $member_new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('添加微信代理');
+            $member_new.hide();
+            $member_list.show();
+        }
+    })
+
+    $goEedit.click(function () {
+        $goNew.click();
+        // $status_item.show();
+        id = $(this).attr('item_id');
+        url = 'edit';
+        $name.val($(this).closest('tr').find('td').eq(1).text());
+        $sort.val($(this).closest('tr').find('td').eq(2).text());
+        $memo.val($(this).closest('tr').find('td').eq(3).text());
+        if($(this).closest('tr').find('td').eq(4).text() == '启用'){
+            $status.attr('value', '0');
+        }else{
+            $status.attr('value', '1');
+        }
+    })
+
+    $goDelete.click(function () {
+        id = $(this).attr('item_id');
+        url = 'del';
+        $name.val($(this).closest('tr').find('td').eq(1).text());
+        $sort.val($(this).closest('tr').find('td').eq(2).text());
+        $memo.val($(this).closest('tr').find('td').eq(3).text());
+        if($(this).closest('tr').find('td').eq(4).text() == '启用'){
+            $status.attr('value', '0');
+        }else{
+            $status.attr('value', '1');
+        }
+        showDelete(submit)
+    })
+
+    $submit.click(function () {
+        submit();
+    })
+
+    function submit() {
+        $.ajax({
+            url: '/wx_agent/'+url,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                wx: $name.val(),
+                seq: $sort.val(),
+                memo: $memo.val(),
+                status: $status.attr('value'),
+                id: id,
+            },
+            success: function (data) {
+                if(data.result == 'ok'){
+                    if(url == 'add'){
+                        showAlert('添加成功!', 'success');
+                    }else if(url == 'edit'){
+                        showAlert('编辑成功!', 'success');
+                    }else if(url == 'del'){
+                        showAlert('删除成功!', 'success');
+                    }
+                    setTimeout(function () {
+                        location.href = '{{ url_for("busi.show_wx_agent") }}';
+                    }, 1000)
+                }else{
+                    showAlert(data.error_msg);
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 2000)
+    }
+
+    function showDelete(fn) {
+        $confirm = $('.refactor-confirm');
+        $confirm.fadeIn();
+        $confirm.find('.cancel').click(function () {
+            $confirm.fadeOut();
+        });
+        $confirm.find('.del').click(function () {
+            $confirm.fadeOut();
+            fn();
+        })
+    }
+
+    $('.content_item .switch_button').click(function () {
+        if ($(this).prop('value') == '1') {
+            $(this).prop('value', '0')
+        } else {
+            $(this).prop('value', '1')
+        }
+    })
+
+</script>
+</body>
+</html>

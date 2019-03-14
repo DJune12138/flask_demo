@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .update_user {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        height: 25px;
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 150px;
+        float: left;
+        text-align: right;
+    }
+
+
+
+</style>
+<body>
+<form action="{{ url_for('busi.set_agent') }}" method="post">
+    <div class="update_user">
+        <h2>编辑代理：</h2>
+        <input type="hidden" name="aid" id="aid" value="{{ status_msg.aid }}">
+        <input type="hidden" name="channel" id="channel" value="{{ status_msg.channel }}">
+        <div class="input_box">
+            <div><span>代理ID：&nbsp;&nbsp;</span></div>
+            <div style="color: green;text-align: left">{{ status_msg.agent_id }}</div>
+        </div>
+        <div class="input_box">
+            <div><span>代理职务：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="请输入代理职务" name="duty" value="{{ status_msg.duty }}"
+                   style="display: block;height: 20px;text-indent: 5px;"/>
+        </div>
+        <div class="input_box">
+            <div><span>代理状态：&nbsp;&nbsp;</span></div>
+            <input type="radio" id="radio1" name="is_active" value="1">启用
+            <input type="radio" id="radio0" name="is_active" value="0">停用
+        </div>
+        <input style="margin-left: 150px;margin-top: 10px;padding: 5px" type="submit" name="" value="保存">
+        <input style="margin-left: 20px;padding: 5px" type="button" id="cancel" value="取消">
+    </div>
+</form>
+</body>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.show_agent_list") }}'
+    });
+
+    {% if status_msg.is_active == 0 %}
+        $('#radio0').attr('checked', true);
+    {% elif status_msg.is_active == 1 %}
+        $('#radio1').attr('checked', true) = true
+    {% endif %}
+</script>
+</html>

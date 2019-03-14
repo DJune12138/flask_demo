@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单控玩家输赢</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .search{
+            /*text-align: left;*/
+            padding: 10px 0 !important;
+            font-size: 12px;
+        }
+        .search span:first-child{
+            padding-left: 0;
+        }
+        table th,table td{
+            vertical-align: middle !important;
+            text-align: right;
+        }
+        table .no-records-found td{
+            text-align: center;
+        }
+        .search_control{
+            text-align: center;
+        }
+        .search_control span{
+            font-size: 14px;
+        }
+        .search_control span b{
+            color: green;
+            font-size: 14px;
+        }
+        .search_sub{
+            padding: 0 !important;
+            background: #e3fbe3;
+            width: 500px;
+            text-align: center;
+            margin-left: 50px;
+            border-radius: 5px;
+        }
+        input[type=button]{
+            width: 94px !important;
+        }
+        .tip{
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div class="rule">
+    <p>查全部玩家时，数据量大，请耐心等待查询结果</p>
+    <p>保护值为正数则表示要玩家赢够这么多钱，保护值为负数则表示要玩家输够这么多钱</p>
+</div>
+<div>
+    {% autoescape false %}
+    {{ search_bar("/games/maniplate/oneplayer", beginDate = False, PlayerID = page.playerid,
+    QueryType = 1,
+    NickName = page.nickname, OThers = page.other_qry, SelectChannel = page.SelectChannel) }}
+    {% endautoescape %}
+</div>
+<div class="search search_sub">
+    <div id="filterType_1" style="display: none;">
+        注册
+        <input type="text" id="filterType_1_1" name="filterType_1_1" onchange="filterTypeChange()"
+               value="{{ page.filterType_1_1 }}">
+        天内，买分超过
+        <input type="text" id="filterType_1_2" name="filterType_1_2" onchange="filterTypeChange()"
+               value="{{ page.filterType_1_2 }}">
+        万，未退分
+    </div>
+    <div id="filterType_2" style="display: none;">
+        所有玩家，最近
+        <input type="text" id="filterType_2_1" name="filterType_2_1" onchange="filterTypeChange()"
+               value="{{ page.filterType_2_1 }}">
+        天内，买分超过
+        <input type="text" id="filterType_2_2" name="filterType_1_2" onchange="filterTypeChange()"
+               value="{{ page.filterType_2_2 }}">
+        万，未退分
+    </div>
+    <div id="filterType_3" style="display: none;">
+        所有玩家，最近
+        <input type="text" id="filterType_3_1" name="filterType_3_1" onchange="filterTypeChange()"
+               value="{{ page.filterType_3_1 }}">
+        天内,买分-卖分超
+        <input type="text" id="filterType_3_2" name="filterType_3_2" onchange="filterTypeChange()"
+               value="{{ page.filterType_3_2 }}">
+        万
+    </div>
+</div>
+<div class="search search_control">
+    <span>输钱控制人数：<b class="bg_green">{{ page.loseControlNum }}</b></span>
+    <span>输钱控制总额：<b class="bg_blue">{{ page.loseControlMoney }}</b></span>
+    <span>赢钱控制人数：<b class="bg_black">{{ page.winControlNum }}</b></span>
+    <span>赢钱控制总额：<b class="bg_orange">{{ page.winControlMoney }}</b></span>
+</div>
+<div class="search" style="text-align: left">
+    <span>
+        <label>保护值：</label>
+        <input type="text" id="protect_val" name="protect_val" value="{{ page.protect_val }}">
+        <!--<i>(<font color="red">保护值为正值则表示玩家要赢够这么多钱，保护值为负值则表示玩家要输够这么多钱</font>)</i>-->
+    </span>
+    <input class="btn btn-primary btn-sm" type="button" onclick="oneplayer_protect(true)" value="设置保护值">
+    <input class="btn btn-primary btn-sm" type="button" onclick="oneplayer_protect(false)" value="清零保护值">
+</div>
+
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+
+<section class="alert" hidden>
+    <div class="alert_cont">
+        <p><span>设置保护值</span></p>
+        <p class="item_input">
+            <span>保护值</span>
+            <input type="text">
+        </p>
+        <p class="tip"> 保护值为正值时表示玩家要赢够这么多钱，<br>保护值为负则表示玩家要输够这么多钱。</p>
+        <p>
+            <a class="button_cancel">取消</a>
+            <a class="button_new">确定</a>
+        </p>
+    </div>
+</section>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+
+    if(getUrlParams().from == 'top'){
+        $('#playerstatus').val(1);
+        $('#query_btn').click();
+    }
+
+    alert_view = $('.alert');
+    alert_sure = alert_view.find('.button_new');
+    alert_cancel = alert_view.find('.button_cancel');
+    alert_input = alert_view.find('input');
+    alert_cancel.click(function () {
+        alert_view.fadeOut();
+    })
+    alert_sure.click(function () {
+        if(alert_input.val()){
+            oneplayer_protect(coin_format_back(alert_input.val()));
+        }else{
+            parent.window.showAlert('请输入保护值');
+        }
+    })
+    // $('#playerstatus').after(' <span><label>玩家筛选：</label> <select id="filterType" name="filterType" onchange="filterTypeChange()"><option value="0">全部</option> <option value="1">新玩家买分</option> <option value="2">所有玩家买分</option> <option value="3">所有玩家买卖分</option> </select> </span>');
+function filterTypeChange(){
+    Type = document.getElementById("filterType").value;
+
+    document.getElementById("filterType_1").style.display="none";
+    document.getElementById("filterType_2").style.display="none";
+    document.getElementById("filterType_3").style.display="none";
+
+    if (Type == 1) {
+        document.getElementById("filterType_1").style.display="";
+    }
+
+    if (Type == 2) {
+        document.getElementById("filterType_2").style.display="";
+    }
+
+    if (Type == 3) {
+        document.getElementById("filterType_3").style.display="";
+    }
+
+    var filterTypeArr = new Array(
+        document.getElementById("filterType").value,
+        document.getElementById("filterType_1_1").value,
+        document.getElementById("filterType_1_2").value,
+        document.getElementById("filterType_2_1").value,
+        document.getElementById("filterType_2_2").value,
+        document.getElementById("filterType_3_1").value,
+        document.getElementById("filterType_3_2").value);
+
+    document.getElementById("filterTypeVal").value = filterTypeArr.join(",");
+}
+
+function load(){
+    var filterTypeVal = document.getElementById("filterTypeVal").value;
+    var filterTypeArr = filterTypeVal.split(",")
+    document.getElementById("filterType").value = filterTypeArr[0];
+    document.getElementById("filterType_1_1").value = filterTypeArr[1];
+    document.getElementById("filterType_1_2").value = filterTypeArr[2];
+    document.getElementById("filterType_2_1").value = filterTypeArr[3];
+    document.getElementById("filterType_2_2").value = filterTypeArr[4];
+    document.getElementById("filterType_3_1").value = filterTypeArr[5];
+    document.getElementById("filterType_3_2").value = filterTypeArr[6];
+    filterTypeChange();
+
+    // do_ip_parse();
+}
+
+// 解析ip地址
+function do_ip_parse() {
+    var obj = document.getElementById("data_player")
+    if (obj.rows.length > 1) {
+        for (var i = 1; i < obj.rows.length; i++) {
+            var col = obj.rows[i].cells.length;
+            var ip = obj.rows[i].cells[col-3].innerText;
+
+            $.getScript('http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip='+ip, function(_result){
+                    if (remote_ip_info.ret == '1'){
+                        alert('IP 详细信息：', 'IP：'+ip+'<BR>国家：'+remote_ip_info.country+'<BR>省份：'+remote_ip_info.province+'<BR>城市：'+remote_ip_info.city+'<BR>区：'+remote_ip_info.district+'<BR>ISP：'+remote_ip_info.isp+'<BR>类型：'+remote_ip_info.type+'<BR>其他：'+remote_ip_info.desc);
+                    } else {
+                        alert('错误', '没有找到匹配的 IP 地址信息！');
+                    }
+                })
+        }
+
+
+        //     $.ajax(
+        //         {
+        //             url:"http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=" + ip,
+        //             async : false,
+        //             type : "get",
+        //             success: function(data) {
+        //                 // alert(data);
+        //                 obj.rows[i].cells[col-2].innerText = "123456";
+        //             },
+        //             error: function() {}
+        //         });
+        // }
+    }
+}
+
+function oneplayer_protect(isTrue) {
+    var checklist = get_checked('reportTable', 1);
+    if (checklist == "") {
+        parent.window.showAlert("请选择需要修改的对象");
+        return;
+    }
+    if(isTrue){
+        if(!$('#protect_val').val()){
+            parent.window.showAlert("请输入保护值");
+            return;
+        }
+        obj = {
+            water:coin_format_back($('#protect_val').val()),
+            check:checklist
+        }
+    }else{
+        obj = {
+            water:0,
+            check:checklist
+        }
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "/games/maniplate/oneplayer_protect",
+        data: obj,
+        success: function() {
+            if(isTrue){
+               parent.window.showAlert("设置保护值成功",'success');
+            }else{
+                parent.window.showAlert("清零保护值成功",'success');
+            }
+            $('#query_btn').click();
+        },
+        dataType: "json"
+    });
+}
+
+function do_protect() {
+    var checklist = get_checked('reportTable', 1);
+    if (checklist == "") {
+        parent.window.showAlert("请选择需要修改的对象");
+        return;
+    }
+    alert_view.fadeIn();
+}
+
+function get_checked(){
+    var tb = document.getElementById('reportTable');    // table 的 id
+    var rows = tb.rows;                           // 获取表格所有行
+
+    var check_str = "";
+    var checklist = document.getElementsByName('btSelectItem');
+    for (var i = 0; i < checklist.length; i++) {
+        if (checklist[i].checked) {
+            var pid = rows[i + 1].cells[1].innerText;
+            check_str = check_str + pid + ",";
+        }
+    }
+
+    return check_str;
+}
+
+$(function () {
+    $('#reportTable').bootstrapTable({
+        striped: true,
+        pagination: true,
+        contentType: "application/x-www-form-urlencoded",
+        paginationPreText:'上一页',
+        paginationNextText:'下一页',
+        showPaginationSwitch:false,//是否显示数据条数选择框
+        pageSize: 100,
+        pageNumber:1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination:'client',
+        showColumns: false,
+        showRefresh: false,
+        showHeader:true,
+        showToolbar:false,
+        buttonsAlign:"right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        columns:
+        [
+            {field:"checked",checkbox:true},
+            {field:"pid",title:"玩家ID",sortable:"true",formatter:pid_format},
+            {field:"nick",title:"昵称",align:"center",valign:"middle"},
+            {field:"coin",title:"当前金币",sortable:"true"},
+            {field:"total_win",title:"总输赢",align:"center",valign:"middle",formatter:coin_format},
+            // {field:"total_down_coin",title:"总买分",align:"center",valign:"middle"},
+            // {field:"total_up_coin",title:"总卖分",align:"center",valign:"middle"},
+            // {field:"today_down_coin",title:"当日买分",align:"center",valign:"middle"},
+            // {field:"today_up_coin",title:"当日卖分",align:"center",valign:"middle"},
+            {field:"today_win",title:"当日输赢",align:"center",valign:"middle",formatter:coin_format},
+            {field:"rest_protect",title:"剩余保护",sortable:"true",formatter:coin_format},
+            {field:"protect",title:"保护值",sortable:"true",formatter:coin_format},
+            {field:"protect_val",title:"保护值2",sortable:"true",visible:false},
+            {field:"acc_protect",title:"累计保护值",sortable:"true",formatter:coin_format_no_color},
+            {field:"agentid",title:"上级代理ID",align:"center",valign:"middle"},
+            {field:"timelong",title:"总游戏时长",align:"center",valign:"middle"},
+            {field:"status",title:"当前在线",align:"center",valign:"middle",formatter:subgame_format},
+            {field:"ip",title:"IP地址",align:"center",valign:"middle"},
+            {field:"last_protect_time",title:"最后设置时间",align:"center",valign:"middle",formatter:getLocalTime},
+        ],
+        data:[
+        {% for item in page.datas %}
+            {
+                pid:{{ item[0] }},
+                nick:"{{ item[1] }}",
+                coin:{{ item[2] }},
+                total_win:{{ item[3] }},
+                total_down_coin:{{ item[4] }},
+                total_up_coin:{{ item[5] }},
+                today_down_coin:{{ item[6] }},
+                today_up_coin:{{ item[7] }},
+                today_win:{{ item[8] }},
+                rest_protect:{{ item[9] }},
+                protect:{{ item[10] }},
+                protect_val:{{ item[10] }},
+                acc_protect:{{ item[11] }},
+                agentid:"{{ item[12] }}",
+                timelong:{{ item[13] }},
+                status:"{{ item[14] }}",
+                ip:"{{ item[15] }}",
+                last_protect_time:{{ item[16] }},
+            },
+        {% endfor %}
+        ]
+    });
+});
+</script>
+</body>
+</html>

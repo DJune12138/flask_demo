@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>玩家信息详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <style>
+        .content{
+            margin-bottom: 20px;
+        }
+        .search_btn {
+            float: right;
+        }
+
+        .search_new {
+            /*margin-top: 80px;*/
+        }
+
+        .main_info {
+            border: solid 1px #ededed !important;
+            border-top: none !important;
+            margin: 0 auto 30px auto;
+            border-radius: 0 !important;
+        }
+
+        .main_info tr {
+            display: flex;
+            border: none;
+        }
+
+        .main_info tr:hover td {
+            background: #ededed !important;
+        }
+
+        .main_info tr:hover td.key {
+            background: #fff !important;
+        }
+
+        .main_info tr td {
+            flex: 1;
+            text-align: left;
+            background: #ededed;
+        }
+
+        .main_info tr td.key {
+            flex: 4;
+            background: #fff;
+        }
+
+        .h3 {
+            font-weight: 600 !important;
+            padding-bottom: 20px;
+        }
+
+        .main_info tr td select {
+            margin: 0 !important;
+            border: none !important;
+            height: 20px !important;
+        }
+
+        #update {
+            margin-left: 20px;
+        }
+
+        .update {
+            position: fixed;
+            /*display: none;*/
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, .3);
+        }
+
+        .update .update_cont {
+            width: 350px;
+            height: 140px;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            color: #000;
+            font-size: 14px;
+            padding: 15px 20px;
+            border-radius: 5px;
+        }
+
+        .update .update_cont input {
+            position: relative;
+            cursor: pointer;
+            top: 11px;
+            margin: 0 !important;
+        }
+
+        .update .update_cont p {
+            margin: 15px 0 !important;
+        }
+
+        .update .update_cont label {
+            margin: 0 0px 0 0px;
+            cursor: pointer;
+            padding: 0 20px 0 10px;
+        }
+
+        .update .update_cont .item-btn {
+            text-align: center;
+        }
+
+        .update .update_cont .item-btn a {
+            margin: 0px 20px !important;
+        }
+
+        .refactor_content {
+            background: #f2f2f2;
+        }
+
+        .sub-title {
+            border-bottom: 1px #ccc solid;
+            margin: 0px 0 20px 0;
+        }
+
+        .sub-title span {
+            position: relative;
+            top: 10px;
+            background: #f2f2f2;
+            left: 50px;
+            font-size: 16px;
+            padding: 0 15px;
+        }
+
+        .content_item {
+            background: #fff;
+        }
+
+        .refactor_content .content_item input, .refactor_content .content_item select {
+            width: auto !important;
+            min-width: 500px !important;
+        }
+
+        .button_cancel, .button_cancel {
+            margin: 0 !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            position: relative;
+            top: 1px;
+            padding: 0 10px;
+        }
+
+        input[disabled] {
+            background: #fff !important;
+        }
+
+        table.new-table tr {
+            display: flex;
+        }
+
+        table.new-table tr:hover td:nth-child(odd) {
+            background: #fbfbfb !important;
+        }
+
+        table.new-table tr:hover td:nth-child(even) {
+            background: #fff !important;
+        }
+
+        table.new-table tr td {
+            flex: 1;
+            background: #fff;
+            height: 35px !important;
+            line-height: 35px !important;
+            padding: 0 65px !important;
+            text-align: left;
+
+        }
+
+        table.new-table tr td:nth-child(odd) {
+            background: #fbfbfb;
+        }
+
+        table.new-table tr td:nth-child(even) {
+            flex: 3;
+        }
+
+        .new-table tr td .button_cancel {
+            color: #000 !important;
+            float: right;
+            height: 26px !important;
+            line-height: 26px !important;
+            margin: 4px 10px 4px 0 !important;
+        }
+
+        .button_new {
+            height: 30px !important;
+            line-height: 30px !important;
+            position: relative;
+            top: 2px;
+        }
+        .alert .alert_cont{
+            height: auto !important;
+            top: 100px;
+            bottom: auto;
+        }
+        .alert .alert_cont p span{
+            width: 100px;
+            margin: 0 10px;
+            display: inline-block;
+        }
+        .alert .alert_cont p:first-child span{
+            width: 140px;
+        }
+        .item_level,.item_ali,.item_bank{
+            display: none;
+        }
+        .alert .alert_cont .item_bank select{
+            width: 140px !important;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_game_user_detail"), beginDate = False, endDate = False,
+    Channels=True, PlayerID = status_msg.PlayerID,
+    Account = status_msg.Account,
+    SelectChannel = status_msg.channel, QueryType = 3,
+    NickName=status_msg.NickName, Method='get') }}
+    {% endautoescape %}
+</div>
+<section class="content">
+    <!--<nav class="nav-sub">-->
+        <!--<span class="nav-select">玩家信息</span>-->
+        <!--<span>游戏报表</span>-->
+    <!--</nav>-->
+    <div class="refactor_content refactor_content_double nav-data">
+        <div>
+            <div class="sub-title"><span>基本信息</span></div>
+            <table class="new-table">
+                <tr>
+                    <td>玩家昵称</td>
+                    <td><span class="nick">{{ base_player.nick }}</span>
+                        <a class="button_cancel" onclick="alter_nick()">修改昵称</a>
+                        <a class="button_cancel" onclick="alter_pass()">修改登录密码</a></td>
+                    <td>玩家ID</td>
+                    <td><span class="PlayerID id">{{ base_player.id }}</span>
+                        <a class="button_cancel" onclick="forbid()">账号封停</a>
+                        <a class="button_cancel" onclick="cancel_forbid()">账号解封</a></td>
+                </tr>
+                <tr>
+                    <td>玩家账号</td>
+                    <td><span class="account_id">{{ base_player.account_id }}</span>
+                    </td>
+                    <td>携带金币</td>
+                    <td><span class="coin">{{ base_player.coin }}</span>
+                        <a class="button_cancel" onclick="cold()">资金冻结</a>
+                        <a class="button_cancel" onclick="cancel_cold()">资金解冻</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>保险柜金币</td>
+                    <td><span class="banker">{{ base_player.banker }}</span>
+                        <a class="button_cancel" onclick="updatePassword()">修改保险柜密码</a>
+                    </td>
+                    <td>累计充值金额</td>
+                    <td><span class="total_recharge_rmb">{{ base_player.total_recharge_rmb }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>累计提现金额</td>
+                    <td class="total_withdraw">{{ base_player.total_withdraw }}</td>
+                    <td>注册时间及IP</td>
+                    <td><span class="reg_time"></span> / <span class="reg_ip"></span></td>
+                </tr>
+                <tr>
+                    <td>注册设备</td>
+                    <td class="did">{{ base_player.did }}</td>
+                    <td>注册渠道</td>
+                    <td class="channel_id">{{ base_player.channel_id }}</td>
+                </tr>
+                <tr>
+                    <td>注册平台</td>
+                    <td class="platform">{{ base_player.platform }}</td>
+                    <td>最后登录时间及IP</td>
+                    <td ><span class="last_login_time"></span> / <span class="last_login_ip"></span></td>
+                </tr>
+                <tr>
+                    <td>游戏总局数</td>
+                    <td class="game_count">{{ base_player.game_count }}</td>
+                    <td>游戏总时长（分）</td>
+                    <td class="time_long">{{ base_player.time_long }}</td>
+                </tr>
+                <tr>
+                    <td>最后进入游戏</td>
+                    <td class="subgame">{{ base_player.subgame }}</td>
+                    <td>玩家层级</td>
+                    <td><span class="vip"></span>
+                        <a class="button_cancel update_level">调整玩家层级</a></td>
+                </tr>
+                <tr>
+                    <td>账号状态</td>
+                    <td class="status">{{ base_player.status }}</td>
+                    <td>备注信息</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>新手卡使用数量</td>
+                    <td class="newbie_card"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <div class="sub-title"><span>个人信息</span></div>
+            <table class="new-table">
+                <tr>
+                    <td>绑定手机</td>
+                    <td>
+                        <span class="phone">{{ base_player.phone }}</span>
+                    </td>
+                    <td>真实姓名</td>
+                    <td><span class="bank_acc">{{ base_player.bank_acc }}</span>
+                        <!--<a class="button_cancel">修改</a>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td>绑定银行卡</td>
+                    <td>
+                        <span class="bank_no">{{ base_player.bank_no }}</span>
+                        <a class="button_cancel" onclick="updateBank()">修改</a></td>
+                    </td>
+                    <td>绑定支付宝</td>
+                    <td>
+                        <span class="zfb">{{ base_player.zfb }}</span>
+                        <a class="button_cancel" onclick="updateZfb()">修改</a></td>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <div class="sub-title"><span>代理信息</span></div>
+            <table class="new-table">
+                <tr>
+                    <td>代理状态</td>
+                    <td>
+                        <span class="agent_status"></span>
+                        <!--<a class="button_cancel"  id="update">调整代理状态</a>-->
+                    </td>
+                    <td>上级代理</td>
+                    <td class="invite_id"></td>
+                </tr>
+                <tr>
+                    <td>代理层级</td>
+                    <td class="agent_lv">
+                        <!--<select class="agent_level"></select>-->
+                        <!--<a class="button_cancel">调整代理层级</a>-->
+                    </td>
+                    <td>推广玩家数</td>
+                    <td class="invite_count"></td>
+                </tr>
+                <tr>
+                    <td>受邀码</td>
+                    <td>
+                        <span class="p_code"></span>
+                        <a class="button_cancel" onclick="uodate_code()">修改</a>
+                    </td>
+                    <td>推广码</td>
+                    <td class="invite_code"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+
+        </div>
+
+    </div>
+    <div class="nav-data game_report">
+
+        <!--<div class="search search_new">-->
+        <!--<span>-->
+            <!--<select id="qryType" name="qryType" onchange="filterTypeChange()">-->
+                <!--<option value="1">游戏详情</option>-->
+                <!--<option value="2">代理数据</option>-->
+            <!--</select>-->
+        <!--</span>-->
+            <!--{#        <span>#}-->
+            <!--{#           日期：<input type="text" class="Wdate" readonly onClick="WdatePicker({firstDayOfWeek:1, isShowClear:false, isShowOK:false, isShowToday:false, autoPickDate:true})" id="date1" name="date1" value="{{ status_msg.date1 }}"/>#}-->
+            <!--{#            &#45;&#45;<input type="text" class="Wdate"  readonly onClick="WdatePicker({firstDayOfWeek:1, isShowClear:false, isShowOK:false, isShowToday:false, autoPickDate:true})" id="date2" name="date2" value="{{ status_msg.date2 }}"/>#}-->
+            <!--{#        </span>#}-->
+            <!--{#        <span>#}-->
+            <!--{#            <input type="button" id="query_btn1" class="btn btn-primary btn-sm" value="查询"/>#}-->
+            <!--{#        </span>#}-->
+            {% autoescape false %}
+            {{ search_bar(url_for("busi.search_game_user_detail"), beginDate = True, endDate = True, QueryType = 3) }}
+            {% endautoescape %}
+
+        <table class="commission"></table>
+        <table id="reportTable1">
+            <tr>
+                <th>11111</th>
+            </tr>
+        </table>
+            <!--<table id="reportTable2"></table>-->
+
+        </div>
+
+
+    </div>
+</section>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<div hidden id="right_channel">{{ right_channel }}</div>
+<div class="h3" hidden>基本信息</div>
+<div class="search_btn" hidden>
+
+    <!--<input type="button" class="btn btn-primary btn-sm" value="修改保险柜密码" onclick="alter_bank_pwd()"/>-->
+    <input type="button" class="btn btn-primary btn-sm" value="修改昵称" onclick="alter_nick()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="修改登录密码" onclick="alter_pass()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="封号" onclick="forbid()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="解封" onclick="cancel_forbid()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="冻结" onclick="cold()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="解冻" onclick="cancel_cold()"/>
+    <input type="button" class="btn btn-primary btn-sm" value="下线" onclick="outline()"/>
+
+</div>
+<section class="update" hidden>
+    <div class="update_cont">
+        <p>
+            <input type="radio" id="radio1" value="1" checked name="status"/>
+            <label class="label-radio" for="radio1">启用</label>
+            <input type="radio" id="radio2" value="0" name="status"/>
+            <label class="label-radio" for="radio2">停用</label>
+            <input type="radio" id="radio3" value="2" name="status"/>
+            <label class="label-radio" for="radio3">待审</label>
+            <input type="radio" id="radio4" value="-1" name="status"/>
+            <label class="label-radio" for="radio4">无</label>
+        </p>
+        <p class="item-btn">
+            <a class="button_cancel">取消</a>
+            <a class="button_new">确定</a>
+        </p>
+    </div>
+</section>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="alert" hidden>
+    <div class="alert_cont">
+        <p><span class="title">调整玩家层级</span></p>
+        <p class="item_level">
+            <select>
+            </select>
+        </p>
+        <p class="item_ali" hidden>
+            <span>支付宝收款人</span>
+            <input type="text">
+        </p>
+        <p class="item_ali" hidden>
+            <span>支付宝账号</span>
+            <input type="text">
+        </p>
+        <p class="item_bank" hidden>
+            <span>银行卡收款人</span>
+            <input type="text">
+        </p>
+        <p class="item_bank" hidden>
+            <span>银行卡收款账号</span>
+            <input type="text">
+        </p>
+        <p class="item_bank" hidden>
+            <span>银行卡银行名</span>
+            <select>
+                <option value="">请选择所属银行</option>
+                <option value="中国银行">中国银行</option>
+                <option value="工商银行">工商银行</option>
+                <option value="农业银行">农业银行</option>
+                <option value="建设银行">建设银行</option>
+                <option value="邮政银行">邮政银行</option>
+                <option value="招商银行">招商银行</option>
+                <option value="民生银行">民生银行</option>
+                <option value="交通银行">交通银行</option>
+                <option value="广发银行">广发银行</option>
+            </select>
+        </p>
+        <p class="item_bank" hidden>
+            <span>银行卡开户地址</span>
+            <input type="text">
+        </p>
+        <p>
+            <a class="button_cancel">取消</a>
+            <a class="button_new">确定</a>
+        </p>
+    </div>
+</section>
+
+<script src="/static/js/my97date/WdatePicker.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+
+    if(getUrlParams().pid){
+        $('#PlayerID').val(getUrlParams().pid);
+        getList();
+    }
+
+    function showInfo(res) {
+        $.each(res,function (index,item) {
+            $('.nav-data .new-table').find('.'+index).text(item);
+        });
+        $('.total_withdraw').text($('.total_withdraw').text()/100);
+        $('.total_recharge_rmb').text($('.total_recharge_rmb').text()/100);
+        loadingShow(false);
+
+    }
+
+    function getList(){
+        $.ajax({
+            url:'/search/games/users/datas/details',
+            data:{
+                PlayerID:$('#PlayerID').val(),
+                NickName:$('#NickName').val(),
+                Account:$('#Account').val(),
+            },
+            success:function (res) {
+                ajaxCallback(res,function () {
+                    showInfo(res.data);
+                },true)
+            }
+        })
+    };
+
+    $('#query_btn').click(function(){
+        loadingShow(true);
+        getList()
+    });
+
+</script>
+<script>
+
+    // $('.game_report #query_form .search').prepend('<select id="qryType" name="qryType" onchange="filterTypeChange()">\n' +
+    //     '                <option value="1">游戏详情</option>\n' +
+    //     '                <option value="2">代理数据</option>\n' +
+    //     '            </select>')
+    update_level = $('.update_level');
+    alert_view = $('.alert');
+    alert_view_select = alert_view.find('.item_level select');
+    PlayerID = $('.PlayerID');
+    update_level.click(function () {
+        $.ajax({
+            url: '/member/level/json/name',
+            success: function (res) {
+                show_alert_view(res.datas, update_level_callbace)
+            }
+        })
+    })
+
+    function update_level_callbace() {
+        $.ajax({
+            url: '/gm/user/alter_vip',
+            data: {
+                PlayerID: PlayerID.text(),
+                vip: alert_view_select.val()
+            },
+            success: function () {
+                showAlert('保存成功', 'success');
+                alert_view.fadeOut();
+            }
+        })
+    }
+
+    function show_alert_view(items, update_level_callbace) {
+        alert_view_select.empty();
+        $.each(items, function (index, item) {
+            alert_view_select.append('<option value="' + item.id + '">' + item.name + '</option>')
+        });
+        alert_view.find('.item_ali').hide();
+        alert_view.find('.item_bank').hide();
+        alert_view.find('.item_level').show();
+        alert_view.find('.title').text('调整玩家层级');
+        alert_view.fadeIn();
+        alert_view_cancel = alert_view.find('.button_cancel');
+        alert_view_sure = alert_view.find('.button_new');
+    }
+
+    update_btn = $('#update');
+    update_cont = $('.update');
+    update_cont_btn = update_cont.find('.item-btn a');
+
+    update_btn.click(function () {
+        update_cont.fadeIn();
+        var index = $('#update').parent().attr('status_id');
+        $('input:radio[value=' + index + ']').attr('checked', true);
+    })
+    update_cont_btn.click(function () {
+        update_cont.fadeOut();
+        if (update_cont_btn.index(this) == 1) {
+            $.ajax({
+                url: '/agent/list/amend/status',
+                type: 'put',
+                data: {
+                    pid: $('.pid').text(),
+                    status: $('input:radio[name="status"]:checked').val(),
+                },
+                success: function (res) {
+                    res = JSON.parse(res)
+                    if (res.result == '1') {
+                        showAlert(res.msg, 'success')
+                    } else {
+                        showAlert(res.msg)
+                    }
+                }
+            })
+        }
+    })
+
+    agent_level = $('.agent_level');
+    player_level = $('.player_level');
+    // getAgentLevel();
+    // getPlayerLevel();
+
+    function getAgentLevel() {
+        $.ajax({
+            url: '/agent/level/retrieve',
+            data: {},
+            success: function (res) {
+                res = JSON.parse(res)
+                agent_level.html('');
+                res.data.forEach(function (item) {
+                    agent_level.append('<option value="' + item.level_id + '">' + item.level_name + '</option>')
+                })
+            },
+        })
+    }
+
+    function getPlayerLevel() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_json_name") }}',
+            data: {},
+            success: function (res) {
+                res = JSON.parse(res)
+                player_level.html('');
+                res.datas.forEach(function (item) {
+                    player_level.append('<option value="' + item.id + '">' + item.name + '</option>')
+                })
+            },
+        })
+    }
+
+    // function filterTypeChange() {
+    //     $('#reportTable1').hide();
+    //     $('#reportTable2').hide();
+    //     if($('#qryType').val() == 1){
+    //         $('#reportTable1').show();
+    //     }else{
+    //         $('#reportTable2').show();
+    //     }
+    //     // Type = document.getElementById("qryType").value;
+    //     //
+    //     // document.getElementById("reportTableDiv1").style.display = "none";
+    //     // document.getElementById("reportTableDiv2").style.display = "none";
+    //     //
+    //     // if (Type == 1) {
+    //     //     document.getElementById("reportTableDiv1").style.display = "";
+    //     // }
+    //     //
+    //     // if (Type == 2) {
+    //     //     document.getElementById("reportTableDiv2").style.display = "";
+    //     // }
+    // }
+
+    // function load() {
+    //     filterTypeChange();
+    // }
+
+
+    alert_view_sure = alert_view.find('.button_new');
+    alert_view.find('.button_cancel').click(function () {
+        alert_view.hide();
+    })
+    alert_view.find('.button_new').click(function () {
+        if(alert_view.find('.title').text() == '修改支付宝信息'){
+            $.ajax({
+                url: "/game/user/set/zfb",
+                type: 'post',
+                data: {
+                    pid: $('.id').text(),
+                    nick: $('.nick').text(),
+                    acc: alert_view.find('.item_ali').eq(0).find('input').val(),
+                    name: alert_view.find('.item_ali').eq(1).find('input').val(),
+                },
+                success: function (res) {
+                    alert_view.hide();
+                    if(res.error == 'system_err'){
+                        showAlert('服务器忙，请稍后再试')
+                    }else{
+                        showAlert("修改支付宝账号成功", 'success');
+                        $('#query_btn').click();
+                    }
+                },
+            });
+        }else if(alert_view.find('.title').text() == '修改银行卡信息'){
+            $.ajax({
+                url: "/game/user/set/bank",
+                type: 'post',
+                data: {
+                    pid: $('.id').text(),
+                    nick: $('.nick').text(),
+                    acc: alert_view.find('.item_bank').eq(1).find('input').val(),
+                    name: alert_view.find('.item_bank').eq(0).find('input').val(),
+                    bank: alert_view.find('.item_bank').find('select').val(),
+                    addr: alert_view.find('.item_bank').eq(3).find('input').val(),
+                },
+                success: function (res) {
+                    alert_view.hide();
+                    if(res.error == 'system_err'){
+                        showAlert('服务器忙，请稍后再试')
+                    }else{
+                        showAlert("修改银行卡账号成功", 'success');
+                        $('#query_btn').click();
+                    }
+                },
+            });
+        }else{
+            update_level_callbace()
+        }
+    })
+
+    function updateBank() {
+        alert_view.find('.item_bank select').val($('.bank_no').text().split('/')[0]);
+        alert_view.find('.item_bank').eq(0).find('input').val($('.bank_acc').text());
+        alert_view.find('.item_bank').eq(1).find('input').val($('.bank_no').text().split('/')[1]);
+        alert_view.find('.item_bank').eq(3).find('input').val($('.bank_no').text().split('/')[2]);
+        alert_view.find('.title').text('修改银行卡信息');
+        alert_view.find('.item_ali').hide();
+        alert_view.find('.item_bank').show();
+        alert_view.find('.item_level').hide();
+        alert_view.show();
+
+        // var account = prompt("输入新的银行卡账号", "");
+        // if (account.length == 0) {
+        //     showAlert("新的银行卡账号不能为空");
+        //     return
+        // }
+
+    }
+
+    function updateZfb() {
+        alert_view.find('.item_ali').eq(0).find('input').val($('.zfb').text().split('/')[0]);
+        alert_view.find('.item_ali').eq(1).find('input').val($('.zfb').text().split('/')[1]);
+        alert_view.find('.title').text('修改支付宝信息');
+        alert_view.find('.item_ali').show();
+        alert_view.find('.item_bank').hide();
+        alert_view.find('.item_level').hide();
+        alert_view.show();
+
+        // var account = prompt("输入新的支付宝账号", "");
+        // if (account.length == 0) {
+        //     showAlert("新的支付宝账号不能为空");
+        //     return
+        // }
+
+    }
+
+    function updatePassword() {
+        var pwd = prompt("输入新的保险柜密码", "");
+        if (pwd.length == 0) {
+            showAlert("新的保险柜密码不能为空");
+            return
+        }
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/alter_bank_pwd",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value,
+                "pwd": pwd
+            },
+            success: function (res) {
+                if(res.error == 'system_err'){
+                    showAlert('服务器忙，请稍后再试')
+                }else{
+                    showAlert("修改保险柜密码成功", 'success');
+                }
+            },
+        });
+    }
+
+    function alter_nick() {
+        var nick = prompt("输入新的昵称", "");
+        if (nick.length == 0) {
+            showAlert("新的昵称不能为空");
+            return
+        }
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/alter_nick",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value,
+                "nick": nick
+            },
+            success: function () {
+                showAlert("修改昵称成功", 'success');
+            },
+        });
+    }
+
+    function uodate_code() {
+        var agent_id = prompt("输入新的受邀码", "");
+        if (agent_id.length == 0) {
+            showAlert("新的受邀码不能为空");
+            return
+        }
+        $.ajax({
+            url: "/game/user/set/invited/code",
+            type: 'post',
+            data: {
+                pid: $('.id').text(),
+                agent_id: agent_id
+            },
+            success: function (res) {
+                if(res.result == 'ok'){
+                    showAlert(res.msg, 'success');
+                    $('#query_btn').click();
+                }else{
+                    showAlert(res.msg);
+                }
+            },
+        });
+    }
+
+    function alter_pass() {
+        var pass = prompt("输入新的密码", "");
+        if (pass.length == 0) {
+            showAlert("新的密码不能为空");
+            return
+        }
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/alter_pass",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value,
+                "pass": pass
+            },
+            success: function () {
+                showAlert("修改密码成功", 'success');
+            },
+        });
+    }
+
+    function send_item() {
+        {% if status_msg.access_level == 0 %}
+            alert("账号级别不够")
+        {% else %}
+            var num = prompt("输入赠送喇叭数量", "0");
+
+            $.ajax({
+                type: 'GET',
+                url: "/gm/user/send_item",
+                data: {
+                    "PlayerID": document.getElementById("PlayerID").value,
+                    "num": num
+                },
+                success: function () {
+                    alert("赠送喇叭成功");
+                },
+            });
+        {% endif %}
+    }
+
+    function send_coin() {
+        {% if status_msg.access_level == 0 %}
+            alert("账号级别不够")
+        {% else %}
+            var num = prompt("输入赠送金币数量", "0");
+
+
+            $.ajax({
+                type: 'GET',
+                url: "/gm/user/send_coin",
+                data: {
+                    "PlayerID": document.getElementById("PlayerID").value,
+                    "num": num
+                },
+                success: function () {
+                    alert("赠送金币成功");
+                },
+                dataType: "json"
+            });
+        {% endif %}
+    }
+
+    function forbid() {
+        var reason = prompt("请输入封号原因", "");
+        if (reason.length == 0) {
+            showAlert("封号原因不能为空");
+            return
+        }
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/forbid",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value,
+                "reason": reason
+            },
+            success: function () {
+                showAlert("封号成功", 'success');
+            },
+        });
+    }
+
+    function cancel_forbid() {
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/cancel_forbid",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value
+            },
+            success: function () {
+                showAlert("解封成功", 'success');
+            },
+        });
+    }
+
+    function cold() {
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/cold",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value
+            },
+            success: function () {
+                showAlert("冻结成功", 'success');
+            },
+        });
+    }
+
+    function cancel_cold() {
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/cancel_cold",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value
+            },
+            success: function () {
+                showAlert("解冻成功", 'success');
+            },
+        });
+    }
+
+    function outline() {
+        $.ajax({
+            type: 'GET',
+            url: "/gm/user/outline",
+            data: {
+                "PlayerID": document.getElementById("PlayerID").value
+            },
+            success: function () {
+                showAlert("踢下线成功", 'success');
+            },
+        });
+    }
+
+
+        $('#reportTable1').bootstrapTable({
+            url: "/games/users/datas/details",
+            method: 'get',
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            dataField: 'data',
+            showPaginationSwitch: false,//是否显示数据条数选择框
+            striped: true,
+            pagination: true,
+            pageSize: 100,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination: 'server',
+            showHeader: true,
+            buttonsAlign: "right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            silentSort: false,
+            queryParamsType: 'limit',
+            queryParams: queryParams1,//传递参数（*）
+
+            columns:
+                [
+                    {field: "time", title: "日期", align: "center", valign: "middle"},
+                    {field: "game_id", title: "游戏名称", align: "center", valign: "middle"},
+                    {field: "game_count", title: "局数", align: "center", valign: "middle"},
+                    {
+                        field: "stake_coin",
+                        title: "投注总额",
+                        align: "center",
+                        valign: "middle",
+                        formatter: coin_format_no_color
+                    },
+                    {
+                        field: "win_coin",
+                        title: "收入总额",
+                        align: "center",
+                        valign: "middle",
+                        formatter: coin_format_no_color
+                    },
+                    {field: "total_win", title: "盈亏金额", align: "center", valign: "middle", formatter: coin_format},
+                    {field: "today_recharge", title: "充值总额", align: "center", valign: "middle"},
+                    {field: "today_withdraw", title: "提现金额", align: "center", valign: "middle"},
+                    {field: "bankrupt_count", title: "破产次数", align: "center", valign: "middle"},
+                ]
+        });
+
+        $('#reportTable2').bootstrapTable({
+            url: "/games/users/datas/details",
+            method: 'get',
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+            striped: true,
+            pagination: true,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            dataField: 'data',
+            showPaginationSwitch: false,//是否显示数据条数选择框
+
+            striped: true,
+            pagination: true,
+            pageSize: 100,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination: 'server',
+            showHeader: true,
+            buttonsAlign: "right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+
+            silentSort: false,
+
+            queryParamsType: 'limit',
+            queryParams: queryParams2,//传递参数（*）
+
+            columns:
+                [
+                    {field: "time", title: "日期", align: "center", valign: "middle"},
+                    {field: "up_coin", title: "买分总量", align: "center", valign: "middle"},
+                    {field: "down_coin", title: "卖分总量", align: "center", valign: "middle"},
+                    {field: "count", title: "赠送次数", align: "center", valign: "middle"},
+                    {field: "pump", title: "抽水总量", align: "center", valign: "middle"},
+                ]
+        });
+
+    //得到查询的参数
+    function queryParams1(params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            PlayerID: $("#PlayerID").val(),
+            date1: $("#beginDate").val(),
+            date2: $("#endDate").val(),
+        };
+        return temp;
+    };
+
+    function queryParams2(params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            PlayerID: $("#PlayerID").val(),
+            NickName: $("#NickName").val(),
+            date1: $("#beginDate").val(),
+            date2: $("#endDate").val(),
+        };
+        return temp;
+    };
+
+    //请求成功方法
+    function responseHandler(result) {
+        if (result.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试')
+        }
+        return {
+            total: result.dataLength,
+            data: result.rowDatas ,
+        };
+    };
+
+    //查询按钮事件
+    $('.game_report #query_form .search #query_btn').click(function () {
+        Type = document.getElementById("qryType").value;
+        if (Type == "1") {
+            $('#reportTable1').bootstrapTable('refreshOptions', {pageNumber: 1});
+            $('#reportTable1').bootstrapTable('refresh', {url: '/search/games/users/datas/game_data_tj'});
+        }
+        if (Type == "2") {
+            $('#reportTable2').bootstrapTable('refreshOptions', {pageNumber: 1});
+            $('#reportTable2').bootstrapTable('refresh', {url: '/search/games/users/datas/prestented_data_tj'});
+        }
+
+    })
+</script>
+</body>
+</html>

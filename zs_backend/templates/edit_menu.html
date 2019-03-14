@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<style type="text/css">
+    .update_menu {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 150px;
+        float: left;
+        text-align: right;
+    }
+    .update_user {
+        margin: 50px 100px;
+        padding: 0;
+        width: 600px;
+        height: 300px;
+    }
+
+    .input_box, .parent_check {
+        width: 500px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box {
+        width: 150px;
+        overflow: hidden;
+        line-height: 25px;
+        margin-bottom: 10px;
+    }
+
+    .check_box div {
+        width: 150px;
+        float: left;
+    }
+
+    .input_box div, .auth_logo {
+        width: 90px;
+        float: left;
+        text-align: right;
+    }
+    input[type='checkbox'], input[type='radio'] {
+        left: -1px;
+        top: 11px;
+    }
+    h2{
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        width: 68px;
+        margin: 23px 0;
+    }
+
+    .content{
+        border:solid 1px #e6e6e6;
+    }
+    .content .content_top{
+        background: #f2f2f2;
+        padding: 5px 2px;
+        border-radius: 0px;
+    }
+    .content .content_item{
+        margin: 10px 10px;
+        border: 1px solid #e6e6e6;
+        padding: 0;
+    }
+    .content .content_item label{
+        margin: 0;
+        background: #FBFBFB;
+        width: 110px;
+        height: 38px;
+        border-right: 1px solid #e6e6e6;
+        font-size: 13px;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 38px;
+    }
+    .content .content_item input{
+        width: 90%;
+        border: none !important;
+        height: 100% !important;
+    }
+
+    .content .content_title {
+        font-size: 13px;
+        color: #666;
+        margin: 8px 0 0 20px;
+        display: inline-block;
+    }
+
+    .content .content_item input.radio {
+        cursor: pointer;
+        width: 13px;
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        margin-left: 10px !important;
+    }
+
+    .content .content_item .radio:last-child {
+        margin-left: 100px !important;
+    }
+
+    .content .content_item:last-child label {
+        height: auto;
+    }
+    .content .content_item input[type='checkbox']{
+        width: 13px !important;
+        height: 13px !important;
+        border: solid 1px #000 !important;
+        top: 0;
+    }
+    .content .content_item_last{
+        position: relative;
+    }
+    .content .content_item_last .span{
+        display: inline-block;
+        padding: 5px 0 5px 120px;
+    }
+    .content .content_item_last span{
+        display: block;
+        font-size: 13px;
+        margin: 3px 0;
+    }
+    .content .content_item_last label{
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+    .content .content_item_last label span{
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+    .btn-primary{
+        margin-bottom: 10px !important;
+    }
+
+
+</style>
+<body>
+<form action="{{ url_for('busi.set_menu') }}" , method="post">
+    <input type="hidden" name="menu_id" value="{{ menu.id }}">
+    <div class="content">
+        <div class="content_top">
+            <input class="btn btn-primary btn-sm" type="button" id="cancel" value="返回菜单列表">
+        </div>
+        <span class="content_title">编辑菜单</span>
+        <p class="content_item">
+            <label>菜单名</label>
+            {% if menu.name_is_edit %}
+            <input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.name }}"/>
+            {% else %}
+        <span style="color: green;text-align: left">{{ menu.name }}</span>
+        <input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.name }}" hidden/>
+        {% endif %}
+        </p>
+        <p class="content_item">
+            <label>视图名</label>
+            {% if menu.name_is_edit %}
+            <input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.view_name }}"/>
+            {% else %}
+        <span style="color: green;text-align: left">{{ menu.view_name }}</span>
+        {% endif %}
+        </p>
+        <p class="content_item content_item_last">
+            <label><span>所需权限</span></label>
+            <span class="span">
+            <input type="checkbox" name="role" value="1" checked hidden/>
+                {% for role in roles %}
+                {% if role.id != 1 %}
+                <span>
+                    {% if role.id in select_roles %}
+                    <input type="checkbox" name="role" value="{{ role.id }}" checked/>{{ role.name }}
+                    {% else %}
+                    <input type="checkbox" name="role" value="{{ role.id }}"/>{{ role.name }}
+                    {% endif %}
+                </span>
+                {% endif %}
+                {% endfor %}
+            </span>
+        </p>
+        <p style="text-indent: 150px;color: red">{{ errmsg }}</p>
+        <input class="btn btn-primary btn-sm" type="submit" name="" value="修改">
+    </div>
+    <!--<div class="update_menu">-->
+        <!--<h2>编辑菜单：</h2>-->
+
+        <!--<div class="input_box">-->
+            <!--<div><span>菜单名：&nbsp;&nbsp;</span></div>-->
+            <!--{% if menu.name_is_edit %}-->
+            <!--<input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.name }}"-->
+                   <!--style="display: block;height: 20px;text-indent: 5px;"/>-->
+            <!--{% else %}-->
+            <!--<div style="color: green;text-align: left">{{ menu.name }}</div>-->
+            <!--<input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.name }}" hidden/>-->
+            <!--{% endif %}-->
+        <!--</div>-->
+        <!--<div class="input_box">-->
+            <!--<div><span>视图名：&nbsp;&nbsp;</span></div>-->
+            <!--{% if menu.name_is_edit %}-->
+            <!--<input type="text" placeholder="请输入菜单名" name="name" value="{{ menu.view_name }}"-->
+                   <!--style="display: block;height: 20px;text-indent: 5px;"/>-->
+            <!--{% else %}-->
+            <!--<div style="color: green;text-align: left">{{ menu.view_name }}</div>-->
+            <!--{% endif %}-->
+        <!--</div>-->
+        <!--<div class="parent_check">-->
+            <!--<div class="auth_logo"><span>所属权限：&nbsp;&nbsp;</span></div>-->
+            <!--<div class="check_box">-->
+                <!--<input type="checkbox" name="role" value="1" checked hidden/>-->
+                <!--{% for role in roles %}-->
+                <!--{% if role.id != 1 %}-->
+                <!--<div>-->
+                    <!--{% if role.id in select_roles %}-->
+                    <!--<input type="checkbox" name="role" value="{{ role.id }}" checked/>{{ role.name }}-->
+                    <!--{% else %}-->
+                    <!--<input type="checkbox" name="role" value="{{ role.id }}"/>{{ role.name }}-->
+                    <!--{% endif %}-->
+                <!--</div>-->
+                <!--{% endif %}-->
+                <!--{% endfor %}-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<input class="btn btn-primary btn-sm" type="submit" name="" value="修改">-->
+        <!--&lt;!&ndash;<input class="btn btn-primary btn-sm cancel" type="button" id="cancel" value="取消">&ndash;&gt;-->
+    <!--</div>-->
+</form>
+</body>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.get_menu") }}'
+    });
+
+</script>
+</html>

@@ -1,0 +1,12 @@
+# -*- coding:utf-8 -*-
+from zs_backend import game_jobs
+
+JOBS = [
+	{
+		"func":game_jobs.get_channel_data,
+		"id":"1",
+		"args":(),
+		"trigger":"interval",
+		"seconds":10,
+	},
+]

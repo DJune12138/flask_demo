@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>运营状况概括</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .new_data {
+            font-size: 12px;
+        }
+
+        .new_data ul {
+            overflow: hidden;
+            background: #f8f8f8;
+            padding: 40px 20px 15px 20px;
+            border: solid 1px #ededed;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .new_data ul li {
+            /*border: solid red 1px;*/
+            float: left;
+            position: relative;
+            padding-left: 50px;
+            margin-right: 50px;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .new_data ul li img {
+            width: 40px;
+            height: 40px;
+            left: 0px;
+            position: absolute;
+        }
+
+        .new_data ul li p {
+            font-size: 18px;
+            color: #5b5f7d;
+            /*font-weight: 600;*/
+        }
+
+        .new_data ul li div {
+            position: absolute;
+            background: #00a0e9;
+            padding: 11px;
+            border-radius: 5px;
+            width: 150px;
+            top: -15px;
+            left: 110px;
+            display: none;
+            color: #fff;
+            height: 72px;
+            cursor: pointer;
+            z-index: 1;
+            text-align: justify;
+            word-break: break-all;
+        }
+
+        .new_data ul li .new_data_tip_long {
+            width: 300px;
+        }
+
+        .new_data ul li p:nth-child(2) {
+            font-size: 10px;
+            color: #98a5ba;
+            font-weight: 300;
+        }
+
+        .new_data .new_data_span {
+            position: absolute;
+            top: 10px;
+            font-size: 14px;
+        }
+
+        .section_chart {
+            padding: 10px 20px 20px 20px;
+            border: solid 1px #ededed;
+            border-radius: 5px;
+            margin-top: 20px;
+            background: #f8f8f8;
+            position: relative;
+        }
+
+        .game_data #game_data_chart {
+            /*border: solid red 1px;*/
+            padding: 20px 20px 0 20px;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .section_span {
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section_span span {
+            float: right;
+        }
+
+        .section_span .button_new {
+            height: 26px !important;
+            line-height: 26px !important;
+        }
+
+        .section_span span input {
+            height: 26px !important;
+        }
+
+        .game_data ul {
+            position: absolute;
+            right: 20px;
+            top: 8px;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        .game_data li {
+            float: left;
+            padding: 5px 10px;
+            border: solid 1px #dedede;
+            border-right: none;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .game_data li:last-child {
+            border-right: solid 1px #dedede;
+        }
+
+        .game_data li.li_select {
+            background: #1E9FFF;
+            color: #fff;
+        }
+
+        .content_box {
+            display: flex;
+        }
+
+        .content_box section {
+            height: 500px;
+            /*border: solid 1px red;*/
+            flex: 2.5;
+            margin-right: 20px;
+        }
+
+        .content_box section:last-child {
+            margin-right: 0px;
+        }
+
+        .content_box section.client_distribution {
+            flex: 5;
+        }
+
+        .content_box .section_chart {
+            overflow: auto;
+        }
+
+        .game_data {
+            margin-bottom: 35px;
+        }
+
+        nav {
+            padding: 10px 0 20px 0;
+            text-align: center;
+        }
+
+        nav ul {
+            margin: 0 auto;
+            overflow: hidden;
+            width: 480px;
+            display: inline-block;
+        }
+
+        nav ul li {
+            font-size: 14px;
+            float: left;
+            border: solid #ededed 1px;
+            border-right: none;
+            padding: 5px 0;
+            width: 80px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        nav ul li:last-child {
+            border-right: solid #ededed 1px;
+        }
+
+        nav ul li.active {
+            background: #1E9FFF;
+            color: #fff;
+        }
+
+        .channel {
+            position: relative;
+            top: -10px;
+            right: 10px;
+        }
+
+        input.Wdate {
+            width: 185px !important;
+        }
+
+        .section_span .search_text {
+            float: none;
+            font-size: 12px;
+            margin: 0 2px 0 5px;
+        }
+        main{
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_daily_data"), beginDate = 11, endDate = 11, QueryType = 3) }}
+    {% endautoescape %}
+</div>
+<main>
+    <!--<nav>-->
+    <!--<ul class="date_">-->
+    <!--<li class="active" time="today">今日</li>-->
+    <!--<li time="yesterday">昨日</li>-->
+    <!--<li time="week">本周</li>-->
+    <!--<li time="last_week">上周</li>-->
+    <!--<li time="month">本月</li>-->
+    <!--<li time="last_month">上月</li>-->
+    <!--</ul>-->
+    <!--</nav>-->
+    <section class="new_data">
+        <ul>
+            <span class="new_data_span">财务状况概括</span>
+            <li><img src="/static/images/nav6.png"/>
+                <p>充值</p>
+                <p class="recharge">0</p>
+                <div>注册人数：今日注册的用户数</div>
+            </li>
+            <li><img src="/static/images/nav7.png"/>
+                <p>提款</p>
+                <p class="withdraw">0</p>
+                <div>游戏人数：今日登录过且进行了游戏的用户数</div>
+            </li>
+            <li><img src="/static/images/nav2.png"/>
+                <p>代理卖分</p>
+                <p class="agent_sell">0</p>
+                <div>活跃人数：今日登录过的用户数</div>
+            </li>
+            <li><img src="/static/images/nav4.png"/>
+                <p>代理买分</p>
+                <p class="agent_buy">0</p>
+                <div>在线人数：当前同时在线用户数</div>
+            </li>
+            <!--<li><img src="/static/images/nav5.png"/>-->
+            <!--<p>反水</p>-->
+            <!--<p class="fanshui">&#45;&#45;</p>-->
+            <!--<div class="new_data_tip_profit new_data_tip_long">游戏盈亏：游戏盈利+游戏抽水</div>-->
+            <!--</li>-->
+            <!--<li><img src="/static/images/nav8.png"/>-->
+            <!--<p>反佣</p>-->
+            <!--<p class="fanyong">&#45;&#45;</p>-->
+            <!--<div class="new_data_tip_updown new_data_tip_long">上下分：玩家上分(0)-玩家下分(0)</div>-->
+            <!--</li>-->
+            <li><img src="/static/images/nav3.png"/>
+                <p>游戏盈亏</p>
+                <p class="ai_win">0</p>
+            </li>
+        </ul>
+    </section>
+    <div class="content_box">
+        <section class="client_distribution section_chart">
+            <span class="section_span">客户端分布</span>
+            <div id="client_distribution_chart"></div>
+        </section>
+        <section class="member_profit section_chart">
+            <span class="section_span">玩家盈亏</span>
+            <table id="profit_member"></table>
+        </section>
+        <section class="game_profit section_chart">
+            <span class="section_span">游戏盈亏</span>
+            <table id="profit_game"></table>
+        </section>
+    </div>
+    <section class="member_online section_chart">
+        <span class="member_online_span section_span">24小时玩家在线走势 <span>对比日期
+            <input class="Wdate Wdate1" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})"><span
+                    class="search_text">VS</span>
+            <input class="Wdate Wdate2" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+            <a class="button_new">查询</a>
+        </span></span>
+        <div id="member_online_chart"></div>
+    </section>
+    <section class="game_data section_chart" hidden>
+        <span class="game_data_span section_span">近30日游戏数据走势</span>
+        <ul>
+            <li class="li_select">输赢结果</li>
+            <li>有效流水</li>
+            <li>游戏人次</li>
+        </ul>
+        <div id="game_data_chart"></div>
+    </section>
+</main>
+<script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/my97date/WdatePicker.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+
+    $(function () {
+        var today = getLocalTime(new Date().getTime() / 1000).slice(0, 10);
+        var start_time = today, end_time = today;
+
+        $('.Wdate1').val(getLocalTime(new Date().getTime() / 1000 - 24 * 3600).slice(0, 10))
+        $('.Wdate2').val(start_time)
+
+        $game_data_ul_li = $('.game_data ul li');
+        $game_data_ul_li.click(function () {
+            $(this).siblings('li').removeClass('li_select');
+            $(this).addClass('li_select');
+            index = $game_data_ul_li.index(this);
+            chart_column(newArray(30), newArray(30), $(this).text());
+        })
+
+        chart_column(newArray(30), newArray(30), '输赢结果');
+        chart_line(newArray(30), newArray(30), newArray(30));
+
+        function chart_pie(player_count, device) {
+            var chart = Highcharts.chart('client_distribution_chart', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: ''
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true
+                        },
+                        showInLegend: true
+                    }
+                },
+                exporting: {enabled: false},
+                credits: {enabled: false},
+                tooltip: {
+                    enabled: true,
+                    formatter: function () {
+                        return '访问来源<br/>' + '<span style="color:' + this.color + ';">' + this.key + '：' + this.y + '</span>'
+
+                    }
+                },
+                series: [{
+                    size: '35%',
+                    dataLabels: {
+                        distance: -30
+                    },
+                    data: [{
+                        name: '新玩家',
+                        y: player_count.new,
+                        color: '#c23531'
+                    }, {
+                        name: '老玩家',
+                        y: player_count.old,
+                        color: '#2f4554'
+                    }, ,]
+                }, {
+                    size: '80%',
+                    innerSize: '70%',
+                    data: device
+                }]
+            });
+        }
+
+        function chart_line(data1, data2, start, end) {
+            var chart = Highcharts.chart('member_online_chart', {
+                chart: {
+                    type: 'spline',
+                },
+                title: {
+                    text: ''
+                },
+                legend: {
+                    align: 'center', //水平方向位置
+                    verticalAlign: 'top', //垂直方向位置
+                },
+                tooltip: {
+                    enabled: true,
+                    formatter: function () {
+                        if (this.point.x % 2 == 1) {
+                            return '时间：' + parseInt(this.point.x / 2) + ':30<br/>' + '人数：' + this.point.y
+                        } else {
+                            return '时间：' + this.point.x / 2 + ':00<br/>' + '人数：' + this.point.y
+                        }
+                    }
+                },
+                exporting: {enabled: false},
+                credits: {enabled: false},
+                xAxis: {
+                    categories: '',
+                    tickWidth: 0,
+                    labels: {
+                        enabled: false
+                    }
+
+                },
+                yAxis: {
+                    title: {
+                        text: ''
+                    },
+                    allowDecimals: false,
+                },
+                series: [{
+                    color: '#c1322e',
+                    name: start,
+                    data: data1,
+                }, {
+                    color: '#405462',
+                    name: end,
+                    data: data2,
+                },],
+            });
+        }
+
+        function chart_column(xAxis, series_data, series_name) {
+            var chart = Highcharts.chart('game_data_chart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: ''
+                },
+                legend: {
+                    enabled: false
+                },
+                xAxis: {
+                    categories: xAxis,
+                },
+                yAxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                series: [{
+                    color: '#3398db',
+                    name: series_name,
+                    data: series_data,
+                }],
+                exporting: {enabled: false},
+                credits: {enabled: false},
+            });
+        }
+
+        function newArray(length) {
+            arr = [];
+            for (var i = 0; i < length; i++) {
+                arr[i] = parseInt((Math.random() * 90))
+            }
+            return arr;
+        }
+
+        function getProfit(request, isGame) {
+            $.ajax({
+                url: isGame ? '/subgame/data/json' : '/games/rank/profit/json',
+                type: 'get',
+                data: {
+                    start_time: start_time,
+                    end_time: end_time,
+                },
+                success: function (msg) {
+                    request.success({row: msg});
+                    if (isGame) {
+                        $('#profit_game').bootstrapTable('load', msg);
+                    } else {
+                        $('#profit_member').bootstrapTable('load', msg);
+                    }
+                },
+            })
+        }
+
+        $('#profit_member').bootstrapTable({
+            ajax: function (request) {
+                getProfit(request, false)
+            },
+            columns: [{
+                field: 'nick',
+                title: '玩家账号',
+            }, {
+                field: 'pid',
+                title: '玩家ID',
+                formatter: pid_format
+            }, {
+                field: 'stake_coin',
+                title: '有效流水',
+                sortable: true,
+                formatter: coin_format_no_color
+            }, {
+                field: 'total_win',
+                title: '盈亏金额',
+                sortable: true,
+                formatter: coin_format
+            }],
+        });
+
+        $('#profit_game').bootstrapTable({
+            ajax: function (request) {
+                getProfit(request, true)
+            },
+            columns: [{
+                field: 'game_name',
+                title: '游戏名称',
+            }, {
+                field: 'total_stake_coin',
+                title: '有效流水',
+                sortable: true,
+                formatter: coin_format_no_color
+            }, {
+                field: 'ai_win',
+                title: '盈亏金额',
+                sortable: true,
+                formatter: coin_format
+            }],
+        });
+
+        channel = $('.channel');
+
+        function getChannel() {
+            $.ajax({
+                url: '/retrieve/all/channel',
+                success: function (res) {
+                    channel.html('');
+                    for (i in res.data) {
+                        channel.append('<option value="' + res.data[i].id + '">' + res.data[i].name + '</option>')
+                    }
+                }
+            })
+        }
+
+        getChannel();
+
+        channel.change(function () {
+            $('#profit_member').bootstrapTable('refresh');
+            $('#profit_game').bootstrapTable('refresh');
+        })
+
+        query_btn = $('#query_btn');
+        query_btn.click(function () {
+            start_time = $('#beginDate').val();
+            end_time = $('#endDate').val();
+            $('#profit_member').bootstrapTable('refresh');
+            $('#profit_game').bootstrapTable('refresh');
+            getFiance()
+            getPlayer_device()
+        })
+
+        new_data = $('.new_data');
+        agent_buy = new_data.find('.agent_buy');
+        agent_sell = new_data.find('.agent_sell');
+        fanshui = new_data.find('.fanshui');
+        fanyong = new_data.find('.fanyong');
+        recharge = new_data.find('.recharge');
+        withdraw = new_data.find('.withdraw');
+        ai_win = new_data.find('.ai_win');
+
+        online_search = $('.member_online .button_new');
+        online_search.click(function () {
+            getonline($(this).siblings('.Wdate1').val(), $(this).siblings('.Wdate2').val())
+        })
+        online_search.click()
+
+        getFiance()
+
+        function getFiance() {
+            // loadingShow(true);
+            $.ajax({
+                url: '/fiance',
+                type: 'get',
+                data: {
+                    start_time: start_time,
+                    end_time: end_time
+                },
+                success: function (res) {
+                    // loadingShow(false);
+                    agent_buy.text(coin_format_no_color(res.agent_buy || 0));
+                    agent_sell.text(coin_format_no_color(res.agent_sell || 0));
+                    fanshui.text(coin_format_no_color(res.fanshui || 0));
+                    fanyong.text(coin_format_no_color(res.fanyong || 0));
+                    recharge.text(res.recharge / 100 || 0);
+                    withdraw.text(res.withdraw / 100 || 0);
+                    ai_win.text(coin_format_no_color(res.ai_win || 0));
+
+                }
+            })
+        }
+
+        getPlayer_device()
+
+        function getPlayer_device() {
+            $.ajax({
+                url: '/player_device',
+                type: 'get',
+                data: {
+                    start_time: start_time,
+                    end_time: end_time
+                },
+                success: function (res) {
+                    var device = [];
+                    for (i in res.device) {
+                        device.push({name: i, y: res.device[i]})
+                    }
+                    chart_pie(res.player_count, device)
+
+                }
+            })
+        }
+
+        function getonline(start, end) {
+            $.ajax({
+                url: '/online',
+                type: 'get',
+                data: {
+                    start_time: start,
+                    end_time: end
+                },
+                success: function (res) {
+                    var data1 = [];
+                    var data2 = [];
+                    for (i in res.data1) {
+                        if (i % 30 == 0) {
+                            data1.push(res.data1[i][1])
+                        }
+                    }
+                    for (i in res.data2) {
+                        if (i % 30 == 0) {
+                            data2.push(res.data2[i][1])
+                        }
+                    }
+                    chart_line(data1, data2, start, end)
+
+                }
+            })
+        }
+
+    })
+</script>
+</body>
+</html>

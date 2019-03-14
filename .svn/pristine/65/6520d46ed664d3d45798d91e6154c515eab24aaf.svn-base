@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>赠送订单详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        .total {
+            text-align: center;
+            font-size: 14px;
+            padding-bottom: 14px;
+        }
+
+        .total span {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_presentation_detail"), beginDate = 11, endDate = 11,
+    SelectChannel = status_msg.channel, Channels=True, PT = True, PlayerID = status_msg.player_id,
+    NickName = status_msg.nick, OThers = status_msg.OThers, Method='get',
+    QueryType = 3) }}
+    {% endautoescape %}
+</div>
+<div class="total">
+    <span>总赠送金币</span>
+    <span class="bg_green">0</span>
+    <span>总缴纳税收</span>
+    <span class="bg_orange">0</span>
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    // {% if status_msg.present_type == '0' %}
+        // $('#present_type').find('option').eq(0).attr("selected", true)
+        // {% elif status_msg.present_type == '1' %}
+        // $('#present_type').find('option').eq(1).attr("selected", true)
+        // {% elif status_msg.present_type == '2' %}
+        // $('#present_type').find('option').eq(2).attr("selected", true)
+        // {% elif status_msg.present_type == '3' %}
+        // $('#present_type').find('option').eq(3).attr("selected", true)
+        // {% elif status_msg.present_type == '4' %}
+        // $('#present_type').find('option').eq(4).attr("selected", true)
+        // {% endif %}
+
+    if (getUrlParams().present_type) {
+        $('#present_type').val(getUrlParams().present_type);
+    }
+    if (getUrlParams().pid) {
+        $('#PlayerID').val(getUrlParams().pid);
+    }
+    if (getUrlParams().date) {
+        $('#beginDate').val(getUrlParams().date);
+        $('#endDate').val(getUrlParams().date);
+        $("#query_btn").click();
+    }
+
+    $('#reportTable').bootstrapTable({
+        url: '{{url_for("busi.search_presentation_detail")}}',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        silentSort: false,
+        queryParamsType: 'limit',
+        queryParams: function (params) {
+            return {
+                size: params.limit,
+                offset: params.offset,
+                present_amount: $('#present_amount').val(),
+                present_type: $('#present_type').val(),
+                PlayerID: $('#PlayerID').val(),
+                NickName: $('#NickName').val(),
+                beginDate: $('#beginDate').val(),
+                endDate: $('#endDate').val(),
+            }
+        },
+        columns:
+            [
+                {field: "time", title: "时间", sortable: "true"},
+                {field: "present_type", title: "赠送类型", align: "center", sortable: "true", valign: "middle"},
+                {field: "give_nick", title: "赠送者昵称", align: "center", valign: "middle"},
+                {field: "give_id", title: "赠送者ID", align: "center", valign: "middle", formatter: pid_format},
+                {field: "give_last_login_ip", title: "赠送者IP", align: "center", valign: "middle"},
+                {field: "money", title: "赠送金币", align: "center", valign: "middle", sortable: "true"},
+                {field: "pump", title: "缴纳抽水", align: "center", valign: "middle"},
+                {field: "recv_nick", title: "被赠送者昵称", align: "center", valign: "middle"},
+                {
+                    field: "recv_id",
+                    title: "被赠送者ID",
+                    align: "center",
+                    sortable: "true",
+                    valign: "middle",
+                    formatter: pid_format
+                },
+                {field: "recv_last_login_ip", title: "被赠送者IP", align: "center", sortable: "true", valign: "middle"},
+            ],
+    });
+
+    //请求成功方法
+    function responseHandler(result) {
+        loadingShow(false);
+        if (result.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试');
+        }
+        $('.total .bg_green').text(result.total.total_money);
+        $('.total .bg_orange').text(result.total.total_pump);
+        return {
+            total: result.data.length,
+            data: result.data
+        };
+    };
+    $("#query_btn").click(function () {
+        loadingShow(true);
+        $('#reportTable').bootstrapTable('refresh')
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+CREATE TABLE IF NOT EXISTS user(
+    `id` int unsigned primary key auto_increment COMMENT '员工ID',
+    `name` varchar(20) default '' COMMENT '账号名',
+    `nick` varchar(20) NOT NULL DEFAULT '' COMMENT '账号昵称',
+    `password` varchar(100) not null COMMENT '账号密码',
+    `regi_time` int(20) default 0 COMMENT '账号注册时间',
+    `access_level` tinyint(5) default 1 COMMENT '账号权限等级',
+    `last_login_time` int(20) default 0 COMMENT '最后登录时间',
+    `last_logout_time` int(20) default 0 COMMENT '最后登出时间',
+    `role_str` varchar(100) not null COMMENT '所属权限字符串',
+    `is_delete` tinyint(5) default 0 COMMENT '账号是否被删除',
+    `status` tinyint(5) default 1 COMMENT '账号状态',
+    `secret_key` varchar(100) comment 'secret key',
+    `game_player_id` varchar(100) comment '绑定游戏账号ID'
+);
+
+CREATE TABLE IF NOT EXISTS channel(
+    id int unsigned primary key auto_increment COMMENT '渠道ID',
+    name varchar(20) not null COMMENT '渠道名',
+    game_log_db varchar(150) not null COMMENT '游戏日志数据库',
+    web_url varchar(150) not null COMMENT '游戏服务端地址',
+    `other_msg` blob COMMENT '渠道其他信息',
+    role_str varchar(100) not null COMMENT '所属权限字符串',
+    `is_delete` tinyint(5) default 0 COMMENT '渠道是否被删除',
+    status tinyint(5) default 1 COMMENT '渠道状态'
+);
+
+CREATE TABLE IF NOT EXISTS menu(
+    id int unsigned primary key auto_increment COMMENT '菜单ID',
+    name varchar(20) not null COMMENT '菜单名',
+    role_str varchar(100) not null COMMENT '所属权限字符串',
+    view_name varchar(50) not null COMMENT '菜单视图名',
+    menu_group varchar(20) not NULL COMMENT '菜单组名',
+    weight int(10) unsigned COMMENT '权重'
+);
+
+CREATE TABLE IF NOT EXISTS role(
+    id int unsigned primary key auto_increment COMMENT '权限组ID',
+    name varchar(20) not null COMMENT '权限组名',
+    parent_id int unsigned COMMENT '父权限组ID'
+);
+
+CREATE TABLE IF NOT EXISTS admin_opt_log (
+    id int unsigned primary key auto_increment,
+    channel int unsigned not null comment "渠道",
+    maintype int unsigned not null default 0 comment "大类 0输赢控制  1系统配置 2玩家相关  3财务相关",
+    log_type int comment "日志类型 0单控玩家  1全盘操控",
+    operator int comment "操作员ID",
+    obj int comment "操作对象",
+    val varchar(500) comment "操作数据",
+    `timestamp` int comment "操作时间",
+    key `timestamp`(`timestamp`)
+);
+
+CREATE TABLE IF NOT EXISTS game_parameter (
+    type int unsigned primary key comment '类型ID',
+    config text comment '参数设置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='游戏参数设置';
+
+INSERT INTO menu VALUES(108, '运营状况概括', '1', 'show_operat_state', '运营分析', 101);
+INSERT INTO menu VALUES(401, '数据走势概括', '1', 'get_game_data', '运营分析', 102);
+
+INSERT INTO menu VALUES(408, '游戏对局详情', '1', 'show_game_detail', '游戏数据', 201);
+INSERT INTO menu VALUES(406, '账变记录详情', '1', 'get_coin_change_data', '游戏数据', 202);
+INSERT INTO menu VALUES(202, '赠送订单详情', '1', 'get_detail_presentation', '游戏数据',203);
+INSERT INTO menu VALUES(407, '卡号使用详情', '1', 'show_card_data', '游戏数据', 204);
+INSERT INTO menu VALUES(405, '道具变更详情', '1', 'get_item_change_data', '游戏数据', 205);
+
+INSERT INTO menu VALUES(501, '玩家操作日志', '1', 'show_manage_log', '玩家管理', 301);
+INSERT INTO menu VALUES(506, '玩家层级管理', '1', 'member_level_details', '玩家管理', 302);
+INSERT INTO menu VALUES(502, '玩家列表查看', '1', 'manage_game_user', '玩家管理', 303);
+INSERT INTO menu VALUES(503, '玩家信息详情', '1', 'get_game_user_detail', '玩家管理', 304);
+INSERT INTO menu VALUES(507, '玩家游戏报表', '1', 'player_game_detail_show', '玩家管理', 305);
+
+INSERT INTO menu VALUES(103, '钱包转账详情', '1', 'transfer_coin', '财务管理', 401);
+INSERT INTO menu VALUES(105, '商城代理管理', '1', 'show_wx_agent', '财务管理', 402);
+INSERT INTO menu VALUES(102, '充值订单管理', '1', 'get_topup_order_detail', '财务管理', 403);
+INSERT INTO menu VALUES(107, '提现订单管理', '1', 'withdrawal_order_details', '财务管理', 404);
+INSERT INTO menu VALUES(106, '收款通道管理', '1', 'show_pay_channel', '财务管理', 405);
+INSERT INTO menu VALUES(104, '人工加款扣款', '1', 'show_player_money_details', '财务管理', 406);
+
+INSERT INTO menu VALUES(402, '游戏盈利报表', '1', 'get_sub_data', '数据报表', 501);
+INSERT INTO menu VALUES(201, '赠送统计报表', '1', 'get_daily_presentation', '数据报表', 502);
+INSERT INTO menu VALUES(101, '充值提现报表', '1', 'get_daily_topup', '数据报表', 503);
+INSERT INTO menu VALUES(403, '数据分时对比', '1', 'get_daily_data_detail', '数据报表', 504);
+INSERT INTO menu VALUES(803, '代理赠送数据', '1', 'show_agent_presentation', '数据报表', 505);
+
+INSERT INTO menu VALUES(505, '代理靓号管理', '1', 'luck_page_init', '代理管理', 601);
+INSERT INTO menu VALUES(801, '代理层级管理', '1', 'agent_level_show', '代理管理', 602);
+INSERT INTO menu VALUES(806, '代理添加管理', '1', 'agent_add_show', '代理管理', 603);
+INSERT INTO menu VALUES(804, '代理列表查看', '1', 'agent_list_show', '代理管理', 604);
+INSERT INTO menu VALUES(901, '分销参数管理', '1', 'agent_distribution_init', '代理管理', 605);
+INSERT INTO menu VALUES(805, '代理佣金结算', '1', 'agent_commission_init', '代理管理', 606);
+INSERT INTO menu VALUES(904, '分销佣金结算', '1', 'distribution_commission_init', '代理管理', 607);
+INSERT INTO menu VALUES(905, '分销代理列表', '1', 'distribution_agent_list_init', '代理管理', 608);
+
+INSERT INTO menu VALUES(601, '盈利亏损排行', '1', 'show_profit_rank', '游戏排行', 701);
+INSERT INTO menu VALUES(602, '金币买卖排行', '1', 'show_point_rank', '游戏排行', 702);
+INSERT INTO menu VALUES(603, '充值提现排行', '1', 'show_withdraw_rank', '游戏排行', 703);
+INSERT INTO menu VALUES(604, '玩家金币排行', '1', 'show_gold_rank', '游戏排行', 704);
+
+INSERT INTO menu VALUES(701, '调控操作日志', '1', 'show_manipulate_log', '强控输赢', 801);
+INSERT INTO menu VALUES(702, '单控玩家输赢', '1', 'maniplate_single_player', '强控输赢', 802);
+INSERT INTO menu VALUES(703, '调控全盘输赢', '1', 'maniplate_full_handicaper', '强控输赢', 803);
+
+INSERT INTO menu VALUES(1001, '平台登录公告', '1', 'show_annouce_game', '运营工具', 901);
+INSERT INTO menu VALUES(1002, '平台滚动公告', '1', 'show_marquee', '运营工具', 902);
+INSERT INTO menu VALUES(1003, '平台内部邮件', '1', 'show_mail_in_game', '运营工具', 903);
+INSERT INTO menu VALUES(1007, '充值优惠设置', '1', 'recharge_discounts_show', '运营工具', 904);
+INSERT INTO menu VALUES(1001, '平台登录公告', '1', 'show_annouce_game', '运营工具', 905);
+INSERT INTO menu VALUES(1004, '平台状态管理', '1', 'show_server_state', '运营工具', 906);
+INSERT INTO menu VALUES(1005, 'H5模拟登陆', '1', 'h5_moni_login', '运营工具', 907);
+INSERT INTO menu VALUES(1006, '平台活动管理', '1', 'show_activity', '运营工具', 910);
+INSERT INTO menu VALUES(1008, '游戏预警设置', '1', 'alarm_config_show', '运营工具', 908);
+
+INSERT INTO menu VALUES(5, '系统操作日志', '1', 'show_users_manage_log', '系统管理', 1001);
+INSERT INTO menu VALUES(1, '员工账号管理', '1', 'get_user', '系统管理', 1002);
+INSERT INTO menu VALUES(2, '后台渠道管理', '1', 'get_channel', '系统管理', 1003);
+INSERT INTO menu VALUES(4, '部门列表查看', '1', 'get_role', '系统管理', 1004);
+INSERT INTO menu VALUES(3, '部门权限管理', '1', 'menus_manage_show', '系统管理', 1005);
+INSERT INTO menu VALUES(6, '游戏开关管理', '1', 'game_platform_show', '系统管理', 1006);
+INSERT INTO menu VALUES(7, '系统参数管理', '1', 'system_parameter_show', '系统管理', 1007);
+INSERT INTO menu VALUES(203, '赠送参数管理', '1', 'presented_config_init', '系统管理', 1008);
+INSERT INTO menu VALUES(504, '访客权限管理', '1', 'show_users_list', '系统管理', 1009);
+INSERT INTO menu VALUES(8, '游戏参数设置', '1', 'game_parameter_show', '系统管理', 1010);

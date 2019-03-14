@@ -1,0 +1,2 @@
+alter table admin_marquee modify user_id varchar(100) comment '生成者账号';
+alter table admin_mail modify user_id varchar(100) comment '生成者账号';

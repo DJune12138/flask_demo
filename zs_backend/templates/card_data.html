@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>卡号使用查询</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        #code,.search .search_text{
+            width: 200px !important;
+        }
+    </style>
+</head>
+<body>
+<div hidden>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.card_data_retrieve"), OThers = other_msg.others, beginDate = other_msg.beginDate, endDate = other_msg.endDate, QueryType = 3, Method = 'get', PrecisionSecond = True, Channels = False) }}
+    {% endautoescape %}
+</div>
+<div class="search search_new">
+    <select>
+        <option value="code">新手卡</option>
+        <option value="playID">玩家ID</option>
+        <option value="date">日期</option>
+    </select>
+    <input type="text" class="search_text">
+    <input class="Wdate" type="text" readonly="" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false, isShowOK:false, isShowToday:false, autoPickDate:true})" id="start_time" hidden>--
+    <input class="Wdate" type="text" readonly="" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false, isShowOK:false, isShowToday:false, autoPickDate:true})" id="end_time" hidden>
+    <a class="button_new">查询</a>
+</div>
+<main>
+    <section><table id="table"></table></section>
+</main>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+    $(function () {
+        search_new = $('.search_new');
+        search_select = search_new.find('select');
+        search_text = search_new.find('.search_text');
+        start_time = search_new.find('#start_time');
+        end_time = search_new.find('#end_time');
+        search_btn = search_new.find('.button_new');
+
+        start_time.val(getLocalTime(new Date(new Date().setHours(0, 0, 0, 0)).getTime()/1000));
+        end_time.val(getLocalTime(new Date().getTime()/1000));
+
+        search_select.change(function () {
+            if($(this).val() == 'date'){
+                search_text.hide();
+                start_time.show();
+                end_time.show()
+            }else{
+                search_text.val('')
+                search_text.show();
+                start_time.hide();
+                end_time.hide()
+            }
+        })
+
+        table = $('#table');
+
+        // $("#query_btn").click(function () {
+        //     table.bootstrapTable('refresh');
+        // })
+
+        table.bootstrapTable({
+            url: '/card/data/retrieve',
+            method: 'get',
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            responseHandler: responseHandler,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            dataField: 'data',
+            showPaginationSwitch: false,
+            striped: true,
+            pagination: true,
+            pageSize: 100,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination: 'server',
+            showHeader: true,
+            buttonsAlign: "right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            silentSort: false,
+            queryParamsType: 'limit',
+            queryParams: queryParams,
+            columns: [{
+                field: 'activation_code',
+                title: '新手卡',
+            }, {
+                field: 'type',
+                title: '类型',
+            }, {
+                field: 'award',
+                title: '奖励',
+            }, {
+                field: 'overdue_time',
+                title: '过期时间',
+            }, {
+                field: 'player',
+                title: '使用玩家ID',
+            }, {
+                field: 'use_time',
+                title: '使用日期',
+            }]
+        });
+
+        search_btn.click(function () {
+            isFirst = false;
+            loadingShow(true)
+            table.bootstrapTable('refreshOptions',{
+                queryParams:queryParams
+            });
+        })
+
+        var isFirst = true;
+        function responseHandler(items) {
+            loadingShow(false)
+            if (items.result == '0') {
+                if(!isFirst){
+                    parent.showAlert(items.msg);
+                }
+                return {
+                    total: 0,
+                    data: [],
+                };
+            } else {
+                return {
+                    total: items.dataLength,
+                    data: items.data
+                };
+            }
+        };
+
+        function queryParams(params) {
+            if(search_select.val() == 'date'){
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    beginDate: start_time.val(),
+                    endDate: end_time.val(),
+                }
+            }else if(search_select.val() == 'code'){
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    code: search_text.val(),
+                }
+            }else{
+                return {
+                    size: params.limit,
+                    offset: params.offset,
+                    PlayerID: search_text.val(),
+                }
+            }
+        };
+    })
+</script>
+</body>

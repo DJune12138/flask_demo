@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>玩家层级管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        table {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table tr {
+            display: flex;
+        }
+
+        table tr th, table tr td {
+            padding: 10px !important;
+            flex: 1;
+            text-align: center;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .refactor_content select {
+            height: 100% !important;
+            border: none !important;
+            color: #000 !important;
+        }
+
+        .content_item_tip {
+            background: #263238;
+            color: #fff;
+            padding: 10px 20px !important;
+        }
+
+        .content_item_tip span {
+            display: block;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .audit-tip, .item-number-exceed, .item-cost-percent, .item-cost-fix {
+            display: none;
+        }
+
+        .member_new {
+            display: none;
+        }
+
+        .member_list {
+            padding: 10px;
+        }
+
+        .member_list table {
+            border-radius: 0 !important;
+        }
+
+        .member_list table tr td a {
+            cursor: pointer;
+        }
+
+        .content_top {
+            text-align: right;
+            padding-right: 20px !important;
+        }
+
+        .submit {
+            position: relative;
+            top: -4px;
+        }
+    </style>
+</head>
+<body>
+<div class="rule">
+    <p>默认层级不允许删除，只允许修改，否则导致游戏内的收款通道无法正常展示。</p>
+</div>
+<div hidden>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.member_level_details"), beginDate=False, QueryType=1, SelectChannel=SelectChannel,
+    Method='get') }}
+    {% endautoescape %}
+</div>
+<main class="refactor_content">
+    <div class="content_top">
+        <input class="btn btn-primary btn-sm" type="button" value="新增玩家层级">
+    </div>
+    <section class="member_new">
+        <p class="content_item">
+            <label>层级名称</label>
+            <input class="name" type="text" placeholder="请输入菜单名" name="name" value=""/>
+        </p>
+        <p class="content_item item-number">
+            <label>提款次数</label>
+            <select class="select-number">
+                <option value="-1">不限次数</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </p>
+        <p class="content_item item-number-exceed">
+            <label>超过次数</label>
+            <select class="select-number-exceed">
+                <option value="1">本日不允许提款</option>
+                <option value="2">按提款金额百分比</option>
+                <option value="3">每次收取固定金额</option>
+            </select>
+        </p>
+        <p class="content_item item-cost-percent">
+            <label>百分比手续费</label>
+            <input class="cost-percent" type="text" placeholder="收取百分之×××手续费" name="name" value=""/>
+        </p>
+        <p class="content_item item-cost-fix">
+            <label>固定手续费</label>
+            <input class="cost-fix" type="text" placeholder="收取×××元手续费" name="name" value=""/>
+        </p>
+        <p class="content_item">
+            <label>单笔最低</label>
+            <input class="minimum" type="text" placeholder="请输入每次提款单笔最低金额，单位: ￥" name="name" value=""/>
+        </p>
+        <p class="content_item">
+            <label>单笔最高</label>
+            <input class="highest" type="text" placeholder="请输入每次提款单笔最高金额，单位: ￥" name="name" value=""/>
+        </p>
+        <p class="content_item content_item_tip" hidden>
+            <span>提款稽查功能主要用于在玩家提款的时候对玩家的流水进行统计，判断玩家是否符合提款要求！</span>
+            <span>提款流水稽查类型如下：</span>
+            <span>1、后台稽查（前台允许玩家随意提款，流水稽查由后台财务人员在审核提款的时候来根据情况做操作）</span>
+            <span>2、严格稽查（前台申请提款时，即对玩家流水进行统计，如未达到流水要求，则拒绝提款申请）</span>
+            <span>3、宽松稽查（前台申请提款时，即对玩家流水进行统计，如未达到流水要求，会弹出提示，但是依然允许玩家进行提款申请，由后台人员决定是否出款）</span>
+            <span>由于外接游戏平台有数据延迟，所以会导致提款时的流水统计可能存在不准确的情况，请各位厅主根据实际情况来决定是否开启本功能；</span></p>
+        <p class="content_item item-audit" hidden>
+            <label>稽查类型</label>
+            <select class="select-audit">
+                <option value="1">后台稽查</option>
+                <option value="2">严格稽查</option>
+                <option value="3">宽松稽查</option>
+            </select>
+        </p>
+        <p class="content_item audit-tip">
+            <label>提示文字</label>
+            <input class="input-audit-tip" type="text" placeholder="请输入提示玩家的文字,20个字以内" name="name" value=""/>
+        </p>
+        <input class="btn btn-primary btn-sm submit" type="submit" name="" value="立即提交">
+    </section>
+    <section class="member_list">
+        <table>
+            <thead>
+            <tr>
+                <th>层级ID</th>
+                <th>层级名称</th>
+                <th>提款次数</th>
+                <th>最小提款</th>
+                <th>最大提款</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for data in datas %}
+            <tr>
+                <td>{{ data.level_id }}</td>
+                <td>{{ data.member_level_name }}</td>
+                <td>{% if data.number_withdrawals == -1 %}不限{% else %}{{ data.number_withdrawals }}次{% endif %}</td>
+                <td>{{ data.min_withdrawals/100 }}</td>
+                <td>{{ data.max_withdrawals/100 }}</td>
+                <td>
+                    <a class="edit" level_id="{{ data.level_id }}" channel_id="{{ data.channel_id }}">编辑</a>
+                    {% if data.level_id != 1 %}
+                    <a class="delete" level_id="{{ data.level_id }}">删除</a>
+                    {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<section class="refactor-confirm">
+    <div class="refactor-confirm-content">
+        <p class="refactor-confirm-text">确定要删除吗?</p>
+        <p class="refactor-confirm-button">
+            <input class="btn btn-primary btn-sm cancel" type="submit" name="" value="取消">
+            <input class="btn btn-primary btn-sm del" type="submit" name="" value="删除">
+        </p>
+    </div>
+</section>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    var level_id;
+    var fee_charging = '--';
+    var old_name = '';
+    var old_channel = '';
+
+    $content = $('.refactor_content');
+    $goNew = $content.find('.content_top input');
+    $member_new = $content.find('.member_new');
+    $member_list = $content.find('.member_list');
+    $name = $member_new.find('.name');
+    $minimum = $member_new.find('.minimum');
+    $highest = $member_new.find('.highest');
+    $select_number = $member_new.find('.select-number');
+    $select_number_exceed = $member_new.find('.select-number-exceed');
+    $cost_percent = $member_new.find('.cost-percent');
+    $cost_fix = $member_new.find('.cost-fix');
+    $select_audit = $member_new.find('.select-audit');
+    $input_audit = $member_new.find('.input-audit-tip');
+    $submit = $member_new.find('.submit');
+    $audit_tip = $member_new.find('.audit-tip');
+    $number_exceed = $member_new.find('.item-number-exceed');
+    $item_cost_percent = $member_new.find('.item-cost-percent');
+    $item_cost_fix = $member_new.find('.item-cost-fix');
+    $goEedit = $member_list.find('table tr td .edit');
+    $goDelete = $member_list.find('table tr td .delete');
+
+    $goEedit.click(function () {
+        $goNew.click();
+        level_id = $(this).attr('level_id');
+        old_channel = $(this).attr('channel_id');
+        search();
+    })
+
+    $goDelete.click(function () {
+        level_id = $(this).attr('level_id');
+        showDelete(deletes)
+    })
+
+    $submit.click(function () {
+        if (!$name.val()) {
+            showAlert('请输入层级名称');
+            return;
+        }
+        if (!$minimum.val()) {
+            showAlert('请输入单笔最低金额');
+            return;
+        }
+        if (isNaN($minimum.val())) {
+            showAlert('最低金额为整数纯数字');
+            return;
+        }
+        if (!$highest.val()) {
+            showAlert('请输入单笔最高金额');
+            return;
+        }
+        if (isNaN($highest.val())) {
+            showAlert('最高金额为整数纯数字');
+            return;
+        }
+        if ($select_number_exceed.val() == '2') {
+            fee_charging = $cost_percent.val();
+        } else if ($select_number_exceed.val() == '3') {
+            fee_charging = $cost_fix.val();
+        } else {
+            fee_charging = '';
+        }
+        submit();
+    })
+
+    $goNew.click(function () {
+        reset();
+        level_id = '';
+        if ($(this).val() == '新增玩家层级') {
+            $(this).val('返回玩家层级');
+            $member_new.show();
+            $member_list.hide();
+        } else {
+            $(this).val('新增玩家层级');
+            $member_new.hide();
+            $member_list.show();
+        }
+        old_name = '';
+        old_channel = '';
+    })
+    $select_audit.change(function () {
+        if ($(this).val() !== '1') {
+            $audit_tip.show()
+        } else {
+            $audit_tip.hide()
+        }
+    })
+
+    $select_number.change(function () {
+        $item_cost_percent.hide()
+        $item_cost_fix.hide()
+        $select_number_exceed.val('1')
+        if ($(this).val() !== '-1') {
+            $number_exceed.show()
+        } else {
+            $number_exceed.hide()
+        }
+    })
+
+    $select_number_exceed.change(function () {
+        $item_cost_percent.hide()
+        $item_cost_fix.hide()
+        if ($(this).val() == '2') {
+            $item_cost_percent.show()
+        } else if ($(this).val() == '3') {
+            $item_cost_fix.show()
+        }
+    })
+
+    function search() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_json_update") }}',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                level_id: level_id,
+            },
+            success: function (res) {
+                $name.val(res.datas.member_level_name)
+                $minimum.val(res.datas.min_withdrawals / 100)
+                $highest.val(res.datas.max_withdrawals / 100)
+                $select_number.val(res.datas.number_withdrawals)
+                $select_number_exceed.val(res.datas.over_operation_id)
+                $select_audit.val(res.datas.inspect_id)
+                $input_audit.val(res.datas.inspect_tips);
+                old_name = res.datas.member_level_name;
+                if ($select_audit.val() != '1') {
+                    $audit_tip.show()
+                } else {
+                    $audit_tip.hide()
+                }
+                if ($select_number.val() != '-1') {
+                    $number_exceed.show();
+                    $item_cost_percent.hide()
+                    $item_cost_fix.hide()
+                    if ($select_number_exceed.val() == '2') {
+                        $item_cost_percent.show();
+                        $cost_percent.val(res.datas.fee_charging);
+                        $cost_fix.val('');
+                    } else if ($select_number_exceed.val() == '3') {
+                        $item_cost_fix.show();
+                        $cost_fix.val(res.datas.fee_charging);
+                        $cost_percent.val('');
+                    }
+                } else {
+                    $number_exceed.hide()
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function submit() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_update_create") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                old_channel: old_channel,
+                member_level_name: $name.val(),
+                min_withdrawals: $minimum.val() * 100,
+                max_withdrawals: $highest.val() * 100,
+                number_withdrawals: $select_number.val(),
+                over_operation_id: $select_number_exceed.val(),
+                fee_charging: fee_charging,
+                inspect_id: $select_audit.val(),
+                inspect_tips: $input_audit.val(),
+                level_id: level_id,
+                old_name: old_name,
+            },
+            success: function (data) {
+                showAlert('修改成功!', 'success');
+                if (data.result == 1) {
+                    if (level_id) {
+                        showAlert('修改成功!', 'success');
+                    } else {
+                        showAlert('新增成功!', 'success');
+                    }
+                    setTimeout(function () {
+                        location.href = '{{ url_for("busi.member_level_details") }}';
+                    }, 1000)
+                }
+                else {
+                    showAlert(data.msg)
+                }
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function deletes() {
+        $.ajax({
+            url: '{{ url_for("busi.member_level_delete") }}',
+            type: 'PUT',
+            dataType: 'json',
+            data: {
+                level_id: level_id,
+            },
+            success: function (res) {
+                showAlert(res.msg, 'success');
+                setTimeout(function () {
+                    location.href = '{{ url_for("busi.member_level_details") }}';
+                }, 1000)
+            },
+            error: function () {
+                showAlert("请求超时，请重试！")
+            }
+        })
+    }
+
+    function reset() {
+        $name.val('');
+        $minimum.val('');
+        $highest.val('');
+        $select_number.val('-1');
+        $select_number_exceed.val('1');
+        $cost_fix.val('');
+        $cost_percent.val('');
+        $select_audit.val('1');
+        $input_audit.val('');
+        $audit_tip.hide()
+        $number_exceed.hide()
+        $item_cost_percent.hide()
+        $item_cost_fix.hide()
+    }
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 2000)
+    }
+
+    function showDelete(fn) {
+        $confirm = $('.refactor-confirm');
+        $confirm.fadeIn();
+        $confirm.find('.cancel').click(function () {
+            $confirm.fadeOut();
+        });
+        $confirm.find('.del').click(function () {
+            $confirm.fadeOut();
+            fn();
+        })
+    }
+
+</script>
+</body>
+</html>

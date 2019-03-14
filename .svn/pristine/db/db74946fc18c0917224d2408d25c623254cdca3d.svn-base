@@ -1,0 +1,1046 @@
+# -*- coding:utf-8 -*-
+# encoding=utf8
+import sys
+import time
+from zs_backend.utils import httpc_util
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+from flask import render_template, jsonify, url_for, flash
+from flask.globals import session, request, g, current_app
+from zs_backend import SqlOperate
+from zs_backend.busi import busi
+from zs_backend.utils import time_util
+from zs_backend.utils.common import login_require
+import json
+from zs_backend.utils.const import *
+from zs_backend.utils.channel_qry import *
+from zs_backend.utils.property_id import property_map_id, id_map_property
+from zs_backend import redis_conn
+
+# 活动类型映射
+activity_type_map = {
+    1: u'赚金币',
+    2: u'瓜分现金',
+    3: u'彩金盛宴',
+    4: u'礼品兑换',
+    5: u'代理返现'
+}
+
+# 跑马灯状态映射
+TAKE_EFFECT = 1  # 生效
+INSERTING_COIL = 0  # 下线
+status_map = {
+    1: u'生效',
+    0: u'下线'
+}
+
+# 活动状态映射
+LOSE_EFFICACY = 0  # 失效
+activity_status_map = {
+    1: u'生效',
+    0: u'失效'
+}
+
+# 由于目前版本邮件只支持发喇叭，特建立此映射
+v1_0_map = {
+    20010001: u'喇叭'
+}
+
+
+@busi.route('/games/gm/announce/game', methods=['GET'])
+@login_require
+def show_annouce_game():
+    status_msg = dict()
+    status_msg['beginDate'] = 11
+    status_msg['endDate'] = 11
+    status_msg['OThers'] = [u'<td> 公告标题：<input type="text" id="announce_title" '
+                            u'name="announce_title" value=""> </td>']
+
+    return render_template('announce_game.html', status_msg=status_msg)
+
+
+@busi.route('/games/gm/announce/game', methods=['POST'])
+@login_require
+def add_annouce_game():
+    title = request.form.get('title')
+    content_image_url = request.form.get('content_image_url')
+    push_times = request.form.get('push_times')
+    priority = request.form.get('priority')
+    date1 = request.form.get('date1')
+    date2 = request.form.get('date2')
+    channel_id = session['select_channel']
+
+    # 校验并处理参数参数
+    if not all([title, content_image_url, push_times, priority, date1, date2]):
+        return jsonify(result=0, msg=u'请填入所有内容！')
+    try:
+        int(push_times)
+        int(priority)
+    except ValueError:
+        return jsonify(result=0, msg=u'每日展示次数与优先级为整数纯数字！')
+    date1 = time_util.formatTimestamp(date1)
+    date2 = time_util.formatTimestamp(date2)
+    if date1 > date2:
+        return jsonify(result=0, msg=u'开始日期不能大于结束日期！')
+
+    sql = "select ifnull(max(id), 1) + 1 from admin_announcement"
+    notice_id = LogQry(channel_id).qry(sql)[0][0]
+
+    channel = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel_id), "name")
+    payload = {
+        "start_time": date1,
+        "end_time": date2,
+        "channel": channel,
+        "notice_id": notice_id,
+        "push_times": push_times,
+        "priority": priority,
+        "content_img": content_image_url
+    }
+    redis_conn.hset(NOTICE_TABLE + channel, notice_id, payload)
+
+    create_sql = """
+        INSERT INTO admin_announcement
+            (id,channel,title,priority,content_image_url,
+            push_times,start_date,end_date)
+        VALUES (%d,%s,'%s',%s,'%s', 
+                %s,%s,%s)
+    """ % (notice_id, channel_id, title, priority, content_image_url,
+           push_times, date1, date2)
+
+    LogQry(channel_id).execute(create_sql)
+
+    return jsonify(result=1, msg=u'新建公告成功！')
+
+
+@busi.route('/games/gm/del_game_announce', methods=['POST'])
+@login_require
+def del_annouce_game():
+    a_id = request.form.get("id")
+    channel = session['select_channel']
+
+    channel = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel), "name")
+    redis_conn.hdel(NOTICE_TABLE + channel, a_id)
+
+    sql = "update admin_announcement set status = 0 where id = %s" % a_id
+    LogQry(channel).execute(sql)
+
+    return jsonify({})
+
+
+def get_valid_annouce(channel):
+    l = redis_conn.hgetall(NOTICE_TABLE + channel)
+    nl = []
+
+    if not l:
+        return nl
+
+    Now = time_util.now_sec()
+    for k, v in l.items():
+        vv = eval(v)
+        start_time = int(vv["start_time"])
+        end_time = int(vv["end_time"])
+
+        if start_time < Now and Now < end_time:
+            ele = {
+                "notice_id": vv["notice_id"],  ## 公告ID
+                "push_times": vv["push_times"],  ## 推送次数
+                "priority": vv["priority"],  ## 优先级
+                "content_img": vv["content_img"]  ## 内容图片链接
+            }
+            nl.append(ele)
+        if end_time < Now:
+            redis_conn.hdel(NOTICE_TABLE + channel, vv["notice_id"])
+
+    return nl
+
+
+def load_annouce(channel):
+    Now = time_util.now_sec()
+    nl = {}
+    sql = '''
+        select id, push_times, priority, content_image_url, start_date, 
+            end_date
+        from admin_announcement
+        where status = 1
+        AND end_date>=%s
+    ''' % (Now)
+    for line in LogQry(channel).qry(sql):
+        ele = {
+            "notice_id": line[0],  ## 公告ID
+            "push_times": line[1],  ## 推送次数
+            "priority": line[2],  ## 优先级
+            "content_img": line[3],  ## 内容图片链接
+            "start_time": line[4],
+            "end_time": line[5],
+        }
+        nl[line[0]] = ele
+    name = redis_conn.hget(CHANNEL_CONFIG_TABLE + str(channel), "name")
+    if nl:
+        redis_conn.hmset(NOTICE_TABLE + name, nl)
+
+
+@busi.route('/search/games/gm/announce/game', methods=['GET'])
+@login_require
+def search_annouce_game():
+    title = request.args.get('announce_title')
+    start_date = time_util.formatDatestamp(request.args.get('beginDate'))
+    end_date = time_util.formatDatestamp(request.args.get('endDate'))
+    channel = int(session['select_channel'])
+
+    status_msg = dict()
+    status_msg['beginDate'] = start_date
+    status_msg['endDate'] = end_date
+    status_msg['OThers'] = [u'<td> 公告标题：<input type="text" id="announce_id" '
+                            u'name="announce_title" value="%s"> </td>' % title]
+
+    if title:
+        title_str = " AND title='%s'" % title
+    else:
+        title_str = ""
+
+    select_sql = """
+        SELECT id, channel, title, priority, content_image_url, push_times, start_date, end_date, status
+        FROM admin_announcement
+        WHERE channel=%s%s 
+        AND status=1
+        AND ((start_date>=%s and start_date<=%s)
+        OR (end_date>=%s and end_date<=%s));
+    """ % (channel, title_str, start_date, end_date, start_date, end_date)
+    game_announce_datas = LogQry(channel).qry(select_sql)
+    datas = list()
+    Now = time_util.now_sec()
+    for ann_id, channel, title, priority, content_image_url, push_times, start_date, end_date, status in game_announce_datas:
+        announce_dict = dict()
+        announce_dict['id'] = ann_id
+        announce_dict['title'] = title
+        announce_dict['priority'] = priority
+        announce_dict['content_image_url'] = content_image_url
+        announce_dict['push_times'] = push_times
+        announce_dict['start_date'] = time_util.formatDateTime(start_date)
+        announce_dict['end_date'] = time_util.formatDateTime(end_date)
+        announce_dict['status'] = status
+        if status == 1:
+            ## 如果状态是1 得判断是否生效状态
+            if Now >= start_date and Now <= end_date:
+                announce_dict['status'] = 2
+            if Now >= end_date:
+                announce_dict['status'] = 3
+        datas.append(announce_dict)
+
+    return render_template('announce_game.html', status_msg=status_msg, datas=datas)
+
+
+@busi.route('/games/gm/marquee', methods=['GET'])
+@login_require
+def show_marquee():
+    """跑马灯页面"""
+
+    status_msg = dict()
+    status_msg['beginDate'] = 11
+    status_msg['endDate'] = 11
+    status_msg['OThers'] = [u'<td> 内容：<input type="text" id="marquee_content" '
+                            u'name="marquee_content" value=""> </td>',
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value=""> </td>']
+
+    return render_template('marquee.html', status_msg=status_msg)
+
+
+@busi.route('/games/gm/marquee', methods=['POST'])
+@login_require
+def create_marquee():
+    """新建跑马灯"""
+
+    # 获取参数
+    channel_id = session['select_channel']
+    user_id = g.user_id
+    marquee_content = request.form.get('marquee_content')
+    push_times = request.form.get('push_times')
+    begin_time = request.form.get('begin_time')
+    end_time = request.form.get('end_time')
+
+    # 校验并处理数据
+    if not all([marquee_content, push_times, begin_time, end_time]):
+        return jsonify(result=2)
+    try:
+        push_times = int(push_times)
+    except ValueError as e:
+        return jsonify(result=3)
+    if int(push_times) < -1:
+        return jsonify(result=3)
+    begin_time = time_util.formatTimestamp(begin_time)
+    end_time = time_util.formatTimestamp(end_time)
+    if begin_time > end_time:
+        return jsonify(result=5)
+
+    # 根据时间戳和账号ID生成公告ID
+    key_id = int(str(time_util.now_sec()) + str(user_id))
+
+    # 向游戏端发送请求
+    if push_times == -1:
+        game_push_times = 88888
+    else:
+        game_push_times = push_times
+    game_status = GameWeb(channel_id).post('/api/send_notice',
+                                           {'notice': marquee_content, 'start': begin_time, 'end': end_time,
+                                            'max': game_push_times, 'id': key_id})
+    if game_status['result'] != 'succ':
+        return jsonify(result=4)
+
+    # 查询账号名
+    retrieve_sql = """SELECT name
+                      FROM user
+                      WHERE id=%s;""" % user_id
+    user_id = SqlOperate().select(retrieve_sql)[0][0]
+
+    # 存进数据库
+    create_marquee_sql = """INSERT INTO admin_marquee (user_id,marquee_content,push_times,begin_time,end_time,
+                                    status,id) 
+                            VALUE('%s','%s',%s,%s,%s,
+                                    %s,%s);""" \
+                         % (user_id, marquee_content, push_times, begin_time, end_time,
+                            TAKE_EFFECT, key_id)
+    LogQry(channel_id).execute(create_marquee_sql)
+
+    # 返回应答
+    return jsonify(result=1)
+
+
+@busi.route('/search/games/gm/marquee', methods=['GET'])
+@login_require
+def query_marquee():
+    """查询跑马灯"""
+
+    # 获取参数
+    marquee_content = request.args.get('marquee_content')
+    user_id = request.args.get('user_id')
+    channel_id = session['select_channel']
+    begin_time = time_util.formatDatestamp(request.args.get('beginDate'))
+    end_time = time_util.formatDatestamp(request.args.get('endDate'))
+
+    # 返回原始搜索数据
+    search_begin_time = begin_time
+    search_end_time = end_time
+    search_marquee_content = marquee_content
+    search_user_id = user_id
+
+    # 从数据库获取数据，并组织参数
+    marquee_content_str = ""
+    user_id_str = ""
+    if marquee_content:
+        marquee_content_str = " AND marquee_content LIKE '%%%s%%'" % marquee_content
+    if user_id:
+        user_id_str = " AND user_id='%s'" % user_id
+    query_sql = """SELECT id,user_id,marquee_content,push_times,begin_time,
+                            end_time,status 
+                    FROM admin_marquee 
+                    WHERE ((begin_time>=%s AND begin_time<=%s) 
+                    OR (end_time>=%s AND end_time<=%s)) 
+                    %s%s
+                    ORDER BY status DESC;""" \
+                % (begin_time, end_time, begin_time, end_time, marquee_content_str, user_id_str)
+    marquee_datas = LogQry(channel_id).qry(query_sql)
+    datas = []
+    for marquee_id, user_id, marquee_content, push_times, begin_time, \
+        end_time, status in marquee_datas:
+        marquee_dict = dict()
+        marquee_dict['marquee_id'] = marquee_id
+        marquee_dict['user_id'] = user_id
+        marquee_dict['marquee_content'] = marquee_content.replace('\n', '<br>')
+        marquee_dict['push_times'] = u'不限' if push_times == -1 else push_times
+        marquee_dict['begin_time'] = time_util.formatDateTime(begin_time)
+        marquee_dict['end_time'] = time_util.formatDateTime(end_time)
+        marquee_dict['status'] = status_map[status]
+        marquee_dict['status_num'] = status  # 用于改变字体颜色
+        datas.append(marquee_dict)
+
+        # # 修改跑马灯用的数据原型
+        # marquee_dict['push_times_num'] = push_times
+        # marquee_dict['channel_num'] = int(channel_id)
+
+    # 返回模版和数据
+    status_msg = dict()
+    status_msg['beginDate'] = search_begin_time
+    status_msg['endDate'] = search_end_time
+    status_msg['OThers'] = [u'<td> 内容：<input type="text" id="marquee_content" '
+                            u'name="marquee_content" value="%s"> </td>' % search_marquee_content,
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value="%s"> </td>' % search_user_id]
+    return render_template('marquee.html', status_msg=status_msg, datas=datas)
+
+
+@busi.route('/games/gm/marquee/cancel', methods=['PUT'])
+@login_require
+def batch_cancel_marquee():
+    """跑马灯批量下线"""
+
+    # 获取参数
+    batch_list = eval(request.form.get('batch_list'))
+    channel_id = session['select_channel']
+
+    # 处理数据，并向游戏服发送请求
+    cancel_id_str = '('
+    for cancel_id in batch_list:
+        cancel_id_str += str(cancel_id) + ','
+        game_status = GameWeb(channel_id).post('/api/del_notice', {'id': int(cancel_id)})
+        if game_status['result'] != 'succ':
+            return jsonify(msg=u'ID为%s的跑马灯下线失败！' % cancel_id)
+    else:
+        cancel_id_str = cancel_id_str.rstrip(',') + ')'
+
+    # 更新数据库
+    batch_cancel_sql = """UPDATE admin_marquee SET status=%s WHERE id in %s;""" % (INSERTING_COIL, cancel_id_str)
+    LogQry(channel_id).execute(batch_cancel_sql)
+
+    # 返回应答
+    return jsonify(msg=u'id为%s的跑马灯已下线！' % cancel_id_str)
+
+
+@busi.route('/games/gm/mail/in/game', methods=['GET'])
+@login_require
+def show_mail_in_game():
+    """游戏内邮件页面"""
+
+    status_msg = dict()
+    status_msg['beginDate'] = 11
+    status_msg['endDate'] = 11
+    status_msg['OThers'] = [u'<td> 邮件标题：<input type="text" id="mail_title" '
+                            u'name="mail_title" value=""> </td>',
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value=""> </td>']
+
+    return render_template('mail_in_game.html', status_msg=status_msg, property_map_id=v1_0_map)
+
+
+@busi.route('/games/gm/mail/create', methods=['POST'])
+@login_require
+def create_mail():
+    """新建邮件"""
+
+    # 获取参数
+    mail_title = request.form.get('mail_title')
+    mail_content = request.form.get('mail_content')
+    push_player_id = request.form.get('push_player_id')
+    is_all = int(request.form.get('is_all'))
+    mail_accessories = request.form.get('mail_accessories')
+    expire = request.form.get('expire')
+    user_id = g.user_id
+    channel_id = session['select_channel']
+
+    # 校验参数并处理数据
+    if is_all:
+        push_player_id = u'全服推送'
+    else:
+        for player_id in push_player_id.split(','):
+            try:
+                int(player_id)
+            except ValueError as e:
+                return jsonify(result=2, errormsg=u'玩家ID之间半角逗号隔开，且为整数纯数字！')
+    if not all([push_player_id, mail_title, mail_content]):
+        return jsonify(result=2, errormsg=u'除附件外，其余都是必填项！')
+    if mail_accessories == u'{':
+        mail_accessories = ''
+    else:
+        mail_accessories_dict = eval(mail_accessories)
+        for num, quantity in mail_accessories_dict.items():
+            try:
+                mail_accessories_dict[num] = int(quantity)
+            except ValueError as e:
+                return jsonify(result=2, errormsg=u'附件选中的道具数量不能为空，且为整数纯数字！')
+        mail_accessories = str(mail_accessories_dict)
+    if is_all:
+        try:
+            expire = int(expire)
+        except ValueError:
+            return jsonify(result=2, errormsg=u'有效时间为必填项，且为整数纯数字！')
+        if expire < 1 or expire > 30:
+            return jsonify(result=2, errormsg=u'有效时间为大于等于1小于等于30的数字！')
+    else:
+        expire = 'null'
+
+    # 查询账号名
+    retrieve_sql = """SELECT name
+                      FROM user
+                      WHERE id=%s;""" % user_id
+    user_id = SqlOperate().select(retrieve_sql)[0][0]
+
+    # 存进数据库
+    create_mail_sql = """INSERT INTO admin_mail (user_id,mail_title,mail_content,mail_accessories,push_player_id,
+                                                  expire) 
+                          VALUE ('%s','%s','%s','%s','%s',
+                                %s);""" \
+                      % (user_id, mail_title, mail_content, mail_accessories, push_player_id,
+                         expire)
+    LogQry(channel_id).execute(create_mail_sql)
+
+    # 返回应答
+    return jsonify(result=1)
+
+
+@busi.route('/games/gm/mail/retrieve', methods=['GET'])
+@login_require
+def retrieve_mail():
+    """查询邮件"""
+
+    # 获取参数
+    mail_title = request.args.get('mail_title')
+    user_id = request.args.get('user_id')
+    channel_id = int(session['select_channel'])
+    begin_time = time_util.formatDatestamp(request.args.get('beginDate'))
+    end_time = time_util.formatDatestamp(request.args.get('endDate'))
+
+    # 返回原始搜索数据
+    search_mail_title = mail_title
+    search_user_id = user_id
+
+    # 从数据库获取并处理数据
+    mail_title_str = ''
+    user_id_str = ''
+    if mail_title:
+        mail_title_str = ' AND mail_title LIKE "%%%s%%"' % mail_title
+    if user_id:
+        user_id_str = " AND user_id='%s'" % user_id
+    retrieve_mail_sql = """SELECT id,user_id,push_player_id,mail_title,mail_content,
+                                    mail_accessories,status,push_time,expire 
+                            FROM admin_mail 
+                            WHERE (push_time>=%s AND push_time<=%s) 
+                            OR push_time=0 
+                            %s%s
+                            ORDER BY status;""" \
+                        % (begin_time, end_time, mail_title_str, user_id_str)
+    mail_datas = LogQry(channel_id).qry(retrieve_mail_sql)
+    datas = []
+    status_num = {0: u'待发送', 1: u'已发送'}
+    for mail_id, user_id, push_player_id, mail_title, mail_content, \
+        mail_accessories, status, push_time, expire in mail_datas:
+        mails_dict = dict()
+        mails_dict['mail_id'] = mail_id
+        mails_dict['user_id'] = user_id
+        mails_dict['push_player_id'] = push_player_id
+        mails_dict['mail_title'] = mail_title
+        mails_dict['mail_content'] = mail_content.replace('\n', '<br>')
+        mails_dict['push_time'] = time_util.formatDateTime(push_time) if push_time > 0 else ''
+        mails_dict['mail_accessories'] = id_map_property(mail_accessories)
+        mails_dict['expire'] = expire if expire else ''
+        mails_dict['status'] = status_num[status]
+        mails_dict['status_num'] = status  # 用于前端判断是否为发送状态
+        datas.append(mails_dict)
+
+    # 高级用户可以操作邮件的发送按钮
+    is_high_level_user = False
+    if session.get('access_level') == 1:
+        is_high_level_user = True
+
+    # 返回模板和数据
+    status_msg = dict()
+    status_msg['beginDate'] = begin_time
+    status_msg['endDate'] = end_time
+    status_msg['SelectChannel'] = channel_id
+    status_msg['OThers'] = [u'<td> 邮件标题：<input type="text" id="mail_title" '
+                            u'name="mail_title" value="%s"> </td>' % search_mail_title,
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value="%s"> </td>' % search_user_id]
+    return render_template('mail_in_game.html', status_msg=status_msg, property_map_id=v1_0_map, datas=datas,
+                           is_high=is_high_level_user)
+
+
+@busi.route('/games/gm/mail/update_json', methods=['GET'])
+@login_require
+def update_mail_json():
+    """返回修改邮件页面时用的json数据"""
+
+    # 获取参数
+    mail_id = request.args.get('mail_id')
+
+    # 从数据库获取并处理数据
+    retrieve_mail_sql = """SELECT push_player_id,mail_title,mail_content,mail_accessories,expire
+                            FROM admin_mail 
+                            WHERE id=%s;""" % mail_id
+    mail_data = (LogQry(session['select_channel']).qry(retrieve_mail_sql))[0]
+    mail_data_dict = dict()
+    mail_data_dict['mail_title'] = mail_data[1]
+    mail_data_dict['mail_content'] = mail_data[2]
+    mail_data_dict['mail_id'] = mail_id
+    mail_data_dict['expire'] = mail_data[4]
+    if mail_data[0] == u'全服推送':
+        mail_data_dict['push_player_id'] = ''
+        mail_data_dict['is_all'] = 1
+    else:
+        mail_data_dict['push_player_id'] = mail_data[0]
+        mail_data_dict['is_all'] = 0
+    try:
+        mail_data_dict['mail_accessories'] = eval(mail_data[3])
+    except SyntaxError as e:
+        mail_data_dict['mail_accessories'] = {}
+
+    # 返回数据
+    return jsonify(data=mail_data_dict)
+
+
+@busi.route('/games/gm/mail/update', methods=['PUT'])
+@login_require
+def update_mail():
+    """修改邮件"""
+
+    # 获取参数
+    mail_title = request.form.get('mail_title')
+    mail_content = request.form.get('mail_content')
+    push_player_id = request.form.get('push_player_id')
+    is_all = int(request.form.get('is_all'))
+    mail_accessories = request.form.get('mail_accessories')
+    expire = request.form.get('expire')
+    user_id = g.user_id
+    channel_id = session['select_channel']
+    mail_id = int(request.form.get('mail_id'))
+
+    # 校验参数并处理数据
+    if is_all:
+        push_player_id = u'全服推送'
+    else:
+        for player_id in push_player_id.split(','):
+            try:
+                int(player_id)
+            except ValueError as e:
+                return jsonify(result=2, errormsg=u'玩家ID之间半角逗号隔开，且为整数纯数字！')
+    if not all([push_player_id, mail_title, mail_content]):
+        return jsonify(result=2, errormsg=u'除附件外，其余都是必填项！')
+    if mail_accessories == u'{':
+        mail_accessories = ''
+    else:
+        mail_accessories_dict = eval(mail_accessories)
+        for num, quantity in mail_accessories_dict.items():
+            try:
+                mail_accessories_dict[num] = int(quantity)
+            except ValueError as e:
+                return jsonify(result=2, errormsg=u'附件选中的道具数量不能为空，且为整数纯数字！')
+        mail_accessories = str(mail_accessories_dict)
+    if is_all:
+        try:
+            expire = int(expire)
+        except ValueError:
+            return jsonify(result=2, errormsg=u'有效时间为必填项，且为整数纯数字！')
+        if expire < 1 or expire > 30:
+            return jsonify(result=2, errormsg=u'有效时间为大于等于1小于等于30的数字！')
+    else:
+        expire = 'null'
+
+    # 查询账号名
+    retrieve_sql = """SELECT name
+                      FROM user
+                      WHERE id=%s;""" % user_id
+    user_id = SqlOperate().select(retrieve_sql)[0][0]
+
+    # 存进数据库
+    update_mail_sql = """UPDATE admin_mail 
+                          SET mail_title='%s',mail_content='%s',mail_accessories='%s',push_player_id='%s',expire=%s,
+                              user_id='%s' 
+                          WHERE id=%s;""" \
+                      % (mail_title, mail_content, mail_accessories, push_player_id, expire,
+                         user_id, mail_id)
+    LogQry(channel_id).execute(update_mail_sql)
+
+    # 返回应答
+    return jsonify(result=1)
+
+
+@busi.route('/games/gm/mail/audit', methods=['PUT'])
+@login_require
+def audit_mail():
+    """发送邮件"""
+
+    # 获取参数
+    mail_id = int(request.form.get('mail_id'))
+    channel_id = session['select_channel']
+
+    # 从数据库获取对应邮件的数据，并处理数据
+    retrieve_sql = """SELECT push_player_id,mail_title,mail_content,mail_accessories,expire
+                      FROM admin_mail
+                      WHERE id=%s;""" % mail_id
+    data = LogQry(channel_id).qry(retrieve_sql)
+    push_player_id = ''  # 当data没数据时（虽然此情况不会发生）push_player_id会因没遍历而没定义，防止报错先定义，下同
+    mail_title = ''
+    mail_content = ''
+    mail_accessories_list = []
+    expire = 1
+    for push_player_id, mail_title, mail_content, mail_accessories, expire in data:
+        if push_player_id != u'全服推送':
+            push_player_id = eval('[' + push_player_id + ']')
+        mail_accessories_list = list()
+        if mail_accessories:
+            for key, val in eval(mail_accessories).items():
+                little_list = list()
+                little_list.append(key)
+                little_list.append(val)
+                mail_accessories_list.append(little_list)
+
+    # 向游戏端发送请求
+    if push_player_id == u'全服推送':
+        expire = expire * 24 * 60 * 60
+        status = GameWeb(channel_id).post('/api/send_sys_mail',
+                                          {'title': mail_title, 'content': mail_content,
+                                           'attach': mail_accessories_list,
+                                           'expire': expire})
+        if status['result'] != 'succ':
+            return jsonify(msg=u'发送失败！')
+    else:
+        status = GameWeb(channel_id).post('/api/send_user_mail',
+                                          {'title': mail_title, 'content': mail_content,
+                                           'attach': mail_accessories_list,
+                                           'expire': 0,
+                                           'pid': push_player_id})
+        if status['result'] != 'succ':
+            return jsonify(msg=u'发送失败！')
+
+    # 更新数据库的邮件状态
+    audit_mail_sql = """UPDATE admin_mail SET status=1,push_time=%s WHERE id=%s;""" \
+                     % (time_util.now_sec(), mail_id)
+    LogQry(channel_id).execute(audit_mail_sql)
+
+    # 返回应答
+    return jsonify(msg=u'id为%s的邮件已成功发送！' % mail_id)
+
+
+# @busi.route('/games/gm/mail/cancel', methods=['PUT'])
+# @login_require
+# def batch_cancel_mail():
+#     """邮件批量下线"""
+#
+#     # 获取参数
+#     batch_list = eval(request.form.get('batch_list'))
+#
+#     # 处理数据
+#     cancel_id_str = '('
+#     for cancel_id in batch_list:
+#         cancel_id_str += str(cancel_id) + ','
+#     else:
+#         cancel_id_str = cancel_id_str.rstrip(',') + ')'
+#
+#     # 更新数据库
+#     batch_cancel_sql = """UPDATE admin_mail SET status=2 WHERE id in %s;""" % cancel_id_str
+#     LogQry(session['select_channel']).execute(batch_cancel_sql)
+#
+#     # 返回应答
+#     return jsonify(msg=u'id为%s的邮件已下线！' % cancel_id_str)
+
+
+@busi.route('/games/gm/activity/show', methods=['GET'])
+@login_require
+def show_activity():
+    """活动系统页面"""
+
+    status_msg = dict()
+    status_msg['beginDate'] = 11
+    status_msg['endDate'] = 11
+    status_msg['OThers'] = [u'<td> 活动描述：<input type="text" id="activity_content_search" '
+                            u'name="activity_content" value=""> </td>',
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value=""> </td>']
+
+    return render_template('activity.html', status_msg=status_msg, property_map_id=property_map_id)
+
+
+@busi.route('/games/gm/activity/create', methods=['POST'])
+@login_require
+def create_activity():
+    """新建活动"""
+
+    # 获取参数
+    picture_url = request.form.get('picture_url')
+    activity_title = request.form.get('activity_title')
+    tab1_url = request.form.get('tab1_url')
+    tab2_url = request.form.get('tab2_url')
+    begin_time = request.form.get('begin_time')
+    end_time = request.form.get('end_time')
+    entry_fee = request.form.get('entry_fee')
+    activity_content = request.form.get('activity_content')
+    priority = request.form.get('priority')
+    activity_type = request.form.get('activity_type')
+    channel_id = session['select_channel']
+    user_id = g.user_id
+
+    # 校验并处理参数
+    if not all([begin_time, end_time, priority, activity_content]):
+        return jsonify(result=2, errormsg=u'请输入必填项！')
+    if entry_fee:
+        try:
+            int(entry_fee)
+        except ValueError as e:
+            return jsonify(result=2, errormsg=u'报名费为整数纯数字！')
+    else:
+        entry_fee = 'null'
+    try:
+        int(priority)
+    except ValueError as e:
+        return jsonify(result=2, errormsg=u'优先级为整数纯数字！')
+    begin_time = time_util.formatTimestamp(begin_time)
+    end_time = time_util.formatTimestamp(end_time)
+    if begin_time > end_time:
+        return jsonify(result=2, errormsg=u'开始时间不能大于结束时间！')
+
+    # 向游戏服发送请求
+    times = [begin_time] + [end_time]
+    if activity_type == '2':
+        game_status = GameWeb(channel_id).post('/api/up_activity',
+                                               {'id': int(activity_type), 'icon1': tab1_url, 'icon2': tab2_url,
+                                                'mark': activity_title, 'ord': int(priority), 'detail': picture_url,
+                                                'entry_fee': int(entry_fee), 'times': times, 'rules': activity_content})
+    else:
+        game_status = GameWeb(channel_id).post('/api/up_activity',
+                                               {'id': int(activity_type), 'icon1': tab1_url, 'icon2': tab2_url,
+                                                'mark': activity_title, 'ord': int(priority), 'detail': picture_url,
+                                                'times': times, 'rules': activity_content})
+    if game_status['result'] != 'ok':
+        return jsonify(result=2, msg='新建失败！')
+
+    # 根据当前时间判定新建的活动的状态
+    if begin_time < time_util.now_sec() < end_time:
+        status = TAKE_EFFECT
+    else:
+        status = LOSE_EFFICACY
+
+    # 同活动类型为生效状态的活动改状态为失效
+    update_sql = """UPDATE admin_activity
+                    SET status=%s
+                    WHERE status=%s
+                    AND activity_type=%s;""" \
+                 % (LOSE_EFFICACY, TAKE_EFFECT, activity_type)
+    LogQry(channel_id).execute(update_sql)
+
+    # 查询账号名
+    retrieve_sql = """SELECT name
+                      FROM user
+                      WHERE id=%s;""" % user_id
+    user_id = SqlOperate().select(retrieve_sql)[0][0]
+
+    # 存进数据库
+    create_activity_sql = """INSERT INTO admin_activity
+                                          (user_id,activity_title,activity_content,picture_url,begin_time,
+                                          end_time,entry_fee,priority,status,tab1_url,
+                                          tab2_url,activity_type) 
+                              VALUES ('%s','%s','%s','%s',%s,
+                                        %s,%s,%s,%s,'%s',
+                                        '%s',%s);""" \
+                          % (user_id, activity_title, activity_content, picture_url, begin_time,
+                             end_time, entry_fee, priority, status, tab1_url,
+                             tab2_url, activity_type)
+    LogQry(channel_id).execute(create_activity_sql)
+
+    # 返回应答
+    return jsonify(result=1)
+
+
+@busi.route('/games/gm/activity/retrieve', methods=['GET'])
+@login_require
+def retrieve_activity():
+    """查询活动"""
+
+    # 获取参数
+    channel_id = session['select_channel']
+    activity_content = request.args.get('activity_content')
+    user_id = request.args.get('user_id')
+    begin_time = request.args.get('beginDate')
+    end_time = request.args.get('endDate')
+
+    # 返回原始搜索数据
+    search_begin_time = time_util.formatDatestamp(begin_time)
+    search_end_time = time_util.formatDatestamp(end_time)
+    search_activity_content = activity_content
+    search_user_id = user_id
+
+    # 从数据库获取并处理数据
+    begin_time = time_util.formatDatestamp(begin_time)
+    end_time = time_util.formatDatestamp(end_time)
+    activity_content_str = ''
+    user_id_str = ''
+    if activity_content:
+        activity_content_str = ' AND activity_content LIKE "%%%s%%"' % activity_content
+    if user_id:
+        user_id_str = ' AND user_id="%s"' % user_id
+    retrieve_activity_sql = """SELECT priority,id,user_id,activity_content,activity_type, 
+                                      entry_fee,begin_time,end_time,status 
+                                FROM admin_activity 
+                                WHERE ((begin_time>=%s AND begin_time<=%s) 
+                                OR (end_time>=%s AND end_time<=%s)) 
+                                %s%s
+                                ORDER BY status DESC;""" \
+                            % (begin_time, end_time, begin_time, end_time, activity_content_str, user_id_str)
+    activity_datas = LogQry(channel_id).qry(retrieve_activity_sql)
+    datas = []
+    for priority, activity_id, user_id, activity_content, activity_type, \
+        entry_fee, begin_time, end_time, status in activity_datas:
+        activity_dict = dict()
+        activity_dict['priority'] = priority
+        activity_dict['activity_id'] = activity_id
+        activity_dict['user_id'] = user_id
+        activity_dict['activity_content'] = activity_content.replace('\n', '<br>')
+        activity_dict['activity_type'] = activity_type_map[activity_type]
+        activity_dict['entry_fee'] = '' if entry_fee is None else entry_fee
+        activity_dict['begin_time'] = time_util.formatDateTime(begin_time)
+        activity_dict['end_time'] = time_util.formatDateTime(end_time)
+        if status == TAKE_EFFECT:  # 如果状态为生效，再判断一下当前时间与活动实际时间是否生效，若失效则修改状态
+            if not begin_time < time_util.now_sec() < end_time:
+                status = LOSE_EFFICACY
+                update_sql = """UPDATE admin_activity
+                                SET status=%s
+                                WHERE id=%s;""" \
+                             % (status, activity_id)
+                LogQry(channel_id).execute(update_sql)
+        activity_dict['status'] = activity_status_map[status]
+        activity_dict['status_num'] = status  # 用于调字体颜色
+        datas.append(activity_dict)
+
+    # 返回模版和数据
+    status_msg = dict()
+    status_msg['SelectChannel'] = int(channel_id)
+    status_msg['beginDate'] = search_begin_time
+    status_msg['endDate'] = search_end_time
+    status_msg['OThers'] = [u'<td> 活动描述：<input type="text" id="activity_content_search" '
+                            u'name="activity_content" value="%s"> </td>' % search_activity_content,
+                            u'<td> 后台账号：<input type="text" id="user_id" '
+                            u'name="user_id" value="%s"> </td>' % search_user_id]
+    return render_template('activity.html', status_msg=status_msg, datas=datas, property_map_id=property_map_id)
+
+
+@busi.route('/games/gm/activity/update_json', methods=['GET'])
+@login_require
+def update_activity_json():
+    """返回修改活动页面时用的json数据"""
+
+    # 获取参数
+    activity_id = request.args.get('activity_id')
+    channel_id = session['select_channel']
+
+    # 从数据库获取并处理数据
+    retrieve_activity_sql = """SELECT activity_title,activity_content,picture_url,tab1_url,tab2_url,
+                                      begin_time,end_time,entry_fee,priority,activity_type,
+                                      id
+                                FROM admin_activity
+                                WHERE id=%s;""" % activity_id
+    activity_data = (LogQry(channel_id).qry(retrieve_activity_sql))[0]
+    activity_data_dict = dict()
+    activity_data_dict['activity_title'] = activity_data[0]
+    activity_data_dict['activity_content'] = activity_data[1]
+    activity_data_dict['picture_url'] = activity_data[2]
+    activity_data_dict['tab1_url'] = activity_data[3]
+    activity_data_dict['tab2_url'] = activity_data[4]
+    activity_data_dict['begin_time'] = time_util.formatDateTime(activity_data[5])
+    activity_data_dict['end_time'] = time_util.formatDateTime(activity_data[6])
+    activity_data_dict['entry_fee'] = activity_data[7]
+    activity_data_dict['priority'] = activity_data[8]
+    activity_data_dict['activity_type'] = activity_data[9]
+    activity_data_dict['activity_id'] = activity_data[10]
+
+    # 返回数据
+    return jsonify(data=activity_data_dict)
+
+
+@busi.route('/games/gm/activity/update', methods=['PUT'])
+@login_require
+def update_activity():
+    """修改活动"""
+
+    # 获取参数
+    picture_url = request.form.get('picture_url')
+    activity_title = request.form.get('activity_title')
+    tab1_url = request.form.get('tab1_url')
+    tab2_url = request.form.get('tab2_url')
+    begin_time = request.form.get('begin_time')
+    end_time = request.form.get('end_time')
+    entry_fee = request.form.get('entry_fee')
+    activity_content = request.form.get('activity_content')
+    priority = request.form.get('priority')
+    activity_type = request.form.get('activity_type')
+    activity_id = request.form.get('activity_id')
+    user_id = g.user_id
+    channel_id = session['select_channel']
+
+    # 校验并处理参数
+    if not all([begin_time, end_time, priority, activity_content]):
+        return jsonify(result=2, errormsg=u'请输入必填项！')
+    if entry_fee:
+        try:
+            int(entry_fee)
+        except ValueError as e:
+            return jsonify(result=2, errormsg=u'报名费为整数纯数字！')
+    else:
+        entry_fee = 'null'
+    try:
+        int(priority)
+    except ValueError as e:
+        return jsonify(result=2, errormsg=u'优先级为整数纯数字！')
+    begin_time = time_util.formatTimestamp(begin_time)
+    end_time = time_util.formatTimestamp(end_time)
+
+    # 向游戏服发送请求
+    times = [begin_time] + [end_time]
+    if activity_type == '2':
+        game_status = GameWeb(channel_id).post('/api/up_activity',
+                                               {'id': int(activity_type), 'icon1': tab1_url, 'icon2': tab2_url,
+                                                'mark': activity_title, 'ord': int(priority), 'detail': picture_url,
+                                                'entry_fee': int(entry_fee), 'times': times, 'rules': activity_content})
+    else:
+        game_status = GameWeb(channel_id).post('/api/up_activity',
+                                               {'id': int(activity_type), 'icon1': tab1_url, 'icon2': tab2_url,
+                                                'mark': activity_title, 'ord': int(priority), 'detail': picture_url,
+                                                'times': times, 'rules': activity_content})
+    if game_status['result'] != 'ok':
+        return jsonify(result=2, msg='修改失败！')
+
+    # 根据当前时间判定新建的活动的状态
+    if begin_time < time_util.now_sec() < end_time:
+        status = TAKE_EFFECT
+    else:
+        status = LOSE_EFFICACY
+
+    # 同活动类型为生效状态的活动改状态为失效
+    update_sql = """UPDATE admin_activity
+                    SET status=%s
+                    WHERE status=%s
+                    AND activity_type=%s;""" \
+                 % (LOSE_EFFICACY, TAKE_EFFECT, activity_type)
+    LogQry(channel_id).execute(update_sql)
+
+    # 查询账号名
+    retrieve_sql = """SELECT name
+                      FROM user
+                      WHERE id=%s;""" % user_id
+    user_id = SqlOperate().select(retrieve_sql)[0][0]
+
+    # 存进数据库
+    update_activity_sql = """UPDATE admin_activity
+                              SET activity_title='%s',activity_content='%s',picture_url='%s',tab1_url='%s',tab2_url='%s',
+                                  begin_time=%s,end_time=%s,entry_fee=%s,priority=%s,activity_type=%s,
+                                  status=%s,user_id='%s'
+                              WHERE id=%s;""" \
+                          % (activity_title, activity_content, picture_url, tab1_url, tab2_url,
+                             begin_time, end_time, entry_fee, priority, activity_type,
+                             status, user_id, activity_id)
+    LogQry(channel_id).execute(update_activity_sql)
+
+    # 返回应答
+    return jsonify(result=1)
+
+# @busi.route('/games/gm/activity/cancel', methods=['PUT'])
+# @login_require
+# def batch_cancel_activity():
+#     """活动批量下线"""
+#
+#     # 获取参数
+#     batch_list = request.form.get('batch_list')
+#
+#     # 处理数据
+#     batch_list = eval(batch_list)
+#     cancel_id_str = '('
+#     for cancel_id in batch_list:
+#         cancel_id_str += str(cancel_id) + ','
+#     else:
+#         cancel_id_str = cancel_id_str.rstrip(',') + ')'
+#
+#     # 更新数据库
+#     batch_cancel_sql = """UPDATE admin_activity SET status=2 WHERE id in %s;""" % cancel_id_str
+#     LogQry(session['select_channel']).execute(batch_cancel_sql)
+#
+#     # 返回应答
+#     return jsonify(msg=u'id为%s的活动已下线！' % cancel_id_str)

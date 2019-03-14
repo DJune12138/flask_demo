@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏数据对比</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <style>
+        main > div {
+            max-width: 600px;
+            height: 400px;
+            float: left;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_game_data_compare"),
+    beginDate = status_msg.beginDate,
+    endDate = status_msg.endDate,
+    Channels=True,
+    SelectChannel = status_msg.channel, QueryType = 3,
+    OThers = status_msg.OThers,
+    Method='get') }}
+    {% endautoescape %}
+</div>
+<main>
+    <div id="container1"></div>
+    <div id="container2"></div>
+    <div id="container3"></div>
+    <div id="container4"></div>
+    <div id="container5"></div>
+    <div id="container6"></div>
+    <div id="container7"></div>
+</main>
+<script src="/static/js/highcharts.js"></script>
+<script src="/static/js/exporting.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    queryData();
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        queryData();
+    })
+
+    function queryData() {
+        $.ajax({
+            url: '/search/game/data/compare',
+            type: 'get',
+            data: {
+                beginDate1: $("#beginDate1").val(),
+                endDate1: $("#endDate1").val(),
+                beginDate2: $("#beginDate2").val(),
+                endDate2: $("#endDate2").val(),
+            },
+            success: function (res) {
+                loadingShow(false);
+                if (res.result == 'ok') {
+                    getChart("container1", "注册人数", res.cur.reg_count, res.pre.reg_count)
+                    getChart("container2", "活跃人数", res.cur.active_count, res.pre.active_count)
+                    getChart("container3", "游戏盈亏", coin_format_no_color(res.cur.game_win), coin_format_no_color(res.pre.game_win))
+                    getChart("container4", "上分", coin_format_no_color(res.cur.up_coin), coin_format_no_color(res.pre.up_coin))
+                    getChart("container5", "下分", coin_format_no_color(res.cur.down_coin), coin_format_no_color(res.pre.down_coin))
+                    getChart("container6", "充值", res.cur.recharge, res.pre.recharge)
+                    getChart("container7", "提现", res.cur.withdraw, res.pre.withdraw)
+                }
+            }
+        })
+    }
+
+    function getChart(To, title, data1, data2) {
+        type = 'pie';
+        series = [{
+            type: 'pie',
+            name: title,
+            data: [
+                ['日期2', data2],
+                {
+                    name: '日期1',
+                    y: data1,
+                    sliced: true,
+                }
+            ]
+        }];
+        if (title == '游戏盈亏') {
+            type = 'column';
+            series = [
+                {
+                    name: '日期1',
+                    data: [data1]
+                }, {
+                    name: '日期2',
+                    data: [data2]
+                }
+            ];
+        }
+        new Highcharts.Chart({
+            chart: {
+                renderTo: To,
+                type: type,
+                marginRight: 20,
+                marginBottom: 25
+            },
+
+            title: {
+                text: title
+            },
+            subtitle: {
+                text: ''
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                },
+            },
+            exporting: {enabled: false},
+            colors: ['#F5DA81', '#81F7F3'],
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        distance: -30,
+                        enabled: true,
+                        inside: true,
+                        format: '<b>{point.name}</b>: {point.y} <i>({point.percentage:.1f}%)</i>',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    },
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    },
+                    slicedOffset: 20,
+                    point: {
+                        events: {
+                            mouseOver: function () {
+                                this.slice();
+                            },
+                            mouseOut: function () {
+                                this.slice();
+                            },
+                            click: function () {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            },
+            series: series
+        });
+    }
+</script>
+</body>
+</html>

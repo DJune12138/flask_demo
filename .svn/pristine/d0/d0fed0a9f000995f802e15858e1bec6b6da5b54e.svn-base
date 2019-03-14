@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>游戏开关管理</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        #sortable .game-item{
+            cursor: move;
+        }
+        .game-item {
+            border: solid 1px #ededed;
+            width: 320px;
+            font-size: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+            float: left;
+            margin: 20px 15px;
+            user-select: none;
+        }
+
+        .game-item .switch_button {
+            display: inline-block;
+            position: relative;
+            top: 6px;
+        }
+
+        .game-item label {
+            margin: 0 10px;
+            user-select: none;
+        }
+
+        .game-item select {
+            height: 28px !important;
+            color: #000 !important;
+        }
+
+        .game-item .item-title {
+            position: absolute;
+            top: -13px;
+            left: 20px;
+            padding: 5px 15px;
+            background: #fff;
+        }
+
+        .section-title {
+            background: #ededed;
+            height: 1px;
+            font-size: 14px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .section-title span {
+            position: relative;
+            top: -10px;
+            left: 20px;
+            background: #fff;
+            padding: 0 10px;
+        }
+
+        section {
+            overflow: hidden;
+        }
+
+        main {
+            text-align: center;
+            position: relative;
+        }
+
+        main .submit_tip {
+            position: absolute;
+            bottom: 6px;
+            left: 53%;
+            font-size: 12px;
+            background: #00a2d4;
+            border-radius: 3px;
+            padding: 6px 10px;
+            color: #fff;
+            display: none;
+        }
+        .rule{
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div hidden>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.game_platform_show"), beginDate=False, QueryType=3, Method='get') }}
+    {% endautoescape %}
+</div>
+<main>
+    <div class="rule"><p>拖动可排序</p></div>
+    <div class="section-title"><span>游戏开关</span></div>
+    <section id="sortable"></section>
+    <div class="section-title"><span>游戏功能开关</span></div>
+    <section class="func"></section>
+    <input class="btn btn-primary btn-sm" type="submit" name="" value="发布" channel_id="{{ SelectChannel }}" id="issue">
+    <span class="submit_tip">发布后，玩家需要重启游戏才能看到最新的游戏排序。</span>
+</main>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        $("#sortable").sortable();
+        $("#sortable").disableSelection();
+    });
+</script>
+<script>
+
+    $(function () {
+        func = $('.func');
+        game = $('#sortable');
+        query_btn = $('#query_btn');
+        submit_btn = $('main input[type=submit]');
+        var update_list = [];
+
+        getList();
+
+        query_btn.click(function () {
+            getList(); 
+        })
+
+        submit_btn.click(function () {
+            update_list = [];
+            $('.game-item').each(function (index, item) {
+                var obj =  {
+                    primary_id: $(item).attr('primary_id'),
+                    status: $(item).find('select').val(),
+                }
+                obj.sort = index + 1;
+                update_list.push(obj);
+            })
+            submit();
+        })
+
+        submit_btn.mouseenter(function () {
+            $('.submit_tip').show();
+        });
+
+        submit_btn.mouseleave(function () {
+            $('.submit_tip').hide();
+        })
+
+        function submit() {
+            loadingShow(true);
+            $.ajax({
+                url: '{{ url_for("busi.game_platform_update") }}',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    update_list: JSON.stringify(update_list),
+                },
+                success: function (res) {
+                    loadingShow(false);
+                    if (res.error == 'system_err') {
+                        parent.window.showAlert('服务器忙，请稍后再试')
+                    }else if (res.result == 1) {
+                        parent.window.showAlert(res.msg, 'success')
+                    } else {
+                        parent.window.showAlert(res.msg)
+                    }
+                },
+                error: function () {
+                    parent.window.showAlert("请求超时，请重试！")
+                }
+            })
+        }
+
+        function getColor(){
+            $('select').change(function () {
+                if($(this).val() == 1){
+                    $(this).closest('.game-item').attr('style','border-color:#5FB878')
+                }else{
+                    $(this).closest('.game-item').attr('style','border-color:#ededed')
+                }
+            });
+            $('select').each(function () {
+                $('select').change()
+            });
+        }
+
+        function getList() {
+            loadingShow(true);
+            $.ajax({
+                url:'/game/platform/retrieve',
+                type:'get',
+                success:function (res) {
+                    loadingShow(false);
+                    func.empty();
+                    $.each(res.data_function,function (index,item) {
+                        if(item.function_id != -11){
+                            func.append('<div class="game-item" primary_id="'+item.function_id+'"><div class="item-title">'+item.name+'</div><label>功能状态</label><select><option value="-1">关闭</option><option value="1">开启</option></select></div>')
+                        }else{
+                            func.append('<div class="game-item" primary_id="'+item.function_id+'"><div class="item-title">'+item.name+'</div><label>功能状态</label><select><option value="-1">单列排序</option><option value="-2">双列排序</option><option value="-3">分类排序</option></select></div>')
+                        }
+                        func.find('.game-item select:last').val(item.status);
+                    })
+                    game.empty();
+                    $.each(res.data_game,function (index,item) {
+                        game.append('<div class="game-item" primary_id="'+item.game_id+'"><div class="item-title">'+item.name+'</div><label>游戏状态</label><select><option value="-1">隐藏游戏</option><option value="0">待开放</option><option value="1">开放</option></select></div>');
+                        game.find('.game-item select:last').val(item.status);
+                    })
+                    getColor();
+                }
+            })
+        }
+
+        // function sort() {
+        //     $('.game-item').each(function (index, item) {
+        //         $('select').find('.sort_' + $(item).find('select').val()).hide()
+        //     })
+        // };
+    });
+</script>
+</body>
+</html>

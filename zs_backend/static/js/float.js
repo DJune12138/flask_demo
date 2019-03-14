@@ -1,0 +1,15 @@
+$(function(){ 
+	$(".max").mouseout(function(){
+		$(".max").hide();
+		$(".big").css({"height":""});
+	}).mouseover(function(){
+		$(".max").show();
+	});
+	$(".min").mouseover(function(){
+		$(".max").show();
+	});
+	$(".big").mouseout(function(){
+		$(".max").hide();
+		$(".big").css({"height":""});
+	})	
+});

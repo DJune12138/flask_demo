@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代理赠送数据</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_agent_presentation"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, Channels=True, PlayerID = False, SelectChannel = status_msg.channel,QueryType = 3,
+    OThers = status_msg.OThers,Method = 'get') }}
+    {% endautoescape %}
+</div>
+<table id="table"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#table').bootstrapTable('refresh');
+    })
+
+    window.operateEvents = {
+        'click #detail': function (e, value, item) {
+            new_iframe('赠送订单详情','/games/presentation/detail?pid='+item.pid+'&date='+item.dateStamp)
+        },
+    }
+
+    $('#table').bootstrapTable({
+        url: '/search/games/agent/presentation',
+        pagination: true,
+        pageSize: 100,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        responseHandler: getHandler,
+        queryParams: function () {
+            return queryParams('player_id', 'beginDate', 'endDate')
+        },
+        columns:
+            [
+                {field: "dateStamp", title: "日期", sortable: true},
+                {field: "pid", title: "代理ID", sortable: true, formatter: pid_format},
+                {field: "nick", title: "代理昵称", sortable: true},
+                {field: "total_down_coin", title: "赠送玩家总金币（卖分）", sortable: true},
+                {field: "total_down_pump", title: "赠送玩家总抽水", sortable: true},
+                {field: "total_up_coin", title: "被玩家赠送总金币（买分）", sortable: true},
+                {field: "total_up_pump", title: "被玩家赠送总抽水", sortable: true},
+                {field: "total_agent_present", title: "赠送代理总金币", sortable: true},
+                {field: "total_agent_present_pump", title: "赠送代理总抽水", sortable: true},
+                {field: "total_agent_recv", title: "被代理赠送总金币", sortable: true},
+                {field: "total_agent_recv_pump", title: "被代理赠送总抽水", sortable: true},
+                {field: '', title: "操作", formatter: getOperate, events: operateEvents, formatter: getOperate},
+            ],
+    });
+
+    function getOperate() {
+        return '<a id="detail">查看详情</a>'
+    }
+
+    function getHandler(res) {
+        loadingShow(false);
+        if (res.error == 'system_err') {
+            return {
+                data: []
+            };
+        } else {
+            var data = [];
+            $.each(res.data,function (index,item) {
+                item.pid = index;
+                item.nick = res.pdatas[index];
+                data.push(item)
+            })
+            return {
+                data: data
+            };
+        }
+    };
+</script>
+</body>
+</html>

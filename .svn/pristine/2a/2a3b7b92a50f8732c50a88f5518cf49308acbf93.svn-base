@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏预警设置</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style>
+        .manage{
+            text-align: left;
+        }
+        .manage p{
+            background: #fff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            border-bottom: 1px solid #f0f5f6;
+        }
+        .manage p:last-child{
+            border: none;
+        }
+        .manage p label{
+            width: 170px;
+            display: inline-block;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            margin: 0 50px;
+        }
+        .manage p input{
+            width: 90px !important;
+            height: 30px !important;
+        }
+        .switch_button{
+            position: relative;
+            top: 5px;
+        }
+    </style>
+</head>
+<body>
+<nav class="nav-sub">
+    <span class="nav-select">预警策略管理</span>
+    <span>预警日志记录</span>
+</nav>
+<section class="manage nav-data">
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家单局游戏押注金额≥</label>
+        <input type="text" value="0" key="1">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家单局游戏盈利金额≥</label>
+        <input type="text" value="0" key="2">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家全部游戏今日盈利额≥</label>
+        <input type="text" value="0" key="3">
+    </p>
+    <p>
+        <span class="switch_button" value="0"></span>
+        <label>同一IP今日注册账号数≥</label>
+        <input type="text" value="0" key="4">
+    </p>
+    <p>
+        <span class="switch_button" value="0"></span>
+        <label>同一设备今日注册账号数≥</label>
+        <input type="text" value="0" key="5">
+    </p>
+    <p>
+        <span class="switch_button" value="0"></span>
+        <label>玩家单局游戏中奖倍数≥</label>
+        <input type="text" value="0" key="6">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家单笔充值金额≥</label>
+        <input type="text" value="0" key="7">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家今日充值总金额≥</label>
+        <input type="text" value="0" key="8">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家单笔提现金额≥</label>
+        <input type="text" value="0" key="9">
+    </p>
+    <p>
+        <span class="switch_button" value="0" filter=true></span>
+        <label>玩家今日提现总金额≥</label>
+        <input type="text" value="0" key="10">
+    </p>
+    <p>
+        <a class="button_new">保存</a>
+    </p>
+</section>
+<section class="list nav-data">
+    <div>
+        {% autoescape false %}
+        {{ search_bar(url_for("busi.alarm_config_show"), beginDate = true, endDate =
+        true,PrecisionSecond = True, QueryType = 3) }}
+        {% endautoescape %}
+    </div>
+    <div class="read">
+        <a class="button_new">已阅</a>
+    </div>
+    <table class="table_data">
+
+    </table>
+</section>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    if(getUrlParams().from == 'top'){
+        setTimeout(function () {
+            $('.nav-sub span:last').click();
+        },10)
+    }
+    submit_ = $('.manage .button_new');
+    switch_button = $('.manage p .switch_button');
+    input = $('.manage p input');
+    query_btn = $('#query_btn');
+    read = $('.read a');
+
+    getAlarm()
+    submit_.click(function () {
+        select = $('.switch_button[value=1]');
+        var data = {};
+        $.each(select,function (index,item) {
+            if($(item).siblings('input').val()){
+                if($(item).attr('filter')){
+                    data[$(item).siblings('input').attr('key')] = coin_format_back($(item).siblings('input').val());
+                }else{
+                    data[$(item).siblings('input').attr('key')] = $(item).siblings('input').val();
+                }
+            }
+        })
+        setAlarm(data)
+    })
+
+    function getAlarm() {
+        $.ajax({
+            url:'alarm_config',
+            type:'get',
+            success:function (res) {
+                switch_button.attr('value',0);
+                input.val(0);
+                $.each(res.data,function (index,item) {
+                    $.each(input,function (idx,ite) {
+                        if(index == $(ite).attr('key')){
+                            $(ite).siblings('.switch_button').attr('value',1);
+                            if($(ite).siblings('span').attr('filter')){
+                                $(ite).val(coin_format_no_color(item))
+                            }else{
+                                $(ite).val(item)
+                            }
+                        }
+                    })
+                })
+            }
+        })
+    }
+
+    function setAlarm(data) {
+        $.ajax({
+            url:'alarm_config_set',
+            type:'get',
+            data:{
+                conf:JSON.stringify(data)
+            },
+            success:function (res) {
+                if(res.result == 'succ'){
+                    parent.window.showAlert('保存成功','success');
+                    getAlarm()
+                }else{
+                    parent.window.showAlert('保存失败')
+                }
+            }
+        })
+    }
+
+    query_btn.click(function () {
+        loadingShow(true);
+        $('.table_data').bootstrapTable('refresh')
+    })
+
+    function getLit() {
+        $.ajax({
+            url:'alarm_list',
+            type:'get',
+            data:{
+                beginDate:$('#beginDate').val(),
+                endDate:$('#endDate').val(),
+            },
+            success:function (res) {
+                if(res.data.length == 0){
+                    parent.window.showAlert('无数据');
+                }
+            }
+        })
+    }
+
+    $('.table_data').bootstrapTable({
+        url: '/alarm_list',
+        striped: true,
+        pagination: true,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        silentSort: false,
+        queryParamsType: 'limit',
+        responseHandler: responseHandler,
+        queryParams: getParams,
+        columns:
+            [
+                {field: "", title: "", checkbox:true, formatter:isDisabled},
+                {field: "id", title: "id",visible:false},
+                {field: "pid", title: "玩家ID", formatter: pid_format},
+                {field: "name", title: "玩家昵称", formatter: addId},
+                {field: "content", title: "内容"},
+                {field: "state", title: "状态",formatter: getState},
+                {field: "time", title: "时间", formatter: getLocalTime},
+            ]
+    });
+
+    function getParams(params) {
+        return {
+            size: params.limit,
+            offset: params.offset,
+            beginDate:$('#beginDate').val(),
+            endDate:$('#endDate').val(),
+        }
+    }
+
+    function responseHandler(res) {
+        loadingShow(false);
+        return {
+            total: res.total,
+            data: res.data
+        };
+    };
+
+    function isDisabled(value,item) {
+        if(item.state == 1){
+            return {
+                disabled:true
+            }
+        }else{
+            return {
+                disabled:false
+            }
+        }
+    }
+
+    function getState(state) {
+        return (state == 1) ? '已阅' : '未阅';
+    }
+
+    function addId(value,item){
+        return '<span key="'+item.id+'">'+value+'</span>'
+    }
+
+    read.click(function () {
+        var select = '';
+        $('.selected').each(function (index,item) {
+            var text = $(item).find('td:eq(2) span').attr('key');
+            select += (select ? ','+text : text)
+        })
+        if(!select){
+            parent.window.showAlert('请选择预警信息');
+            return;
+        }
+        $.ajax({
+            url:'alarm_read',
+            data:{
+                ids:select
+            },
+            success:function (res) {
+                if(res.result == 'succ'){
+                    parent.showAlert('已阅成功','success');
+                    $('.table_data').bootstrapTable('refresh')
+                    parent.getPendinglNum();
+                }else{
+                    parent.showAlert('已阅失败');
+                }
+            }
+        })
+    })
+
+</script>
+</body>
+</html>

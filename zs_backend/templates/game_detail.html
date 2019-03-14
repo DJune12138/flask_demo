@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>对局日志详情</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        input[type=time] {
+            width: 85px !important;
+        }
+
+        input.Wdate {
+            width: 155px !important;
+        }
+
+        input#time_end {
+            margin-left: 7px !important;
+        }
+
+        table tr td a {
+            margin: 0 10px;
+        }
+
+        .list {
+        }
+
+        .detail {
+            background: rgba(0, 0, 0, .3);
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: none;
+        }
+
+        .detail .close {
+            position: absolute;
+            right: 5%;
+            top: 10%;
+            opacity: 1;
+            transform: translate(-30px, 10px);
+        }
+
+        .detail .content {
+            border: solid 1px #ededed;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            background: #fff;
+            position: absolute;
+            height: 80%;
+            overflow-y: auto;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .detail .content p {
+            font-size: 12px;
+            margin: 5px 0;
+            /*line-height: 40px;*/
+            border-bottom: #ededed solid 1px;
+        }
+
+        .detail .content p span {
+            font-size: 14px;
+            margin: 0px 30px 0 0;
+            width: 230px;
+            display: inline-block;
+            /*border: solid 1px red;*/
+            height: 50px;
+            line-height: 50px;
+            overflow: hidden;
+            word-break: break-all;
+        }
+
+        .detail .content p.p-img {
+            line-height: 50px;
+        }
+
+        .detail .content p.p-img span {
+            position: relative;
+            top: -13px;
+        }
+
+        .detail .content p.p-img span.span-img {
+            top: 0px;
+        }
+
+        .detail .content p.p-img span img {
+            height: 40px;
+        }
+
+        .fixed-table-loading {
+            /*display: none !important;*/
+        }
+
+        .total {
+            font-size: 14px;
+            text-align: center;
+            padding: 5px 0 15px 0;
+        }
+
+        .total p {
+            display: inline-block;
+        }
+
+        .total span {
+            /*background: green;*/
+            color: #fff;
+            padding: 0 5px;
+            margin: 0 5px;
+            font-size: 16px;
+            border-radius: 3px;
+        }
+
+        .content_total {
+            font-size: 14px;
+            padding: 10px 10px 10px 0;
+            border-bottom: #ededed solid 1px;
+        }
+    </style>
+</head>
+<body>
+<div class="rule">
+    <p>1、对局数据详情记录了玩家每局的游戏详情（包括：携带金币、游戏操作、游戏进程、游戏输赢结算等）</p>
+    <p>2、对局数据量庞大，对局日志详情目前只能查询每周周一至周日的数据，不支持跨自然周查询</p>
+</div>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.game_detail_retrieve"), beginDate=11, endDate=11, OThers=other_msg.others, PlayerID='', Account='',PrecisionSecond = True,
+    QueryType=3, Method='get') }}
+    {% endautoescape %}
+</div>
+<main>
+    <section class="list">
+        <div class="total">
+            <p class="total_stake_coin">总投注<span class="bg_green">0</span>，</p>
+            <p class="total_output_coin">总产出<span class="bg_blue">0</span>，</p>
+            <p class="total_pump">总抽水<span class="bg_black">0</span>，</p>
+            <p class="total_margin">输赢金额<span class="bg_orange">0</span></p>
+        </div>
+        <div id="reportTableDiv">
+            <table id="reportTable"></table>
+        </div>
+    </section>
+</main>
+<section class="detail">
+    <div class="content"></div>
+</section>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script>
+    // $('#query_btn').before('<input type="time" id="time_start">' +
+    //     '至<input type="time" id="time_end">');
+    // time_start = $('#time_start');
+    // time_end = $('#time_end');
+
+    $('.date_fast').hide();
+
+    nav_span = $('nav span');
+    main = $('main');
+    detail = $('.detail');
+    list = main.find('.list');
+    go_detail = main.find('.go_detail');
+    content = detail.find('.content');
+
+    go_detail.click(function () {
+        detail.fadeIn()
+    })
+
+    function getDetail(src, items) {
+        detail.find('.close').remove();
+        detail.append('<div class="close"><input type="button" class="btn btn-primary btn-sm" value="关闭"></div>');
+        content.html('');
+        content.append('<div class="content_total">' + src + '</div>');
+        items.forEach(function (item) {
+            p = $('<p></p>');
+            // item = JSON.parse(item)
+            for (let v of item) {
+                p.append('<span title="' + v + '">' + v + '</span>');
+            }
+            p.appendTo(content)
+        })
+
+        detail.fadeIn()
+        detail.find('.close').click(function () {
+            detail.fadeOut()
+        })
+    }
+
+    window.operateEvents = {
+        'click #go_look': function (e, value, row, index) {
+            $("#code").val(row.auto_id);
+            $('#query_btn').click()
+        },
+        'click #go_detail': function (e, value, row, index) {
+            $.ajax({
+                url: '{{ url_for("busi.game_position_detail_retrieve") }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    auto_id: row.auto_id,
+                    time: row.time,
+                },
+                success: function (data) {
+                    getDetail(data.src, data.items)
+                },
+                error: function () {
+                    showAlert("请求超时，请重试！")
+                }
+            })
+        }
+    }
+
+    $('#reportTable').bootstrapTable({
+        url: '{{ url_for("busi.game_detail_retrieve") }}',
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        dataField: 'data',
+        showPaginationSwitch: false,//是否显示数据条数选择框
+        striped: true,
+        pagination: true,
+        pageSize: 100,
+        pageNumber: 1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination: 'server',
+        showHeader: true,
+        buttonsAlign: "right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        // clickToSelect: true,
+
+        silentSort: false,
+
+        queryParamsType: 'limit',
+        queryParams: queryParams,//传递参数（*）
+
+        columns:
+            [
+                {field: "time", title: "牌局时间", align: "center", valign: "middle", formatter: getLocalTime},
+                {field: "account", title: "玩家账号", align: "center", valign: "middle"},
+                {field: "pid", title: "玩家ID", align: "center", valign: "middle", formatter: pid_format},
+                {field: "nick", title: "玩家昵称", align: "center", valign: "middle"},
+                {field: "game_name", title: "游戏名称", align: "center", valign: "middle",},
+                {field: "room_type", title: "房间类型", align: "center", valign: "middle"},
+                {field: "stake_coin", title: "总投注", align: "center", valign: "middle", formatter: coin_format_no_color},
+                {
+                    field: "output_coin",
+                    title: "总产出",
+                    align: "center",
+                    valign: "middle",
+                    formatter: coin_format_no_color
+                },
+                {field: "pump", title: "总抽水", align: "center", valign: "middle", formatter: coin_format_no_color},
+                {field: "margin", title: "输赢金额", align: "center", valign: "middle", formatter: coin_format},
+                {field: "auto_id", title: "局号", align: "center", valign: "middle"},
+                {
+                    field: "opt",
+                    title: "详情",
+                    align: "center",
+                    valign: "middle",
+                    events: operateEvents,
+                    formatter: operateFormatter
+                },
+
+            ],
+
+    });
+
+    //请求成功方法
+    function responseHandler(items) {
+        loadingShow(false)
+        if (items.error == 'system_err') {
+            showAlert('服务器忙，请稍后再试');
+            // return;
+        }else if (items.result == '0') {
+            showAlert(items.msg);
+            $('.list .total .total_stake_coin span').text(0);
+            $('.list .total .total_output_coin span').text(0);
+            $('.list .total .total_pump span').text(0);
+            $('.list .total .total_margin span').text(0);
+            return {
+                total: '',
+                data: [],
+            };
+        } else {
+            $('.list .total .total_stake_coin span').text(coin_format_no_color(items.total_all.total_stake_coin));
+            $('.list .total .total_output_coin span').text(coin_format_no_color(items.total_all.total_output_coin));
+            $('.list .total .total_pump span').text(coin_format_no_color(items.total_all.total_pump));
+            $('.list .total .total_margin span').text(coin_format_no_color(items.total_all.total_margin));
+        }
+        return {
+            total: items.dataLength, //总页数,前面的key必须为"total"
+            data: items.rowDatas //行数据，前面的key要与之前设置的dataField的值一致.
+        };
+    };
+
+    //得到查询的参数
+    function queryParams(params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            channel: $("#channel").val(),
+            game: $("#game").val(),
+            code: $("#code").val(),
+            PlayerID: $("#PlayerID").val(),
+            Account: $("#Account").val(),
+            code: $("#code").val(),
+            beginDate: $("#beginDate").val(),
+            endDate: $("#endDate").val(),
+            // time_start: $("#time_start").val(),
+            // time_end: $("#time_end").val(),
+        };
+        return temp;
+    };
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a id="go_look">同桌玩家</a><a id="go_detail">对局日志解析</a>',
+        ].join('');
+
+    }
+
+    //查询按钮事件
+    $('#query_btn').click(function () {
+        if(new Date($("#endDate").val()).getTime()-new Date($("#beginDate").val()).getTime() > 604799000){
+            showAlert('查询日期不能超过1个自然周')
+        }else{
+            loadingShow(true);
+            $('#reportTable').bootstrapTable('refreshOptions', {pageNumber: 1});
+            $('#reportTable').bootstrapTable('refresh');
+        }
+    })
+
+    function showAlert(text, type) {
+        $alert = $('.refactor-alert');
+        $content = $alert.find('.refactor-alert-content');
+
+        $content.css('background', '#ec971f');
+        $content.text(text);
+        $alert.fadeIn();
+        if (type == 'success') {
+            $content.css('background', '#286090');
+        }
+        setTimeout(function () {
+            $alert.fadeOut();
+        }, 1000)
+    }
+</script>
+</body>
+</html>

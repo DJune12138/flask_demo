@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>部门权限管理旧</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style type="text/css">
+        .update, .delete {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .update:hover, .delete:hover {
+            color: blue;
+        }
+
+    </style>
+</head>
+<body>
+<div style="overflow: hidden;width: 300;height: 50px;line-height: 30px" id="link-edit-role-menu">
+    <input style="margin-bottom:1px;vertical-align: top;" type="button" onclick="link_to()" id="edit_role_menu"
+           class="btn btn-primary btn-sm" value="编辑权限组菜单"/>
+    <div style="display: inline-block;vertical-align: top;">
+        <select style="height: 30px;" name="role_group" id="role_group_select">
+            {% for role in roles %}
+            {% if role.parent_id != 1 or (result != -1 and role.id != 1) %}
+            <option role_id="{{ role.id }}">{{ role.name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% for menus in menus_list %}
+<div class="container" style="margin:40px 0 5px;padding: 0;">◆{{ menus.group }}</div>
+<table>
+    <thead>
+        <tr>
+            <th style="text-align:center;">id</th>
+            <th style="text-align:center;">菜单名</th>
+            <th style="text-align:center;">视图名</th>
+            <th style="text-align:center;">所属权限组</th>
+            <th style="text-align:center;">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for menu in menus.menu_list %}
+        <tr>
+            <td>{{ menu.id }}</td>
+            <td>{{ menu.name }}</td>
+            <td>{{ menu.view_name }}</td>
+            <td>{{ menu.role_text }}</td>
+            <td style="width: 100px;overflow: hidden">
+                <div style="color: #000">
+                    <a class="delete" menu_id="{{ menu.id }}">删除</a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+<br><br><br>
+
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+</body>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script src="/static/js/all.js"></script>
+<script>
+        function Uploadjq() {
+            var dic = new FormData();
+            dic.append('user', 'v1');
+            dic.append('myimage', document.getElementById('img').files[0]);
+            $.ajax({
+                url: '/pay_channel/qr_code/save',
+                type: 'POST',
+                data: dic,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                dataType: 'JSON',
+                success: function (arg) {
+                    if (arg.status){
+                        var img = document.createElement('img');
+                        img.src = "/" + arg.path;
+                        $('#imgs').append(img);
+                    }
+                }
+            })
+
+        }
+</script>
+<script type="text/javascript">
+    var oDel = document.getElementsByClassName('delete');
+    for (var i = 0; i < oDel.length; i++) {
+        oDel[i].onclick = function () {
+            var menu_id = this.getAttribute("menu_id");
+            var params = {
+                'menu_id': menu_id
+            };
+            $.ajax({
+                url: '{{ url_for("busi.delete_menu") }}',
+                type: 'DELETE',
+                data: JSON.stringify(params),
+                contentType: 'application/json',
+                success: function (response) {
+                    showAlert('删除成功','success');
+                    setTimeout(function(){
+                        location.href = '{{ url_for("busi.get_menu") }}';
+                    },1e3)
+                }
+            });
+        }
+    }
+
+    function link_to() {
+        var role_id = $('#role_group_select option:selected').attr('role_id');
+        var role_name = $('#role_group_select option:selected').text();
+        location.href = 'menus/add?role_id=' + role_id + '&role_name=' + role_name
+    };
+
+    var roleLength = document.getElementById('role_group_select').length;
+    if (roleLength == 0) {
+        $('#link-edit-role-menu').hide();
+    }
+
+</script>
+</html>

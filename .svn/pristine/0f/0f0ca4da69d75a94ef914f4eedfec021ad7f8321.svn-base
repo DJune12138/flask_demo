@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>员工账号管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style type="text/css">
+        .update, .delete {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .update:hover, .delete:hover {
+            color: blue;
+        }
+        table tr td >div{
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        .member_list {
+            padding: 10px !important;
+        }
+        .content_top{
+            text-align: right;
+            padding-right: 10px !important;
+        }
+    </style>
+</head>
+<body>
+<main class="refactor_content">
+    <div class="content_top">
+        <input type="button" onclick="link_to()" id="add_user" class="btn btn-primary btn-sm" value="添加员工"/>
+    </div>
+    <section class="member_new">
+    </section>
+    <section class="member_list">
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align:center;">id</th>
+                    <th style="text-align:center;">员工名</th>
+                    <th style="text-align:center;">员工昵称</th>
+                    <th style="text-align:center;">游戏ID</th>
+                    <th style="text-align:center;">注册时间</th>
+                    <th style="text-align:center;">最后登陆时间</th>
+                    <th style="text-align:center;">最后登出时间时间</th>
+                    <th style="text-align:center;">账号级别</th>
+                    <th style="text-align:center;">安全秘钥</th>
+                    <th style="text-align:center;">所属权限组</th>
+                    <th style="text-align:center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in datas %}
+                <tr>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.name }}</td>
+                    <td>{{ data.nick }}</td>
+                    <td>{{ data.pid }}</td>
+                    <td>{{ data.regi_time }}</td>
+                    <td>{{ data.last_login_time }}</td>
+                    <td>{{ data.last_logout_time }}</td>
+                    <td>{{ data.access_level }}</td>
+                    <td>{{ data.secret_key }}</td>
+                    <td>{{ data.role_text }}</td>
+                    <td style="width: 300px;overflow: hidden">
+                        {% if cuser_id != data.id %}
+                        <div>
+                            <a class="update" href="/users/edit?user_id={{ data.id }}&role_str={{ data.role_str }}">修改</a>
+                        </div>
+                        <div>
+                            {% if data.secret_key != '' %}
+                            <a class="del_key" user_id="{{ data.id }}">清除秘钥</a>
+                            {% else %}
+                            <a class="change_secret_key" user_id="{{ data.id }}">开启秘钥</a>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a class="delete" user_id="{{ data.id }}" status="{{ data.status }}">删除</a>
+                        </div>
+                        {% else %}
+                        <div><span style="color: red">当前登录账号</span></div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+
+</body>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript"> $content = $('.refactor_content');
+    var oDel = document.getElementsByClassName('delete');
+    for (var i = 0; i < oDel.length; i++) {
+        oDel[i].onclick = function () {
+            var user_id = this.getAttribute("user_id");
+            var status = this.getAttribute("status");
+            var params = {
+                'user_id': user_id,
+                'status': status
+            };
+            $.ajax({
+                url: '{{ url_for("busi.delete_user") }}',
+                type: 'DELETE',
+                data: JSON.stringify(params),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    alert(response.errmsg);
+                    location.href = '{{ url_for('busi.get_user') }}'
+                }
+            });
+        }
+    }
+
+    var oDel = document.getElementsByClassName('change_secret_key');
+    for (var i = 0; i < oDel.length; i++) {
+        oDel[i].onclick = function () {
+            var user_id = this.getAttribute("user_id");
+            var params = {
+                'user_id': user_id,
+            };
+            $.ajax({
+                url: '{{ url_for("busi.change_secret_key") }}',
+                type: 'POST',
+                data: JSON.stringify(params),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    parent.window.showAlert(response.errmsg,'success')
+                    location.href = '{{ url_for('busi.get_user') }}'
+                }
+            });
+        }
+    }
+
+    $('.del_key').click(function () {
+        $.ajax({
+            url: '/clean/secret/key',
+            type: 'put',
+            data: {
+                userid:$(this).attr('user_id')
+            },
+            success: function (res) {
+                if(res.result == 'ok'){
+                    parent.window.showAlert(res.msg,'success');
+                    location.href = '{{ url_for('busi.get_user') }}';
+                }else{
+                    parent.window.showAlert(res.msg);
+                }
+            }
+        });
+    })
+
+    function link_to(){
+        window.location.href = '/users/add'
+    }
+
+
+</script>
+</html>

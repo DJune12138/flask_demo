@@ -1,0 +1,370 @@
+# -*- coding:utf-8 -*-
+import json
+
+from flask import redirect
+from flask import render_template, jsonify
+from flask import url_for
+from flask.globals import current_app, request, g, session
+
+from zs_backend.busi.game_opt_log import log_type_d, log_main_type_d
+from zs_backend.sql import SqlOperate
+from zs_backend.utils import time_util
+from zs_backend.utils.common import login_require, get_highest_role_id
+from . import busi
+from zs_backend.utils import httpc_util
+import json
+from base64 import b64decode, b64encode
+from zs_backend.utils.const import *
+from zs_backend import redis_conn
+from zs_backend.busi import gm_manage
+from zs_backend.busi import black_white_list
+
+STATUS_USE = 0
+STATUS_NOUSE = 1
+
+@busi.route('/api/channel_data', methods=['POST'])
+def channel_data():
+    datas = []
+    sql = '''
+        select id, name, other_msg
+        from channel
+        where is_delete = %d
+    ''' % STATUS_USE
+    for cid, channel, cfg in SqlOperate().select(sql):
+        dd = json.loads(cfg)
+        sms_config = ""
+        sms_type = ""
+        if dd.has_key("sms_config"):
+            try:
+                sms_config = b64decode(dd["sms_config"])
+            except:
+                sms_config = dd["sms_config"]
+        if dd.has_key("sms_type"):
+            sms_type = dd["sms_type"]
+
+        payload = {
+            "id":cid,
+            "api":dd["api"],
+            "channel":channel,
+            "wx_appid":dd["wx_appid"],
+            "wx_token":dd["wx_token"],
+            "h5_wx_appid":dd["h5_wx_appid"],
+            "h5_wx_token":dd["h5_wx_token"],
+            "hotup_url":dd["hotup_url"],
+            "sms_type":sms_type,
+            "sms_config":sms_config,
+            "server_state":dd["server_state"],
+        }
+        
+        ## 查询黑白名单 公告信息
+        payload["notice"] = gm_manage.get_valid_annouce(channel)
+        payload["black"] = redis_conn.hget(BLACK_WHITE_TABLE+str(cid), "black")
+        payload["white"] = redis_conn.hget(BLACK_WHITE_TABLE+str(cid), "white")
+
+        datas.append(payload)
+
+    return jsonify(data = datas)
+
+## 加载渠道配置到redis
+def load_channel():
+    sql = 'select id, name, game_log_db, web_url, other_msg, role_str from channel where is_delete = %d' % STATUS_USE
+    for line in SqlOperate().select(sql):
+        dd = json.loads(line[4])
+        dd["id"] = line[0]
+        dd["name"] = line[1]
+        dd["game_log_db"] = line[2]
+        dd["web_url"] = line[3]
+        dd["role_str"] = line[5]
+
+        redis_conn.hmset(CHANNEL_CONFIG_TABLE+str(line[0]), dd)
+        redis_conn.hmset(CHANNEL_CONFIG_TABLE+line[1], dd)
+
+        ## 加载黑白名单数据
+        black_white_list.sync_ip_black_white(line[0])
+        ## 加载公告数据
+        gm_manage.load_annouce(line[0])
+
+@busi.route('/channels', methods=['GET'])
+@login_require
+def get_channel():
+    datas = []
+    sql = '''
+        select id, name, game_log_db, web_url, other_msg, 
+            role_str 
+        from channel 
+        where id in (%s)
+    ''' % (",".join([str(i) for i in session['channel']]))
+    for line in SqlOperate().select(sql):
+        chan_dict = dict()
+        chan_dict['id'] = line[0]
+        chan_dict['name'] = line[1]
+        chan_dict['game_log_db'] = line[2]
+        chan_dict['web_url'] = line[3]
+        chan_dict['other_msg'] = json.loads(line[4])
+        chan_dict['role_str'] = line[5]
+        chan_dict['role_text'] = SqlOperate().get_role_text(line[5])
+        datas.append(chan_dict)
+
+    return render_template('index_channel.html', channels=datas)
+
+@busi.route('/select_channel', methods=['GET'])
+@login_require
+def select_channel():
+    channel = int(request.args.get("channel_id"))
+    if channel in session['channel']:
+        session['select_channel'] = channel
+        return jsonify() 
+
+    return jsonify(error_msg = "no id")
+
+@busi.route('/channels_config', methods=['POST'])
+@login_require
+def channels_config():
+    d = {}
+    for channel in session['channel']:
+        tab = CHANNEL_CONFIG_TABLE+str(channel)
+        d[channel] = {
+            "name":redis_conn.hget(tab, "name"), 
+            "coin_rate":redis_conn.hget(tab, "coin_rate")
+        }
+    try:
+        return jsonify(result="succ", data=d)
+    except:
+        return jsonify(result="fail")
+
+@busi.route('/channels', methods=['POST'])
+@login_require
+def add_channel():
+    json_dict = request.form
+    channel_name = json_dict.get('name')
+    game_log_db = json_dict.get('game_log_db')
+    web_url = json_dict.get('web_url')
+    status = json_dict.get('status')
+    role_list = json_dict.getlist('role')
+
+    other_msg = dict()
+    other_msg['h5_link'] = json_dict.get('h5_link')
+    other_msg['coin_rate'] = json_dict.get('coin_rate')
+    other_msg['api'] = json_dict.get('api')
+    other_msg['hotup_url'] = json_dict.get('hotup_url')
+    other_msg['h5_api_key'] = json_dict.get('h5_api_key')
+    other_msg['wx_appid'] = json_dict.get('wx_appid')
+    other_msg['wx_token'] = json_dict.get('wx_token')
+    other_msg['h5_wx_appid'] = json_dict.get('h5_wx_appid')
+    other_msg['h5_wx_token'] = json_dict.get('h5_wx_token')
+    other_msg['sms_type'] = json_dict.get('sms_type')
+    other_msg['sms_config'] = b64encode(json_dict.get('sms_config'))
+    other_msg['server_state'] = SERVER_STATE_STOP
+
+    role_str = '/'.join(role_list)
+    # 拼接创建渠道数据
+    chan_create_sql = """
+        INSERT INTO channel (name, game_log_db, web_url, other_msg, role_str) 
+        VALUES('%s','%s','%s','%s', '%s');
+    """ % (channel_name, game_log_db, web_url, json.dumps(other_msg), role_str)
+
+    sql_oper = SqlOperate()
+    try:
+        # 执行插入新渠道sql语句
+        sql_oper.insert(chan_create_sql)
+    except Exception as e:
+        current_app.logger.error(e)
+        return render_template('add_channel.html', errmsg='添加渠道失败')
+
+    highest_role = get_highest_role_id(session['role_str'])
+
+    ## 重新加载渠道配置
+    load_channel()
+
+    channel_id = int(redis_conn.hget(CHANNEL_CONFIG_TABLE+channel_name, "id"))
+
+    sql = '''
+        insert into admin_opt_log 
+            (channel, maintype, log_type, operator, obj, 
+            val, timestamp)
+        values 
+            (%d, %d, %d, %d, %d, 
+            %d, %d)
+    ''' % (0, log_main_type_d["system"], log_type_d["add_channel"], session['user_id'], channel_id, 
+        highest_role, time_util.now_sec())
+    sql_oper.insert(sql)
+
+    return redirect(url_for('busi.get_channel'))
+
+
+@busi.route('/channels/set', methods=['POST'])
+@login_require
+def set_channel():
+    json_dict = request.form
+    channel_id = json_dict.get('channel_id')
+    chan_name = json_dict.get('name')
+    game_log_db = json_dict.get('game_log_db')
+    web_url = json_dict.get('web_url')
+    status = json_dict.get('status')
+    role_list = json_dict.getlist('role')
+
+    ## 查询出旧配置
+    sql = 'select other_msg from channel where id = %s' % channel_id
+    cfg = SqlOperate().select(sql)[0][0]
+    other_msg = json.loads(cfg)
+
+    other_msg['h5_link'] = json_dict.get('h5_link')
+    other_msg['coin_rate'] = json_dict.get('coin_rate')
+    other_msg['api'] = json_dict.get('api')
+    other_msg['hotup_url'] = json_dict.get('hotup_url')
+    other_msg['h5_api_key'] = json_dict.get('h5_api_key')
+    other_msg['wx_appid'] = json_dict.get('wx_appid')
+    other_msg['wx_token'] = json_dict.get('wx_token')
+    other_msg['h5_wx_appid'] = json_dict.get('h5_wx_appid')
+    other_msg['h5_wx_token'] = json_dict.get('h5_wx_token')
+    other_msg['sms_type'] = json_dict.get('sms_type')
+    other_msg['sms_config'] = b64encode(json_dict.get('sms_config'))
+
+    role_str = '/'.join(role_list)
+    user_update_sql = """
+        UPDATE channel 
+        SET name='%s', game_log_db='%s', web_url='%s', other_msg='%s', role_str='%s' 
+        WHERE id=%s;
+    """ % (chan_name, game_log_db, web_url, json.dumps(other_msg), role_str, channel_id)
+
+    load_channel()
+
+    sql_oper = SqlOperate()
+    sql_oper.update(user_update_sql)
+
+    highest_role = get_highest_role_id(session['role_str'])
+
+    sql = '''
+        insert into admin_opt_log 
+            (channel, maintype, log_type, operator, obj, 
+            val, timestamp)
+        values 
+            (%d, %d, %d, %d, %s, 
+            %d, %d)
+    ''' % (0, log_main_type_d["system"], log_type_d["edit_channel"], session['user_id'], channel_id, highest_role, time_util.now_sec())
+    sql_oper.insert(sql)
+
+    return redirect(url_for('busi.get_channel'))
+
+def delete_channel():
+    channel_id = request.args.get('channel_id')
+    del_channel_sql = """UPDATE channel SET is_delete=1 WHERE id=%s""" % channel_id
+
+    sql_oper = SqlOperate()
+    try:
+        sql_oper.delete(del_channel_sql)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errmsg='删除失败')
+
+    load_channel()
+
+    highest_role = get_highest_role_id(session['role_str'])
+
+    sql = '''
+        insert into admin_opt_log 
+            (channel, maintype, log_type, operator, obj, 
+            val, timestamp)
+        values 
+            (%d, %d, %d, %d, %d, 
+            %d, %d)
+    ''' % (0, log_main_type_d["system"], log_type_d["delete_channel"], session['user_id'], int(channel_id), highest_role, time_util.now_sec())
+    sql_oper.insert(sql)
+
+    return jsonify(errmsg='删除成功')
+
+
+@busi.route('/channels/<re(".+"):operation>', methods=['GET'])
+@login_require
+def show_oper_chan(operation):
+    if operation == 'add':
+        sql_oper = SqlOperate()
+        crole_str = session['role_str']
+        roles_list = sql_oper.get_roles_list_by_role_str(crole_str)
+
+        return render_template('add_channel.html', roles=roles_list)
+
+    elif operation == "delete":
+        delete_channel()
+        return redirect(url_for('busi.get_channel'))
+
+    elif operation == 'edit':
+        channel_id = request.args.get('channel_id')
+        erole_str = request.args.get('role_str')
+
+        erole_list = erole_str.split('/')
+        chan_select_sql = """SELECT name, game_log_db ,web_url, other_msg, status FROM channel WHERE id=%s""" % channel_id
+
+        sql_oper = SqlOperate()
+        chan_tup = sql_oper.select(chan_select_sql)
+
+        crole_str = session['role_str']
+        roles_list = sql_oper.get_roles_list_by_role_str(crole_str)
+
+        chan_dict = dict()
+        other = json.loads(chan_tup[0][3])
+        sms_config= ""
+        if other.has_key("sms_config"):
+            try:
+                sms_config = b64decode(other["sms_config"])
+            except:
+                sms_config = other["sms_config"]
+        chan_dict['id'] = channel_id
+        chan_dict['name'] = chan_tup[0][0]
+        chan_dict['game_log_db'] = chan_tup[0][1]
+        chan_dict['web_url'] = chan_tup[0][2]
+        chan_dict['other_msg'] = other
+        chan_dict['other_msg']["sms_config"] = sms_config
+        chan_dict['status'] = chan_tup[0][4]
+
+        return render_template('edit_channel.html', channel=chan_dict, roles=roles_list, eroles=erole_list)
+
+## 查询服务器状态
+@busi.route('/games/gm/server_state', methods=['GET'])
+@login_require
+def show_server_state():
+    datas = {}
+    sql = '''
+        select name, other_msg
+        from channel
+        where is_delete = 0
+    '''
+    for line in SqlOperate().select(sql):
+        cfg = json.loads(line[1])
+        if cfg.has_key("server_state"):
+            datas[line[0]] = cfg["server_state"]
+        else:
+            datas[line[0]] = SERVER_STATE_STOP
+
+    page = {}
+    page["datas"] = datas
+
+    return render_template('server_state.html', page=page)
+
+## 修改服务器状态
+@busi.route('/games/gm/set_server_state', methods=['POST'])
+@login_require
+def set_server_state():
+    channels = request.form.get("channels")
+    state = int(request.form.get("state"))
+
+    if state not in [SERVER_STATE_STOP, SERVER_STATE_PRE_PUBLIC, SERVER_STATE_PUBLIC]:
+        return jsonify({})
+
+    for channel in channels.split(","):
+        if channel:
+            payload = {
+                "channels": channel,
+                "state": state
+            }
+            channel_id = int(redis_conn.hget(CHANNEL_CONFIG_TABLE + channel, "id"))
+            sql = 'select other_msg from channel where id = %d' % channel_id
+            cfg = SqlOperate().select(sql)[0][0]
+            conf = json.loads(cfg)
+            conf["server_state"] = state
+
+            sql = "update channel set other_msg = '%s' where id = %d" % (json.dumps(conf), channel_id)
+            SqlOperate().update(sql)
+            redis_conn.hset(CHANNEL_CONFIG_TABLE+channel, "server_state", state)
+
+    return jsonify({})

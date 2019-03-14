@@ -1,0 +1,17 @@
+# -*- coding:utf-8 -*-
+from zs_backend.utils import httpc_util
+from zs_backend.utils.const import *
+from zs_backend import redis_conn
+from config import Config
+
+## 获取各种用于api服的渠道数据
+def get_channel_data():
+    rr = httpc_util.post(Config.ADMIN_WEB_SITE+"/api/channel_data", {})
+    rr = rr.json()
+    for dd in rr["data"]:
+        channel = dd["name"]
+        channel_id = dd["id"]
+        redis_conn.hmset(CHANNEL_CONFIG_TABLE+channel, dd)
+        redis_conn.hmset(CHANNEL_CONFIG_TABLE+str(channel_id), dd)
+        redis_conn.hset(WX_CONFIG_TABLE, dd["wx_appid"], dd["wx_token"])
+        redis_conn.hset(WX_CONFIG_TABLE, dd["h5_wx_appid"], dd["h5_wx_token"])

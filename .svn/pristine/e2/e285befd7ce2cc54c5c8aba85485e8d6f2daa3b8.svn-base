@@ -1,0 +1,1 @@
+alter table admin_recharge add column `pay_name` VARCHAR(100) COMMENT '转账姓名';

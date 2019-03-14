@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>玩家操作日志</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+<div>
+    {% autoescape false %}
+    {{ search_bar("/games/users/manage/log", beginDate = 11, endDate = 11, PlayerID = '', NickName = '',
+    SelectChannel = page.SelectChannel, QueryType = 3,
+    Channels=True, Method='GET') }}
+    {% endautoescape %}
+</div>
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+<script type="text/javascript">
+$(function () {
+    $('#reportTable').bootstrapTable({
+        url:"/games/users/manage/log",
+        method: 'get',
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded",
+        responseHandler:responseHandler,//请求数据成功后，渲染表格前的方法
+        striped: true,
+        pagination: true,
+        paginationPreText:'上一页',
+        paginationNextText:'下一页',
+        dataField:'data',
+        showPaginationSwitch:false,//是否显示数据条数选择框
+        pageSize: 100,
+        pageNumber:1,
+        pageList: [10, 20, 50, 100, 200, 500],
+        sidePagination:'server',
+        showHeader:true,
+        buttonsAlign:"right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        silentSort:false,
+        queryParamsType:'limit',
+        queryParams: queryParams,//传递参数（*）
+
+        columns:
+        [
+            {field:"OperatorName",title:"操作账号",align:"center",valign:"middle"},
+            {field:"obj_name",title:"被操作用户",align:"center",valign:"middle"},
+            {field:"log_content",title:"事件",align:"center",valign:"middle"},
+            {field:"timestamp",title:"时间",align:"center",valign:"middle",formatter:getLocalTime}
+        ]
+    });
+});
+
+//得到查询的参数
+function queryParams (params) {
+    var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+        size: params.limit,  //页面大小
+        offset: params.offset, //页码
+        channel:$("#channel").val(),
+        beginDate:$("#beginDate").val(),
+        endDate:$("#endDate").val(),
+        PlayerID:$("#PlayerID").val(),
+        NickName:$("#NickName").val(),
+    };
+    return temp;
+};
+
+//请求成功方法
+function responseHandler(result){
+    loadingShow(false);
+    var errcode = result.errcode;//在此做了错误代码的判断
+    if(errcode != 0){
+        alert("错误代码" + errcode);
+        return;
+    }
+    //如果没有错误则返回数据，渲染表格
+    return {
+        total : result.dataLength, //总页数,前面的key必须为"total"
+        data : result.rowDatas //行数据，前面的key要与之前设置的dataField的值一致.
+    };
+};
+
+ //查询按钮事件
+$('#query_btn').click(function(){
+    loadingShow(true);
+    $('#reportTable').bootstrapTable('refreshOptions', {pageNumber:1});
+    $('#reportTable').bootstrapTable('refresh', {url : '/search/games/users/manage/log'});
+})
+</script>
+</html>

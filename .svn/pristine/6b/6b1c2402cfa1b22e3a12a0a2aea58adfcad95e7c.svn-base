@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>平台滚动公告</title>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style type="text/css">
+        .add_marquee {
+            padding: 20px 0 20px 100px;
+            border: solid 1px #ededed;
+            margin: 0 0 30px 0;
+            border-radius: 5px;
+        }
+
+        .input_box, .parent_check {
+            /*width: 1200px;*/
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+            padding-left: 200px;
+        }
+
+        .check_box {
+            width: 150px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box div {
+            height: 25px;
+            width: 150px;
+            float: left;
+        }
+
+        .input_box input {
+            height: 30px;
+            width: 200px;
+            float: left;
+            border: 1px solid #4876FF;
+            border-radius: 5px
+        }
+
+        .input_box div, .auth_logo {
+            width: 150px;
+            float: left;
+            text-align: right;
+        }
+
+        .nav {
+            margin-bottom: 4px !important;
+            position: relative;
+            top: 50px;
+        }
+
+        .nav span {
+            background: #DDDDDD;
+            color: #000;
+            padding: 5px 100px;
+            border-radius: 5px 5px 0 0;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+
+        .nav .select {
+            background: #00a0e9;
+            color: #fff;
+        }
+
+        .p-button {
+            width: 827px;
+            text-align: center;
+        }
+
+        .content_top {
+            text-align: right;
+        }
+
+        .content_top .button_new {
+            margin: 5px 10px !important;
+        }
+
+        #batch_cancel {
+            float: left;
+            margin: 7px;
+        }
+
+        .item-content textarea {
+            font-size: 14px;
+            width: 800px;
+            height: 300px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.query_marquee"), beginDate = status_msg.beginDate, endDate = status_msg.endDate, QueryType = 1, Channels=False, OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<div class="refactor_content">
+    <div class="content_top">
+        <a class="button_new">新建滚动公告</a>
+        <button class="btn btn-primary btn-sm" id="batch_cancel">批量下线</button>
+    </div>
+</div>
+<nav class="nav" hidden>
+    <span class="select" onclick="show_query()">查询</span>
+    <span onclick="show_add()" id="add-page">新建</span>
+</nav>
+<table class="table table-striped table-bordered table-hover table-condensed" hidden>
+    <tr>
+        <th id="query-page" style="cursor: pointer;text-align:center;background-color: #FFE4B5" ONCLICK="show_query()">
+            查询
+        </th>
+        <th id="add-page" style="cursor: pointer;text-align:center;" ONCLICK="show_add()">新建</th>
+    </tr>
+</table>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<form id="marquee_form" hidden>
+    <div class="add_marquee">
+        <h3 id="tips" style="text-align: center"></h3>
+        <div class="input_box item-content">
+            <div><span>内容：&nbsp;&nbsp;</span></div>
+            <textarea placeholder="请输入平台滚动公告内容" id="marquee_content_create"></textarea>
+        </div>
+        <div class="input_box">
+            <div><span>起止时间：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false,
+         isShowOK:false, isShowToday:false, autoPickDate:true})" id="date1" name="begin_time" value="" required><span
+                style="float:left;padding:0 10px;">  --  </span>
+            <input class="Wdate" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', firstDayOfWeek:1, isShowClear:false,
+            isShowOK:false, isShowToday:false, autoPickDate:true})" id="date2" name="end_time" value="" required>
+        </div>
+        <div class="input_box">
+            <div><span>每日展示次数：&nbsp;&nbsp;</span></div>
+            <input type="text" placeholder="" name="push_times" value=""
+                   style="display: block;text-indent: 5px;" required id="push_times"/>
+            <span>&nbsp;&nbsp;&nbsp;提示:整数，不限次数输入-1</span>
+        </div>
+        <p class="p-button">
+            <input class="btn btn-primary btn-sm commit" type="button" name="" value="确认" id="create"
+                   ONCLICK="create_marquee()">
+            <input class="btn-sm cancel" type="button" id="cancel" value="取消">
+        </p>
+    </div>
+</form>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript"
+        src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    go_new = $('.refactor_content .content_top .button_new');
+    go_new.click(function () {
+        if ($(this).text() == '新建滚动公告') {
+            $(this).text('返回公告列表');
+            $('#batch_cancel').hide();
+            show_add();
+        } else {
+            $(this).text('新建滚动公告');
+            $('#batch_cancel').show();
+            show_query();
+        }
+    })
+    $('.nav span').click(function () {
+        $(this).siblings('span').removeClass('select');
+        $(this).addClass('select');
+    })
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.show_marquee") }}'
+    });
+
+    function show_query() {
+        $("#query-page").css("background-color", "#FFE4B5");
+        $("#add-page").css("background-color", "#DDDDDD");
+        $('#marquee_form').hide();
+        $('#reportTableDiv').show()
+    }
+
+    function show_add() {
+        $("#add-page").css("background-color", "#FFE4B5");
+        $("#query-page").css("background-color", "#DDDDDD");
+        $('#reportTableDiv').hide();
+        $('#marquee_form').show();
+    }
+
+    // 新建跑马灯
+    function create_marquee() {
+        $.ajax({
+            url: '{{ url_for("busi.create_marquee") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'marquee_content': document.getElementById('marquee_content_create').value,
+                'begin_time': document.getElementById('date1').value,
+                'end_time': document.getElementById('date2').value,
+                'push_times': document.getElementById('push_times').value
+            },
+            success: function (data) {
+                if (data.result == 1) {
+                    alert("新建滚动公告成功！");
+                    location.href = '{{ url_for("busi.show_marquee") }}'
+                }
+                else if (data.result == 2) {
+                    alert("缺少参数！")
+                }
+                else if (data.result == 4) {
+                    alert("新建失败！")
+                }
+                else if (data.result == 5) {
+                    alert("开始时间不能大于结束时间！")
+                }
+                else {
+                    alert("输入的参数有误！请根据提示输入！")
+                }
+            },
+            error: function () {
+                alert("请求超时，请重试！")
+            }
+        })
+    }
+
+    {#// 修改跑马灯#}
+    {#function modification_marquee() {#}
+    {#    $.ajax({#}
+    {#        url: '{{ url_for("busi.editor_marquee") }}',#}
+    {#        type: 'PUT',#}
+    {#        dataType: 'json',#}
+    {#        data: {#}
+    {#            'marquee_id': $('.commit').attr('marquee_id'),#}
+    {#            'marquee_content': document.getElementById('marquee_content_create').value,#}
+    {#            'begin_time': document.getElementById('date1').value,#}
+    {#            'end_time': document.getElementById('date2').value,#}
+    {#            'push_times': document.getElementById('push_times').value#}
+    {#        },#}
+    {#        success: function (data) {#}
+    {#            if (data.result == 1) {#}
+    {#                alert("修改跑马灯成功！");#}
+    {#                location.href = '{{ url_for("busi.show_marquee") }}'#}
+    {#            }#}
+    {#            else if (data.result == 2) {#}
+    {#                alert("缺少参数！")#}
+    {#            }#}
+    {#            else {#}
+    {#                alert("输入的参数有误！请根据提示输入！")#}
+    {#            }#}
+    {#        },#}
+    {#        error: function () {#}
+    {#            alert("请求超时，请重试！")#}
+    {#        }#}
+    {#    })#}
+    {# }#}
+
+    // 组织批量下线的数组
+    function batch_list() {
+        var batch_str = '[';
+        var j = 0;
+        $('#reportTable tbody tr').each(function () {
+            if ($(this).find('input').is(':checked')) {
+                batch_str = batch_str + $(this).children().eq(1).html() + ', ';
+                j++;
+                if (j == $(this).parent().find('tr[class=selected]').length) {
+                    batch_str += ']'
+                }
+            }
+        });
+        return batch_str
+    }
+
+    // 批量下线
+    $('#batch_cancel').click(function () {
+        $.ajax({
+            url: '{{ url_for("busi.batch_cancel_marquee") }}',
+            type: 'PUT',
+            dataType: 'json',
+            data: {
+                'batch_list': batch_list()
+            },
+            success: function (data) {
+                alert(data.msg);
+                $('.bs-checkbox').find('input').eq(0).prop('checked', false);
+                $('#reportTable tbody tr').each(function () {
+                    if ($(this).find('input').is(':checked')) {
+                        $(this).children().eq(7).html('<span style="color: red">下线</span>');
+                        $(this).children().eq(0).find('input').prop('checked', false);
+                        $(this).attr('class', '')
+                    }
+                })
+            }
+        })
+    });
+
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            showPaginationSwitch: false,//是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination: 'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader: true,
+            showToolbar: false,
+            buttonsAlign: "right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+                [
+                    {field: "checked", checkbox: true},
+                    {field: "marquee_id", title: "滚动公告ID", align: "center", valign: "middle"},
+                    {field: "user_id", title: "后台账号", align: "center", valign: "middle"},
+                    {field: "marquee_content", title: "内容", align: "center", valign: "middle"},
+                    {field: "push_times", title: "每日展示次数", align: "center", valign: "middle"},
+                    {field: "begin_time", title: "开始时间", align: "center", valign: "middle"},
+                    {field: "end_time", title: "结束时间", align: "center", valign: "middle"},
+                    {#{field: "operate", title: "操作", align: "center", valign: "middle"},#}
+                    {field: "status", title: "状态", align: "center", valign: "middle"}
+                ],
+            data: [
+                {% for data in datas %}
+                    {
+                        marquee_id: '{{ data.marquee_id }}',
+                        user_id: '{{ data.user_id }}',
+                        marquee_content: '{{ data.marquee_content | safe }}',
+                        push_times: '{{ data.push_times }}',
+                        begin_time: '{{ data.begin_time }}',
+                        end_time: '{{ data.end_time }}',
+                        {#operate: '<a class="editor_marquee" marquee_id="{{ data.marquee_id }}" marquee_content="{{ data.marquee_content}}" interval_time="{{ data.interval_time }}" push_times="{{ data.push_times_num }}" begin_time="{{ data.begin_time }}" end_time="{{ data.end_time }}" channel_id="{{ data.channel_num }}">修改</a>',#}
+                        status: '{% if data.status_num==0 %}<span style="color: red">{{ data.status }}</span>{% else %}<span style="color: limegreen">{{ data.status }}</span>{% endif %}'
+                    },
+                {% endfor %}
+            ]
+        });
+        {#// 构造修改跑马灯页面#}
+        {#$('.editor_marquee').click(function () {#}
+        {#    go_new.text('返回公告列表');#}
+        {#    $('#batch_cancel').hide();#}
+        {#    $('#add-page').html('修改');#}
+        {#    $('#tips').html('正在修改id为' + $(this).attr('marquee_id') + '的跑马灯');#}
+        {#    $('.commit').attr('ONCLICK', 'modification_marquee()').attr('marquee_id', $(this).attr('marquee_id'));#}
+        {#    show_add();#}
+        {#    $('#marquee_content_create').val($(this).attr('marquee_content'));#}
+        {#    $('#date1').val($(this).attr('begin_time'));#}
+        {#    $('#date2').val($(this).attr('end_time'));#}
+        {#    $('#push_times').val($(this).attr('push_times'));#}
+        {#    $('#active_channel').val($(this).attr('channel_id'));#}
+        {# });#}
+    })
+</script>
+</body>
+</html>

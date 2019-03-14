@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>账变记录详情</title>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<style type="text/css">
+    .pagination-coin {
+        margin: 30px auto 50px auto;
+        width: 800px;
+        height: 50px;
+    }
+    .pagination-coin a, .pagination-coin p {
+        padding-top: 1px;
+        display: inline-block;
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+        color: black;
+        border: 1px solid black;
+    }
+    .total{
+      text-align: center;
+      font-size: 14px;
+    }
+    .total span{
+      font-size: 14px;
+    }
+</style>
+<body>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/highcharts.js"></script>
+<script type="text/javascript" src="/static/js/exporting.js"></script>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_coin_change_data"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, QueryType = 3,
+    Channels=True, SelectChannel = status_msg.channel, PlayerID = status_msg.player_id, Account = status_msg.Account, Method='get',
+    OThers=status_msg.OThers, PrecisionSecond=True
+    ) }}
+    {% endautoescape %}
+</div>
+<div class="total">
+    <span>总变更</span>
+    <span class="bg_orange">0</span>
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<section class="refactor-alert"><p class="refactor-alert-content">服务器忙，请稍后再试</p></section>
+</body>
+<script type="text/javascript">
+    $('#game').find('option').eq({{ status_msg.game }}).attr("selected", true)
+
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            url:"/game/coin_change/datas",
+            method: 'get',
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            responseHandler:responseHandler,//请求数据成功后，渲染表格前的方法
+            striped: true,
+            pagination: true,
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            dataField:'data',
+            showPaginationSwitch:false,//是否显示数据条数选择框
+
+            striped: true,
+            pagination: true,
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'server',
+            showHeader:true,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+
+            silentSort:false,
+
+            queryParamsType:'limit',
+            queryParams: queryParams,//传递参数（*）
+
+            columns:
+            [
+                {field:"timeStamp",title:"时间",align:"center",valign:"middle"},
+                {field:"pid",title:"玩家ID",align:"center",valign:"middle",formatter:pid_format},
+                {field:"nick",title:"昵称",align:"center",valign:"middle"},
+                {field:"log_type",title:"日志类型",align:"center",valign:"middle"},
+                {field:"subgame",title:"子游戏",align:"center",valign:"middle"},
+                {field:"val",title:"变更值",align:"center",valign:"middle",formatter:coin_format},
+                {field:"rest",title:"剩余",align:"center",valign:"middle",formatter:coin_format_no_color},
+            ]
+        });
+    });
+
+    //得到查询的参数
+    function queryParams (params) {
+        var temp = {  //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            size: params.limit,  //页面大小
+            offset: params.offset, //页码
+            PlayerID:$("#PlayerID").val(),
+            Account:$("#Account").val(),
+            channel:$("#channel").val(),
+            NickName:$("#NickName").val(),
+            beginDate:$("#beginDate").val(),
+            endDate:$("#endDate").val(),
+            game:$("#game").val(),
+        };
+        return temp;
+    };
+
+    //请求成功方法
+    function responseHandler(result){
+        loadingShow(false);
+        if(result.error == 'system_err'){
+            showAlert('没有找到匹配的记录')
+            $('.total .bg_orange').text('0')
+            return;
+        }
+        $('.total .bg_orange').text(coin_format_no_color(result.total_val))
+        //如果没有错误则返回数据，渲染表格
+        return {
+            total : result.dataLength, //总页数,前面的key必须为"total"
+            data : result.rowDatas, //行数据，前面的key要与之前设置的dataField的值一致.
+        };
+    };
+
+     //查询按钮事件
+    $('#query_btn').click(function(){
+        loadingShow(true);
+        $('#reportTable').bootstrapTable('refreshOptions', {pageNumber:1});
+        $('#reportTable').bootstrapTable('refresh', {url : '/search/game/coin_change/datas'});
+})
+</script>
+</html>

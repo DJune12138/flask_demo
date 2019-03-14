@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>人工加款扣款</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        label{
+            font-size: 12px !important;;
+        }
+        .btn-primary{
+            margin-bottom: 10px !important;
+        }
+        .content_title{
+            cursor: pointer;
+            background: #71889f;
+            border: solid 1px #bdc9d3;
+            border-radius: 5px 5px 0 0;
+            color: #fff !important;
+            padding: 5px 10px;
+            margin: 10px 0 0 0 !important;
+            font-size: 12px !important;
+            user-select: none;
+            border-bottom: none;
+        }
+        .select{
+            background: #fff;
+            color: #000 !important;
+        }
+        .refactor_content  select{
+            border: none !important;
+            color: #000 !important;
+            height: 100% !important;
+        }
+        .type-prop,.type-password{
+            display: none;
+        }
+        .content_nav{
+            border-bottom: solid 1px #ddd;
+            padding-left: 10px;
+            background: #ebf0f3;
+        }
+        .search{
+            padding: 0 10px 10px 10px;
+        }
+        .content_main{
+            background: #fff;
+            padding-top: 10px;
+        }
+        .content_item{
+            background: #fff;
+            width: 98% !important;
+            float: left;
+            margin: 10px 1% !important;
+            box-sizing: border-box;
+            padding-left: 115px !important;
+            padding-right: 5px !important;
+            position: relative;
+            height: 40px;
+        }
+        .content_item_first{
+            margin-top: 0;
+        }
+
+        .refactor_content {
+            border-radius: 3px;
+        }
+
+        .content_item label:first-child {
+            position: absolute;
+            left: 0;
+        }
+
+        .content_item input[type=text], .content_item input[type=password], .content_item select {
+            width: 100% !important;
+            box-sizing: border-box;
+            height: 75% !important;
+        }
+
+        input.nick {
+            font-size: 15px !important;
+            color: red !important;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="rule">
+    <p>加款扣款时，请务必确认渠道、玩家ID、玩家昵称等信息是否一致。</p>
+</div>
+<div class="content_top">
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_player_money_detail"), beginDate = False, endDate = False,
+    Channels=True, PlayerID = status_msg.PlayerID,Account = status_msg.Account,
+    SelectChannel = status_msg.channel, QueryType = 1,
+    NickName=status_msg.NickName, Method='get') }}
+    {% endautoescape %}
+</div>
+<section class="refactor_content">
+    <div class="content_nav">
+        <span class="content_title select">金币赠送</span>
+        <span class="content_title">道具赠送</span>
+        <!--<span class="content_title">修改保险柜密码</span>-->
+    </div>
+    <div class="content_main">
+    <!--金币赠送-->
+    <p class="content_item type-coin content_item_first">
+        <label>玩家昵称</label>
+        <input class="disabled nick" type="text" placeholder="" value="{{ base_player.nick }}" disabled/>
+    </p>
+    <p class="content_item type-coin content_item_first">
+        <label>携带金币</label>
+        <input class="disabled" type="text" placeholder="" value="{{ base_player.coin }}" disabled/>
+    </p>
+    <p class="content_item type-coin">
+        <label>保险柜金币</label>
+        <input class="disabled" type="text" placeholder="" value="{{ base_player.banker }}" disabled/>
+    </p>
+    <p class="content_item type-coin">
+        <label>操作类型</label>
+        <select class="coin-type" name="coin-type">
+            <option value="1">加款-后台充值</option>
+            <!--<option value="2">加款-额度补回</option>-->
+            <option value="3">扣款-后台提款</option>
+            <!--<option value="4">扣款-额度扣除</option>-->
+        </select>
+    </p>
+    <p class="content_item type-coin">
+        <label>操作金额</label>
+        <input class="coin-num" type="text" placeholder="请输入操作金额"/>
+    </p>
+    <p class="content_item type-coin">
+        <label>操作原因</label>
+        <input class="coin-reason" type="text" placeholder="请输入操作原因"/>
+    </p>
+    <!--道具赠送-->
+    <p class="content_item type-prop">
+        <label>道具名称</label>
+        <input type="text" placeholder="请输入道具名称" value="喇叭" disabled/>
+    </p>
+    <p class="content_item type-prop">
+        <label>操作类型</label>
+        <select class="prop-type" name="prop-type">
+            <option value="1">加款-后台增加</option>
+            <option value="2">扣款-后台扣除</option>
+        </select>
+    </p>
+    <p class="content_item type-prop">
+        <label>赠送数量</label>
+        <input class="prop-num" type="text" placeholder="请输入赠送数量" required/>
+    </p>
+    <!--修改保险柜密码-->
+    <p class="content_item type-password">
+        <label>新密码</label>
+        <input class="password-input" type="password" placeholder="请输入新密码"/>
+    </p>
+    <p class="content_item type-password">
+        <label>确认密码</label>
+        <input class="password-sure" type="password" placeholder="请输入确认密码"/>
+    </p>
+
+    <input class="btn btn-primary btn-sm" id="submit" type="submit" value="确定">
+    </div>
+</section>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<script>
+    var type_index = 0;
+
+    $('.content_title').click(function () {
+        $('.content_title').removeClass('select');
+        $(this).addClass('select');
+        var index =$('.content_title').index(this);
+        if(type_index != index){
+            $('.coin-num').val('');
+            $('.coin-reason').val('');
+            $('.prop-num').val('');
+            $('.password-input').val('');
+            $('.password-sure').val('');
+        }
+        type_index = index;
+        $('.content_item').hide();
+        switch (index) {
+            case 0:
+                $('.type-coin').show();
+                break;
+            case 1:
+                $('.type-prop').show();
+                break;
+            case 2:
+                $('.type-password').show();
+                break;
+        }
+    })
+
+    $('#submit').click(function(){
+        switch (type_index) {
+            case 0:
+                givingCoin();
+                break;
+            case 1:
+                givingProp();
+                break;
+            case 2:
+                modifyPassword();
+                break;
+        }
+    })
+
+    // 金币赠送
+    function givingCoin() {
+        var playerID = document.getElementById("PlayerID").value;
+        {% if status_msg.access_level == 0 %}
+        alert("账号级别不够")
+        {% else %}
+        if (!playerID) {
+            showAlert('请填写玩家信息并查询 !')
+        }else if (!$('.coin-num').val()) {
+            showAlert('请填写操作金额!')
+        } else if(!$('.coin-reason').val()){
+            showAlert('请填写操作原因!')
+        }else{
+            $.ajax({
+                type: 'GET',
+                url: "/gm/user/send_coin",
+                dataType: "json",
+                data: {
+                    // channel:channel,
+                    PlayerID:playerID,
+                    num:$('.coin-num').val(),
+                    type:$('.coin-type').val(),
+                    reason:$('.coin-reason').val(),
+                },
+                success: function() {
+                    msg = ($('.coin-type').val() == 1) ? '加' : '扣'
+                    parent.showAlert(msg+'款成功','success');
+                    setTimeout(function () {
+                        $('#query_btn').click()
+                    },1000)
+                },
+            });
+        }
+        {% endif %}
+    }
+
+    // 道具赠送
+    function givingProp() {
+        {% if status_msg.access_level == 0 %}
+        alert("账号级别不够")
+        {% else %}
+        if (!$('.prop-num').val()) {
+            showAlert('请填写赠送数量!')
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: "/gm/user/send_item",
+                dataType: "json",
+                data: {
+                    PlayerID: document.getElementById("PlayerID").value,
+                    num:$('.prop-num').val(),
+                    type:$('.prop-type').val(),
+                },
+                success: function () {
+                    showAlert("赠送喇叭成功!",'success');
+                },
+            });
+        }
+        {% endif %}
+    }
+
+    <!--修改保险柜密码-->
+    function modifyPassword() {
+        if (!$('.password-input').val()) {
+            showAlert('请填写新密码!')
+        } else if(!$('.password-sure').val()){
+            showAlert('请填写确认密码!')
+        } else if($('.password-input').val() != $('.password-sure').val()){
+            showAlert('两次密码不一致!')
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: "/gm/user/alter_bank_pwd",
+                dataType: "json",
+                data: {
+                    PlayerID: document.getElementById("PlayerID").value,
+                    pwd:$('.password-input').val()
+                },
+                success: function () {
+                    showAlert("修改保险柜密码成功!",'success');
+                },
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

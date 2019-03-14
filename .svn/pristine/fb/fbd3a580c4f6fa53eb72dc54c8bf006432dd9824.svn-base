@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>充值优惠设置</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/all.css"/>
+    <style type="text/css">
+        .tip{
+            font-size: 14px;
+            padding-left: 15px;
+        }
+        .add_activity {
+            padding: 20px 0 20px 400px;
+            border: solid 1px #ededed;
+            margin: 0 0 30px 0;
+            border-radius: 5px;
+        }
+
+        .input_box, .parent_check {
+            width: 1200px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box {
+            width: 150px;
+            overflow: hidden;
+            line-height: 25px;
+            margin-bottom: 10px;
+        }
+
+        .check_box div {
+            height: 25px;
+            width: 150px;
+            float: left;
+        }
+
+        .input_box div, .auth_logo {
+            width: 160px;
+            float: left;
+            text-align: right;
+        }.content_item .hierarchy {
+             padding: 3px 10px;
+             font-size: 13px;
+             background-color: #d2d2d2;
+             color: #fff;
+             overflow: hidden;
+             white-space: nowrap;
+             text-overflow: ellipsis;
+             display: inline-block;
+             position: relative;
+             top: 2px;
+             cursor: pointer;
+             margin: 5px 5px;
+         }
+
+        .content_item .hierarchy-select {
+            background-color: #5FB878;
+        }
+        .content_top{
+            text-align: right;
+        }
+        .content_top .button_new{
+            margin: 5px 10px !important;
+        }#batch_cancel{
+             float: left;
+             margin: 7px;
+         }
+         input[type=file] {
+              display: inline-block;
+                               color: #fff;
+            border: none !important;
+            width: 75px;
+          }
+         .file_val1,.file_val2,.file_val3,.file_val4{
+            border: none !important;
+        }
+        .item-content textarea {
+            font-size: 14px;
+            width: 800px;
+            height: 300px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+        {{ search_bar(url_for("busi.recharge_discounts_retrieve"), beginDate=other_msg.beginDate, endDate=other_msg.endDate, QueryType=1, Channels=True, OThers=other_msg.OThers, Method='get', SelectChannel=other_msg.SelectChannel) }}
+    {% endautoescape %}
+    <span style="color: red">{{ other_msg.tips }}</span>
+</div>
+
+<div class="refactor_content">
+    <div class="content_top">
+{#        <button class="btn btn-primary btn-sm" id="batch_cancel">批量下线</button>#}
+        <a class="button_new">新建充值优惠</a>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover table-condensed" hidden>
+    <tr>
+        <th id="query-page" style="cursor: pointer;text-align:center;background-color: #FFE4B5" ONCLICK="show_query()">查询</th>
+        <th id="add-page" style="cursor: pointer;text-align:center;" ONCLICK="show_add()">新建</th>
+    </tr>
+</table>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+<form id="activity_form" hidden>
+    <div class="add_activity">
+        <h3 id="tips" style="text-align: center"></h3>
+        <div class="input_box">
+            <div><span>活动类型：&nbsp;&nbsp;</span></div>
+            <select id="activity_type" style="border-radius:5px;border:1px solid #4876FF" onchange="activity_type_change()">
+                <option value="6">类型一：固定金额赠送（例如：充值100送50、充值100送100、充值200送200）</option>
+                <option value="7">类型二：充值金额的百分比赠送（例如：最低充值1元起，赠送30%，最高赠送1888）</option>
+            </select>
+        </div>
+        <div class="input_box">
+            <div><span>活动页签角标图片：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input1" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input1','.file_val1')"/>
+            <input class="file_val1" type="text" disabled>
+            <span class="tip">尺寸：76×78</span>
+        </div>
+        <div class="input_box">
+            <div><span>活动内容图片：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input2" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input2','.file_val2')"/>
+            <input class="file_val2" type="text" disabled>
+            <span class="tip">尺寸：827×664</span>
+        </div>
+        <div class="input_box">
+            <div><span>活动页签图片1：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input3" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input3','.file_val3')"/>
+            <input class="file_val3" type="text" disabled>
+            <span class="tip">尺寸：150×38</span>
+        </div>
+        <div class="input_box">
+            <div><span>活动页签图片2：&nbsp;&nbsp;</span></div>
+            <input class="file" type="file" id="img_input4" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                   onchange="imgUpload(this,'img_input4','.file_val4')"/>
+            <input class="file_val4" type="text" disabled>
+            <span class="tip">尺寸：150×38</span>
+        </div>
+        <div class="input_box item-content">
+            <div><span>活动规则描述：&nbsp;&nbsp;</span></div>
+            <textarea placeholder="请输入活动规则描述" id="activity_content_create"></textarea>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;必填</span>
+        </div>
+        <div class="input_box">
+            <div><span>参与玩家：&nbsp;&nbsp;</span></div>
+            <select id="participation_member" style="border-radius:5px;border:1px solid #4876FF">
+                <option value="1">所有玩家</option>
+                <option value="2">新玩家（没有充值记录的）</option>
+                <option value="3">老玩家（有过充值记录的）</option>
+            </select>
+        </div>
+        <div class="input_box" id="participation_level">
+            <div><span>参与层级：&nbsp;&nbsp;</span></div>
+            <p class="content_item member_level">
+                <span class="hierarchy hierarchy-select">默认层级1</span>
+                <span class="hierarchy">默认层级2</span>
+                <span class="hierarchy">默认层级3</span>
+            </p>
+        </div>
+        <div class="input_box">
+            <div><span>流水要求：&nbsp;&nbsp;</span></div>
+            <input type="text" id="journal_require" style="display:block;text-indent:5px;float:left">
+            <span id="water_tips1">【 例：充值500送200，10倍流水即可提款 】则请输入 10</span>
+            <span id="water_tips2" hidden>【 例：1元起充，赠送30%彩金，最高可获得1888元，3倍流水即可提款 】则请输入 3</span>
+        </div>
+        <div class="input_box">
+            <div><span>申请次数：&nbsp;&nbsp;</span></div>
+            <input type="text" id="apply_times" placeholder="不限次数，请输入0" style="display:block;text-indent:5px;float:left">【 每个玩家可以申请的次数 】如不限制申请次数，请输入 0
+        </div>
+        <div class="input_box" id="max_present_tips">
+            <div><span>最高赠送：&nbsp;&nbsp;</span></div>
+            <input type="text" id="max_present" placeholder="￥" style="display:block;text-indent:5px;float:left">
+            <span id="max_tips1">【 例：充值500送200 】则请输入 200</span>
+            <span id="max_tips2" hidden>【 例：1元起充，赠送30%彩金，最高可获得1888元 】则请输入 1888</span>
+        </div>
+        <br><br><a style="padding-left:73px" id="add_recharge">增加充值梯度</a><a style="padding-left:30px" id="delete_recharge">删除充值梯度</a>
+        <div id="type_1">
+            <div class="change_1">
+                <br>
+                <div class="input_box">
+                    <div><span>充值金额：&nbsp;&nbsp;</span></div>
+                    <input type="text" class="recharge_money_1" placeholder="￥" style="display:block;text-indent:5px;float:left">【 例：充值500送200 】则请输入 500
+                </div>
+                <div class="input_box">
+                    <div><span>赠送金额：&nbsp;&nbsp;</span></div>
+                    <input type="text" class="present_money_1" placeholder="￥" style="display:block;text-indent:5px;float:left">【 例：充值500送200 】则请输入 200
+                </div>
+            </div>
+        </div>
+        <div id="type_2">
+            <div class="change_2">
+                <br>
+                <div class="input_box">
+                    <div><span>最低充值：&nbsp;&nbsp;</span></div>
+                    <input type="text" class="recharge_money_2" placeholder="￥" style="display:block;text-indent:5px;float:left">【 例：1元起充，赠送30%彩金，最高可获得1888元 】则请输入 1
+                </div>
+                <div class="input_box">
+                    <div><span>赠送比例：&nbsp;&nbsp;</span></div>
+                    <input type="text" class="present_money_2" placeholder="%" style="display:block;text-indent:5px;float:left">【 例：1元起充，赠送30%彩金，最高可获得1888元 】则请输入 30
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <div class="input_box">
+            <div><span>活动开始时间：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" id="begin_time" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1,isShowClear:false,isShowOK:false,isShowToday:false,autoPickDate:true})">
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;必填</span>
+        </div>
+        <div class="input_box">
+            <div><span>活动结束时间：&nbsp;&nbsp;</span></div>
+            <input class="Wdate" id="end_time" type="text" readonly onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',firstDayOfWeek:1,isShowClear:false,isShowOK:false,isShowToday:false,autoPickDate:true})">
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;必填</span>
+        </div>
+        <div class="input_box">
+            <div><span>优先级：&nbsp;&nbsp;</span></div>
+            <input type="text" id="priority" placeholder="请输入优先级">
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;必填，数值越大优先级越高</span>
+        </div>
+        <input type="button" name="" value="确认" class="commit btn btn-primary btn-sm" ONCLICK="create_activity()">
+        <input class="btn btn-primary btn-sm cancel" type="button" id="cancel" value="取消">
+    </div>
+</form>
+<section class="refactor-alert">
+    <p class="refactor-alert-content">服务器忙，请稍后再试</p>
+</section>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript">
+    var file_name = '';
+    file = $('.file');
+    go_new = $('.refactor_content .content_top .button_new');
+    go_new.click(function () {
+       if($(this).text() == '新建充值优惠'){
+           $(this).text('返回优惠列表');
+           $('#batch_cancel').hide();
+           show_add();
+       }else{
+           $(this).text('新建充值优惠');
+           $('#batch_cancel').show();
+           show_query();
+       }
+    });
+
+    getMemberLevel();
+    $('#channel_id').change(function () {
+    getMemberLevel();
+    })
+    function getMemberLevel() {
+    $.ajax({
+    url: '{{ url_for("busi.member_level_json_name") }}',
+    type: 'GET',
+    dataType: 'json',
+    async: false,
+    success: function (res) {
+    $('.member_level').html('');
+    res.datas.forEach(function (item) {
+    $('.member_level').append($('<span class="hierarchy" item_id=' + item.id + '>' + item.name + '</span>'))
+    });
+
+    $('.member_level .hierarchy').click(function () {
+    if ($(this).hasClass('hierarchy-select')) {
+    $(this).removeClass('hierarchy-select');
+    } else {
+    $(this).addClass('hierarchy-select');
+    }
+    })
+
+    },
+    error: function () {
+    showAlert("请求超时，请重试！")
+    }
+    })
+    }
+
+    $('#cancel').click(function () {
+        location.href = '{{ url_for("busi.recharge_discounts_show") }}'
+    });
+
+    function show_query() {
+        $("#query-page").css("background-color","#FFE4B5");
+        $("#add-page").css("background-color","#DDDDDD");
+        $('#activity_form').hide();
+        $('#reportTableDiv').show()
+    }
+
+    function show_add() {
+        $("#add-page").css("background-color","#FFE4B5");
+        $("#query-page").css("background-color","#DDDDDD");
+        $('#reportTableDiv').hide();
+        $('#activity_form').show();
+        activity_type_change()
+    }
+
+    // 新建活动
+    function create_activity() {
+        player_lv = '';
+        $('.hierarchy-select').each(function () {
+            if (player_lv) {
+                player_lv += ',' + $(this).attr('item_id');
+            } else {
+                player_lv += $(this).attr('item_id');
+            }
+        });
+        $.ajax({
+            url: '{{ url_for("busi.recharge_discounts_create_update") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'activity_title': $('.file_val1').val(),
+                'show_picture_url': $('.file_val2').val(),
+                'tab1_url': $('.file_val3').val(),
+                'tab2_url': $('.file_val4').val(),
+                'activity_type': $('#activity_type').val(),
+                'participation_member': $('#participation_member').val(),
+                'participation_level': player_lv,
+                'activity_content': $('#activity_content_create').val(),
+                'recharge_detail': get_recharge(),
+                'journal_require': $('#journal_require').val(),
+                'request_times': $('#apply_times').val(),
+                'max_add_recharge': $('#max_present').val(),
+                'begin_time': $('#begin_time').val(),
+                'end_time': $('#end_time').val(),
+                'priority': $('#priority').val()
+            },
+            success: function(data) {
+                if(data.result == 1){
+                    alert(data.msg);
+                    location.href = '{{ url_for("busi.recharge_discounts_show") }}'
+                }
+                else{
+                    alert(data.msg)
+                }
+            },
+            error: function() {
+                alert("请求超时，请重试！")
+            }
+        })
+    }
+
+    // 修改活动
+    function update_activity() {
+        player_lv = '';
+        $('.hierarchy-select').each(function () {
+            if (player_lv) {
+                player_lv += ',' + $(this).attr('item_id');
+            } else {
+                player_lv += $(this).attr('item_id');
+            }
+        });
+        $.ajax({
+            url: '{{ url_for("busi.recharge_discounts_create_update") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                'activity_title': $('.file_val1').val(),
+                'show_picture_url': $('.file_val2').val(),
+                'tab1_url': $('.file_val3').val(),
+                'tab2_url': $('.file_val4').val(),
+                'activity_type': $('#activity_type').val(),
+                'participation_member': $('#participation_member').val(),
+                'participation_level': player_lv,
+                'activity_content': $('#activity_content_create').val(),
+                'recharge_detail': get_recharge(),
+                'journal_require': $('#journal_require').val(),
+                'request_times': $('#apply_times').val(),
+                'max_add_recharge': $('#max_present').val(),
+                'begin_time': $('#begin_time').val(),
+                'end_time': $('#end_time').val(),
+                'priority': $('#priority').val(),
+                'activity_id': $('.commit').attr('activity_id')
+            },
+            success: function(data) {
+                if(data.result == 1){
+                    alert(data.msg);
+                    $('#query_btn').click()
+                }
+                else{
+                    alert(data.msg)
+                }
+            },
+            error: function() {
+                alert("请求超时，请重试！")
+            }
+        })
+    }
+
+    {#// 组织批量下线的数组#}
+    {#function batch_list() {#}
+    {#    var batch_str = '[';#}
+    {#    var j = 0;#}
+    {#    $('#reportTable tbody tr').each(function() {#}
+    {#        if($(this).find('input').is(':checked')) {#}
+    {#            batch_str = batch_str + $(this).children().eq(3).html() + ', ';#}
+    {#            j++;#}
+    {#            if(j==$(this).parent().find('tr[class=selected]').length) {#}
+    {#                batch_str += ']'#}
+    {#            }#}
+    {#        }#}
+    {#    });#}
+    {#    return batch_str#}
+    {# }#}
+
+    {#// 批量下线#}
+    {#$('#batch_cancel').click(function() {#}
+    {#    $.ajax({#}
+    {#        url: '{{ url_for("busi.recharge_discounts_cancel") }}',#}
+    {#        type: 'PUT',#}
+    {#        dataType: 'json',#}
+    {#        data: {#}
+    {#            'batch_list': batch_list()#}
+    {#        },#}
+    {#        success: function(data) {#}
+    {#            if(data.result == 1) {#}
+    {#                alert(data.msg);#}
+    {#                $('.bs-checkbox').find('input').eq(0).prop('checked',false);#}
+    {#                $('#reportTable tbody tr').each(function() {#}
+    {#                    if($(this).find('input').is(':checked')) {#}
+    {#                        $(this).children().eq(15).html('下线');#}
+    {#                        $(this).children().eq(14).find('.ok_audit').remove();#}
+    {#                        $(this).children().eq(0).find('input').prop('checked',false);#}
+    {#                        $(this).attr('class','')#}
+    {#                    }#}
+    {#                })#}
+    {#            }#}
+    {#            else {#}
+    {#                alert(data.msg)#}
+    {#            }#}
+    {#        }#}
+    {#    })#}
+    {# });#}
+
+    // 活动类型转换
+    var $recharge_money = '';
+    var $present_money = '';
+    var $max_present = '';
+    var $journal_require = '';
+    var $apply_times = '';
+    var $add_change = '';
+    var outermost_html = '';
+    var change_class = '';
+    function activity_type_change(){
+        if($('#activity_type').val()==6) {
+            $('#type_1').show();
+            $('#type_2').hide();
+            $('#water_tips1').show();
+            $('#water_tips2').hide();
+            $('#max_tips1').show();
+            $('#max_tips2').hide();
+            $recharge_money = $('.recharge_money_1');
+            $present_money = $('.present_money_1');
+            $max_present = $('.max_present_1');
+            $journal_require = $('.journal_require_1');
+            $apply_times = $('.apply_times_1');
+            $add_change = $('#type_1');
+            outermost_html = '<div class="change_1">';
+            change_class = '.change_1';
+        }
+        else {
+            $('#type_1').hide();
+            $('#type_2').show();
+            $('#water_tips1').hide();
+            $('#water_tips2').show();
+            $('#max_tips1').hide();
+            $('#max_tips2').show();
+            $recharge_money = $('.recharge_money_2');
+            $present_money = $('.present_money_2');
+            $max_present = $('.max_present_2');
+            $journal_require = $('.journal_require_2');
+            $apply_times = $('.apply_times_2');
+            $add_change = $('#type_2');
+            outermost_html = '<div class="change_2">';
+            change_class = '.change_2'
+        }
+    }
+
+    // 增加充值梯度点击事件
+    $('#add_recharge').click(function() {
+        $add_change.append(outermost_html + $add_change.find(change_class).eq(-1).html())
+    });
+
+    // 删除充值梯度点击事件
+    $('#delete_recharge').click(function(){
+        if($add_change.find(change_class).length>1) {
+            $add_change.find(change_class).eq(-1).remove()
+        }
+        else {
+            alert('就剩下一个了，还要删吗？')
+        }
+    });
+
+    // 构造修改页的充值梯度数据
+    function modification_recharge(data) {
+        activity_type_change();
+        var delete_length = $add_change.find(change_class).length-1;
+        for (var i=0;i<delete_length;i++) {
+            $('#delete_recharge').click()
+        }
+        for (var i=0;i<data.length-1;i++) {
+            $('#add_recharge').click()
+        }
+        for (var i in data) {
+            for (var j in data[i]) {
+                $(change_class).eq(i).find('input').eq(j).val(data[i][j])
+            }
+        }
+    }
+
+    // 构造充值梯度数据
+    function get_recharge() {
+        var all_recharge_data = '[';
+        $add_change.find(change_class).each(function() {
+            var one = '[';
+            $(this).find('input').each(function() {
+                one = one + "'" + $(this).val() + "'" + ', '
+            });
+            one = one.substring(0,one.length - 2) + ']';
+            all_recharge_data = all_recharge_data + one + ', '
+        });
+        all_recharge_data = all_recharge_data.substring(0,all_recharge_data.length - 2) + ']';
+        return all_recharge_data
+    }
+
+    $(function () {
+        $('#reportTable').bootstrapTable({
+            striped: true,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            paginationPreText:'上一页',
+            paginationNextText:'下一页',
+            showPaginationSwitch:false,  //是否显示数据条数选择框
+            pageSize: 100,
+            pageNumber:1,
+            pageList: [10, 20, 50, 100, 200, 500],
+            sidePagination:'client',
+            showColumns: false,
+            showRefresh: false,
+            showHeader:true,
+            showToolbar:false,
+            buttonsAlign:"right",
+            exportTypes: ["excel"],
+            exportDataType: "all",
+            clickToSelect: true,
+            columns:
+            [
+                {#{field:"checked",checkbox:true},#}
+                {field:"priority",title:"优先级",align:"center",sortable:true},
+                {field:"activity_id",title:"活动ID",align:"center",valign:"middle"},
+                {field:"user_id",title:"后台账号",align:"center",valign:"middle"},
+                {field:"activity_content",title:"活动规则描述",align:"center",valign:"middle"},
+                {field:"activity_type",title:"活动类型",align:"center",valign:"middle"},
+                {field:"participation_member",title:"参与玩家",align:"center",valign:"middle"},
+                {field:"request_times",title:"申请次数",align:"center",valign:"middle"},
+                {field:"max_add_recharge",title:"最高赠送",align:"center",valign:"middle"},
+                {field:"journal_require",title:"流水要求",align:"center",valign:"middle"},
+                {field:"begin_time",title:"开始时间",align:"center",valign:"middle"},
+                {field:"end_time",title:"结束时间",align:"center",valign:"middle"},
+                {field:"status",title:"状态",align:"center",valign:"middle"},
+                {field:"operate",title:"操作",align:"center",valign:"middle"}
+            ],
+            data:[
+                {% for one in data %}
+                    {
+                        priority:'{{ one.priority }}',
+                        activity_id:'{{ one.activity_id }}',
+                        user_id:'{{ one.user_id }}',
+                        activity_content:'{{ one.activity_content | safe }}',
+                        activity_type:'{{ one.activity_type }}',
+                        participation_member:'{{ one.participation_member }}',
+                        request_times:'{{ one.request_times }}',
+                        max_add_recharge:'{{ one.max_add_recharge/100 }}',
+                        journal_require:'{{ one.journal_require }}',
+                        begin_time:'{{ one.begin_time }}',
+                        end_time:'{{ one.end_time }}',
+                        status:'{% if one.status_num==0 %}<span style="color: red">{{ one.status }}</span>{% else %}<span style="color: limegreen">{{ one.status }}</span>{% endif %}',
+                        operate:'<a activity_id="{{ one.activity_id }}" class="update_activity">修改</a>'
+                    },
+                {% endfor %}
+            ]
+        });
+
+        // 构造修改活动页面
+        $('.update_activity').click(function() {
+            go_new.text('返回优惠列表');
+            $('#batch_cancel').hide();
+            $.ajax({
+                url: '{{ url_for("busi.recharge_discounts_json") }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    'activity_id': $(this).attr('activity_id')
+                },
+                success: function(data) {
+                    $('.file_val1').val(data.data.activity_title);
+                    $('.file_val2').val(data.data.show_picture_url);
+                    $('.file_val3').val(data.data.tab1_url);
+                    $('.file_val4').val(data.data.tab2_url);
+                    $('#activity_type').val(data.data.activity_type);
+                    $('#participation_member').val(data.data.participation_member);
+                    $('#activity_content_create').val(data.data.activity_content);
+                    modification_recharge(data.data.recharge_detail);
+                    $('#journal_require').val(data.data.journal_require);
+                    $('#apply_times').val(data.data.request_times);
+                    $('#max_present').val(data.data.max_add_recharge);
+                    $('#begin_time').val(data.data.begin_time);
+                    $('#end_time').val(data.data.end_time);
+                    $('#priority').val(data.data.priority);
+                    {#$('#add-page').html('修改');#}
+                    $('#tips').html('正在修改id为' + data.data.activity_id + '的活动');
+                    $('.commit').attr('ONCLICK','update_activity()').attr('activity_id',data.data.activity_id);
+                    getMemberLevel();
+                    $('.hierarchy').removeClass('hierarchy-select');
+                    data.data.participation_level.split(',').forEach(function (item) {
+                        $('.hierarchy').each(function (idx, ite) {
+                            if (item == $(ite).attr('item_id')) {
+                                $(ite).addClass('hierarchy-select')
+                            }
+                        })
+                    });
+                    show_add();
+                }
+            })
+        });
+
+        {#// 活动通过审核#}
+        {#$('.ok_audit').click(function() {#}
+        {#    var self_id = $(this).attr('activity_id');#}
+        {#    $.ajax({#}
+        {#        url: '{{ url_for("busi.recharge_discounts_audit") }}',#}
+        {#        type: 'PUT',#}
+        {#        dataType: 'json',#}
+        {#        data: {#}
+        {#            'activity_id': self_id#}
+        {#        },#}
+        {#        success: function(data) {#}
+        {#            alert(data.msg);#}
+        {#            $('#audit_'+self_id).remove();#}
+        {#            $('#status_'+self_id).html('已审核');#}
+        {#        },#}
+        {#        error: function() {#}
+        {#            alert("请求超时，请重试！")#}
+        {#        }#}
+        {#    })#}
+        {# })#}
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主内容</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+    <style>
+        input{
+            height: 30px !important;
+            padding: 5px 20px;
+            color: #fff !important;
+        }
+        input.button_stop{
+            background-color: #d9534f;
+        }
+        input.button_stop:hover{
+            background-color: #c9302c;
+        }
+        input.button_wait{
+            background-color: #f0ad4e;
+        }
+        input.button_wait:hover{
+            background-color: #ec971f;
+        }
+        input.button_success{
+            background-color: #5cb85c;
+        }
+        input.button_success:hover{
+            background-color: #449d44;
+        }
+    </style>
+</head>
+
+<script language="javascript" type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/tableExport/tableExport.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/all.js"></script>
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+    <tr>
+        <td>
+            <input type="button" class="button_stop" onclick="do_set_state_batch(1)" value="批量停服">
+            <input type="button" class="button_wait" onclick="do_set_state_batch(2)" value="批量预发布">
+            <input type="button" class="button_success" onclick="do_set_state_batch(3)" value="批量发布">
+        </td>
+    </tr>
+</table>
+<div id="reportTableDiv">
+    <table id="reportTable"></table>
+</div>
+</body>
+</html>
+
+<script>
+$(function () {
+    $('#reportTable').bootstrapTable({
+        striped: true,
+        pagination: true,
+        contentType: "application/x-www-form-urlencoded",
+        paginationPreText:'上一页',
+        paginationNextText:'下一页',
+        showPaginationSwitch:false,//是否显示数据条数选择框
+        pageSize: 100,
+        pageNumber:1,
+        pageList: [10, 20, 50, 100, 200, 500],  
+        sidePagination:'client',
+        showColumns: false,
+        showRefresh: false,
+        showHeader:true,
+        showToolbar:false,
+        buttonsAlign:"right",
+        exportTypes: ["excel"],
+        exportDataType: "all",
+        clickToSelect: true,
+        columns: 
+        [
+            {field:"checked",checkbox:true},
+            {field:"channel",title:"渠道",sortable:"true"},
+            {field:"state",title:"状态",sortable:"true",formatter:state_format},
+            {field: 'operate',title: '操作',align: 'center',events: operateEvents,formatter: operateFormatter}
+        ],
+        data:[
+        {% for k, v in page.datas.items() %}
+            {
+                channel:"{{ k }}",
+                state:{{ v }}
+            },
+        {% endfor %}
+        ]
+    }); 
+});
+
+function operateFormatter(value, row, index) {
+    return [
+        '<input type="button" class="button_stop" id="b_stop" value="停服">',
+        '<input type="button" class="button_wait" id="b_pre_pub" value="预发布">',
+        '<input type="button" class="button_success" id="b_pub" value="发布">'
+    ].join('');
+}
+
+window.operateEvents = {
+    'click #b_stop': function (e, value, row, index) {
+        do_set_state(row.channel, 1);
+    },
+    'click #b_pre_pub': function (e, value, row, index) {
+        do_set_state(row.channel, 2);           
+    },
+    'click #b_pub': function (e, value, row, index) {
+        do_set_state(row.channel, 3);           
+    },
+}
+
+function state_format(state) {
+    if (state == 1) {return "<font color='#FF0000'>维护中</font>"}
+    if (state == 2) {return "<font color='#AEB404'>预发布</font>"}
+    if (state == 3) {return "<font color='#04B404'>已发布</font>"}
+}
+
+function do_set_state_batch(state) {
+    var id_list = get_checked('reportTable', 1);
+    if (id_list) {do_set_state(id_list, state)}
+}
+
+function do_set_state(id_list, state) {
+    $.ajax({
+        url: '/games/gm/set_server_state',
+        type: 'POST',
+        dataType: "json",
+        data: {
+            'state': state,
+            'channels': id_list,
+        },
+        success: function(data) {
+            location.reload();
+        },
+        error: function() {
+            alert("请求超时，请重试！")
+        }
+    })
+}
+
+</script>

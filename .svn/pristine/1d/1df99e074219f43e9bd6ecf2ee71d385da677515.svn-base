@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>金币买卖排行</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/static/js/bootstrap-table-develop/dist/bootstrap-table.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/all.css" type="text/css" media="screen"/>
+</head>
+<body>
+<div>
+    {% autoescape false %}
+    {{ search_bar(url_for("busi.search_sell_buy_point_rank"), beginDate = status_msg.beginDate, endDate =
+    status_msg.endDate, Channels=True, SelectChannel = status_msg.channel, PT = False, PlayerID = False, QueryType = 3,
+    OThers = status_msg.OThers, Method='get') }}
+    {% endautoescape %}
+</div>
+<p style="color: red">{{ status_msg.errmsg }}</p>
+<table id="reportTable"></table>
+<script src="/static/js/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/tableExport/tableExport.min.js"></script>
+<script src="/static/js/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="/static/js/all.js"></script>
+<script type="text/javascript">
+    // {% if status_msg.sort == '0' %}
+    //     $('#point').find('option').eq(0).attr("selected", true)
+    // {% elif status_msg.sort == '1' %}
+    //     $('#point').find('option').eq(1).attr("selected", true)
+    // {% endif %}
+    //
+    // {% if status_msg.user_type == '0' %}
+    //     $('#user_type').find('option').eq(0).attr("selected", true)
+    // {% elif status_msg.user_type == '1' %}
+    //     $('#user_type').find('option').eq(1).attr("selected", true)
+    // {% elif status_msg.user_type == '2' %}
+    //     $('#user_type').find('option').eq(2).attr("selected", true)
+    // {% endif %}
+
+    $('#query_btn').click(function () {
+        loadingShow(true);
+        $('#reportTable').bootstrapTable('refresh');
+    })
+
+    window.operateEvents = {
+        'click #go_detail': function (e, value, row, index) {
+            new_iframe('玩家信息详情', '/games/users/datas/details?pid=' + row.pid)
+        },
+    }
+
+    $('#reportTable').bootstrapTable({
+        url: '/search/games/rank/sellpoint',
+        responseHandler: responseHandler, queryParams: function () {
+            return {
+                point: $('#point').val(),
+                user_type: $('#user_type').val(),
+                beginDate: $('#beginDate').val(),
+                endDate: $('#endDate').val(),
+            }
+        },
+        columns:
+            [
+                {field: "rank", title: "排名", sortable: "true",},
+                {field: "pid", title: "玩家ID", formatter: pid_format},
+                {field: "nick", title: "玩家昵称"},
+                {field: "game_count", title: "参与局数", sortable: "true"},
+                {field: "total_up_coin", title: "总买分", sortable: "true",formatter: coin_format_no_color,},
+                {field: "total_down_coin", title: "总卖分", sortable: "true",formatter: coin_format_no_color,},
+                {
+                    field: "total_win",
+                    title: "总盈利",
+                    formatter: coin_format,
+                    sortable: "true"
+                },
+                {field: "last_login_ip", title: "IP地址"},
+                {field: "operate", title: "操作",
+                    events: operateEvents,formatter: '<a id="go_detail">查看详情</a>'},
+            ]
+    });
+
+    function responseHandler(res) {
+        loadingShow(false);
+        $.each(res.data,function (index,item) {
+            item.total_win = item.total_down_coin - item.total_up_coin;
+        })
+        return {
+            total: res.data.length,
+            data: res.data
+        };
+    };
+</script>
+</body>
+</html>

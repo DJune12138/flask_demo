@@ -1,0 +1,58 @@
+# -*- coding:utf-8 -*-
+from zs_backend import SqlOperate
+from zs_backend import redis_conn
+from werkzeug.security import generate_password_hash
+from zs_backend.busi.channel import load_channel
+from zs_backend.busi.game_parameter import load_game_paramter
+from zs_backend import scheduler
+import fcntl
+from zs_backend.utils import httpc_util
+from zs_backend.utils.const import *
+
+def init(admin_type):
+    if admin_type == "API":
+        return
+
+    try:
+        f = file("admin.lock", "w")
+        fcntl.flock(f, fcntl.LOCK_EX)
+        init1()
+    except:
+        pass
+
+
+def init1():
+    print "system init"
+    ## 初始化系统账号
+    user_count = SqlOperate().select('select count(1) from user')[0][0]
+    if user_count == 0:
+        sql = '''
+            insert into user (name, nick, password, role_str) values ('admin', 'admin', '%s', '1')
+        ''' % generate_password_hash('123456')
+        SqlOperate().insert(sql)
+
+    role_count = SqlOperate().select('select count(1) from role')[0][0]
+    if role_count == 0:
+        sql = '''
+            insert into role (id, name, parent_id) values (1, '管理员组', 1)
+        '''
+        SqlOperate().insert(sql)
+
+    ## 加载渠道配置到redis
+    load_channel()
+    ## 加载游戏参数
+    load_game_paramter()
+
+def cron(admin_type):
+    if admin_type == "API" or admin_type == "ALL":
+        ## 启动定时计划任务
+        scheduler.add_job(func=get_channel_data, id='1', args=(), trigger='interval', seconds=10, replace_existing=True)
+
+## 获取各种用于api服的渠道数据
+def get_channel_data():
+    rr = httpc_util.post(API_WEB_SITE+"/api/channel_data", {}).json()
+    for dd in rr["data"]:
+        channel = dd["channel"]
+        redis_conn.hmset(CHANNEL_CONFIG_TABLE+channel, dd)
+        redis_conn.hset(WX_CONFIG_TABLE, dd["wx_appid"], dd["wx_token"])
+        redis_conn.hset(WX_CONFIG_TABLE, dd["h5_wx_appid"], dd["h5_wx_token"])
